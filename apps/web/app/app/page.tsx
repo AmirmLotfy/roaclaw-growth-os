@@ -252,9 +252,19 @@ export default function Page() {
         throw new Error('This workspace needs a page capture. Attach an approved Chrome capture or choose Sable & Stem.');
       }
       const privacy = page.isSynthetic && navigator.onLine ? workspaceData.privacy : 'local';
-      const extracted = await inspectPage(page, privacy);
+      let canReviewInCloud = privacy !== 'local';
+      let extracted;
+      try {
+        extracted = await inspectPage(page, privacy);
+      } catch (problem) {
+        const appCheckRejected = problem instanceof Error && 'code' in problem && String(problem.code).startsWith('appCheck/');
+        if (privacy !== 'hybrid' || !appCheckRejected) throw problem;
+        extracted = await inspectPage(page, 'local');
+        canReviewInCloud = false;
+        setNotice('Page inspected on this device. Firebase App Check blocked the cloud review.');
+      }
       let result = analyzeAudit(workspace, page, extracted.fields, extracted.source);
-      if (privacy !== 'local' && result.findings.length) {
+      if (canReviewInCloud && result.findings.length) {
         setBusy('Reviewing findings in the cloud');
         try {
           const commentary = await reasonFromFindings(result.findings);

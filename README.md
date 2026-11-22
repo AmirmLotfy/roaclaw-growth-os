@@ -4,7 +4,7 @@ An ad offers a vase set for **$99**. Its landing page shows **$119**. ROACLAW br
 
 [Product website](https://roaclaw-growth-os-2026.web.app/) · [Campaign Preflight](https://roaclaw-growth-os-2026.web.app/app/preflight/) · [Growth Audit demo](https://roaclaw-growth-os-2026.web.app/app/) · [Chrome companion ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip) · [Test evidence](qa/EVIDENCE_INDEX.md)
 
-![ROACLAW Growth Audit with the captured price, two Firebase source labels, and a proposed Chrome bookmark](qa/evidence/web/02-hybrid-audit.png)
+![ROACLAW Growth Audit with the captured price, two Firebase source labels, and a proposed Chrome bookmark](apps/web/public/site/growth-audit.webp)
 
 ## Check your own landing page
 

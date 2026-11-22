@@ -1,6 +1,6 @@
 # Remotion production
 
-The picture uses the running dashboard, Chrome companion, and source badges from Firebase. The visual language follows the product site's charcoal, lime, and paper-green colors. Captions and short motion accents preserve the underlying evidence and actions.
+The picture uses the running dashboard, Chrome companion, and source badges from Firebase. Graphite, neutral paper, and vermilion match the current product. A color grade neutralizes the earlier palette in existing UI footage. The captured values, interface layout, and action sequence stay intact.
 
 ## Record
 
@@ -31,7 +31,7 @@ ROACLAW_PREFLIGHT_RECORD=1 ROACLAW_PREFLIGHT_EVIDENCE=.local/film node qa/e2e/pr
 npm --prefix apps/video run film
 ```
 
-The film expects `narration.wav` and `music.mp3` in `.local/film`. The older Growth Audit clips come from the verified capture workflow above. The shot and subtitle timings are in [film-edit.mjs](film-edit.mjs). The render writes `ROACLAW_CAMPAIGN_PREFLIGHT_FILM.mp4`, the English SRT, and the thumbnail to `.local/video/`.
+The film expects `narration.wav` and `music.mp3` in `.local/film`. The older Growth Audit clips come from the verified capture workflow above. The shot and subtitle timings are in [film-edit.mjs](film-edit.mjs). The render writes `ROACLAW_CAMPAIGN_PREFLIGHT_FILM.mp4` and its English SRT to `.local/video/`. The platform-specific [thumbnail source](design-thumbnails.mjs) produces separate 1800 × 1200 Devpost PNG and 3840 × 2160 YouTube JPEG files in the same directory.
 
 Use the installed Remotion package. The picture-review command produces a separate local cut. If the edit sets `requireAudio`, the final render checks for both narration and score.
 

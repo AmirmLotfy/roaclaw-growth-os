@@ -33,13 +33,13 @@ type DemoProps = {
 };
 
 const tokens = {
-  canvas: "#EDF1EC",
-  surface: "#FEFFFC",
-  ink: "#1D291F",
-  night: "#171E19",
-  signal: "#D8F479",
-  border: "#BFCDBF",
-  muted: "#46564A",
+  canvas: "#f1f1f0",
+  surface: "#fbfbfa",
+  ink: "#222325",
+  night: "#18191b",
+  signal: "#ff6749",
+  border: "#cdccca",
+  muted: "#545355",
   text: "IBM Plex Sans, sans-serif",
   mono: "IBM Plex Mono, monospace",
 };

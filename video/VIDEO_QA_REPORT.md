@@ -1,23 +1,22 @@
-# ROACLAW video QA
+# ROACLAW film and submission artwork QA
 
-Reviewed 22 November 2026. The new picture edit shows the live redesigned site, Growth Audit and the Chrome companion from clean synthetic test profiles. The edit is ready for the supplied narration and score.
+## Campaign Preflight film
 
-## Current picture review
+Verified on 22 November 2026. The graphite and vermilion edit opens with the $99 campaign offer and $119 storefront price. It shows recorded device-only inference, a separate Firebase cloud review, the offline audit, Chrome capture and bookmark approval, and the new Campaign Preflight workflow. Prior verified UI footage was color-graded. Live Preflight footage uses the project's own demo storefront.
 
-| Asset | Local path |
-|---|---|
-| H.264 picture review | `.local/video/ROACLAW_PICTURE_REVIEW.mp4` |
-| English review captions | `.local/video/ROACLAW_PICTURE_REVIEW_EN.srt` |
-| Thumbnail | `.local/video/ROACLAW_PICTURE_REVIEW_THUMBNAIL.png` |
-| Source cuts | [picture-edit.json](picture-edit.json) |
-| Local evidence | `.local/video/picture-review-qa/` |
+| Asset | Local path | Verified format |
+|---|---|---|
+| Film | `.local/video/ROACLAW_CAMPAIGN_PREFLIGHT_FILM.mp4` | 127.019 seconds, 1920 × 1080, 30 fps, 3,810 video frames, H.264 and stereo AAC |
+| English captions | `.local/video/ROACLAW_CAMPAIGN_PREFLIGHT_FILM.srt` | 36 cues |
+| Devpost gallery cover | `.local/video/ROACLAW_DEVPOST_3X2.png` | 1800 × 1200, sRGB PNG, 516,857 bytes |
+| YouTube thumbnail | `.local/video/ROACLAW_YOUTUBE_16X9.jpg` | 3840 × 2160, sRGB JPEG, 418,251 bytes |
+| Remotion timeline | [film-edit.mjs](film-edit.mjs) | 26 shots and timed captions |
+| Thumbnail source | [design-thumbnails.mjs](design-thumbnails.mjs) | Two independent compositions and aspect-ratio checks |
 
-The picture review is 85.803 seconds, 1920 × 1080, 30 fps, 2,574 video frames. The 48 kHz stereo AAC track is silent. FFmpeg decoded the full file without errors. The sixteen-cut contact sheet, opening and ending frames, source labels, bookmark receipt crop and 1280 × 720 thumbnail were inspected. The on-device shot starts at 00:10.800, the cloud review at 00:16.200, and the offline run at 00:21.800. The English SRT has 20 cues, including the closing test URL.
+The film passed a full FFmpeg decode. The midpoint of all 26 shots was inspected, including close-ups of the device, cloud, exact tagged link, Chrome capture, exported report and closing URL. The cloud review is visible at 00:22.500. Both thumbnails were inspected at 320px wide. [Devpost image guidance](https://help.devpost.com/article/126-know-your-submission-steps) · [YouTube image guidance](https://support.google.com/youtube/answer/72431)
 
-The approval footage is from the native Chrome side panel in a disposable test profile. The connected dashboard receipt and lead-generation shots are authentic QA stills. [Hosted audit evidence](../qa/evidence/web/runtime.json) · [Chrome runtime](../qa/evidence/g3-web/runtime.json) · [Dashboard receipt](../qa/evidence/g3-web/06-web-receipt.png)
+The edit uses the owner's supplied continuous narration and music. The score ducks under speech and bridges the captioned Preflight sequence. The delivered AAC measures -16.1 LUFS integrated and -1.6 dBTP. The close was checked against the supplied narration. The supplied stem hashes and final file hash are in the [film report](../qa/evidence/video/campaign-preflight-film.json). Supplied audio and the local export remain private to the workspace.
 
-## Final narrated master
+## Publication
 
-Waiting for the ten narration WAVs and instrumental score. After ingest, review pacing, spoken captions, speaker and headphone playback, loudness, true peak, and duration. Record the audio provider, model, hashes and usage rights before external publication. [Remotion production](REMOTION_PRODUCTION.md) · [Narration script](VOICEOVER_SCRIPT.md)
-
-The earlier 47.680-second Studio upload remains a draft. The separate 57.813-second export remains local. Publication and Devpost submission are on hold.
+The prior Studio upload and Devpost project remain drafts. The owner asked to hold external submission. The new assets have only been created locally.

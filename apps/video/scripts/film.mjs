@@ -3,6 +3,7 @@ import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { captions, duration, insertDuration, narrationCut, shots } from '../../../video/film-edit.mjs';
+import { writeCapturePalette } from './capture-palette.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const packageDir = resolve(root, 'apps/video');
@@ -13,13 +14,13 @@ const prefix = resolve(out, 'ROACLAW_CAMPAIGN_PREFLIGHT_FILM');
 const props = resolve(source, 'film-props.json');
 const assets = {
   'ceramic-vase-set.webp': 'apps/web/public/ceramic-vase-set.webp',
-  'growth-web.webm': '.local/footage/roaclaw-web.webm',
+  'growth-web.mp4': '.local/footage/roaclaw-web.webm',
   'growth-chrome.mp4': '.local/footage/roaclaw-chrome-panel.mp4',
   'growth-pair.png': 'qa/evidence/g3-web/01-pairing.png',
   'growth-receipt.png': '.local/footage/picture-dashboard-receipt.png',
   'growth-lead.png': '.local/footage/picture-lead-audit.png',
   'growth-memory.png': 'qa/evidence/g3-web/07-web-memory.png',
-  'preflight-web.webm': '.local/film/preflight-web.webm',
+  'preflight-web.mp4': '.local/film/preflight-web.webm',
   'preflight-panel.mp4': '.local/film/preflight-panel.mp4',
   'preflight-proof.png': '.local/film/03-preflight-result.png',
 };
@@ -27,10 +28,23 @@ const runtimeAssets = ['narration.wav', 'music.mp3'].map((filename) => resolve(s
 if (runtimeAssets.some((path) => !existsSync(path))) throw new Error('Place the supplied narration.wav and music.mp3 in .local/film.');
 mkdirSync(mediaDir, { recursive: true });
 mkdirSync(out, { recursive: true });
-for (const [name, from] of Object.entries(assets)) copyFileSync(resolve(root, from), resolve(mediaDir, name));
-
 function run(command, args, cwd = root) {
   execFileSync(command, args, { cwd, stdio: 'inherit' });
+}
+
+const lut = resolve(source, 'capture-palette.cube');
+writeCapturePalette(lut);
+for (const [name, from] of Object.entries(assets)) {
+  const src = resolve(root, from);
+  const dest = resolve(mediaDir, name);
+  if (name === 'ceramic-vase-set.webp') {
+    copyFileSync(src, dest);
+    continue;
+  }
+  const output = name.endsWith('.mp4')
+    ? ['-an', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '15', '-pix_fmt', 'yuv420p']
+    : ['-frames:v', '1', '-update', '1'];
+  run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', src, '-vf', `lut3d=file=${lut}`, ...output, dest]);
 }
 
 const left = narrationCut + insertDuration;

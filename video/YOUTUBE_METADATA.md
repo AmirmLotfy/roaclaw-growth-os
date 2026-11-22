@@ -2,7 +2,7 @@
 
 ## Title
 
-ROACLAW Growth Audit | Gemini Nano 4 and Firebase AI Logic
+ROACLAW | Check the ad against the landing page
 
 ## Description
 
@@ -10,9 +10,13 @@ ROACLAW compares a campaign offer with the page it sends people to. The demo ad 
 
 See the source evidence, the exact tagged destination, and the Chrome bookmark receipt after approval. The workspaces, campaign figures, and storefront are demo data.
 
+Campaign Preflight lets you enter your own brief and compare it with a public page you capture in Chrome. It produces a suggested tracking link and a downloadable report.
+
 Product site https://roaclaw-growth-os-2026.web.app/
 
 Growth Audit https://roaclaw-growth-os-2026.web.app/app/
+
+Campaign Preflight https://roaclaw-growth-os-2026.web.app/app/preflight/
 
 Source https://github.com/AmirmLotfy/roaclaw-growth-os
 
@@ -20,4 +24,4 @@ Built for Google #BuildHybridAI 2026.
 
 ## Assets and checks
 
-Use the final video thumbnail and timed English captions. Keep the original uploads private or draft while reviewing. Once approved, set the final entry to Public and confirm HD processing and playback from the public link before updating Devpost.
+Use `.local/video/ROACLAW_YOUTUBE_16X9.jpg` and `.local/video/ROACLAW_CAMPAIGN_PREFLIGHT_FILM.srt`. The Devpost gallery uses its separate 3:2 cover. Once reviewed and authorized, set the final entry to Public and confirm HD processing and playback from the public link before updating Devpost.

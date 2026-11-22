@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-22",
+  "master": "ROACLAW_CAMPAIGN_PREFLIGHT_FILM.mp4",
+  "sha256": "1bfa504a41c6b82b186e1f8a061d7e90edef3dfacaab9dae4b25f629846b29f4",
+  "durationSeconds": 127.019,
+  "vCodec": "h264",
+  "aCodec": "aac",
+  "width": 1920,
+  "height": 1080,
+  "framesPerSecond": 30,
+  "frames": 3810,
+  "fullDecode": "PASS",
+  "shotsInspected": 26,
+  "subtitleCues": 36,
+  "audio": {
+    "source": "Owner-supplied narration and score",
+    "narrationSha256": "3273b57cd31e5d23bce11d096aef1e274638223e3c52ad10c079dbe8e4b47654",
+    "scoreSha256": "ffe18d405b8584aa461605cb76c1da47a0717e02339de34dfb093ae158ce23ef",
+    "integratedLufs": -16.1,
+    "truePeakDbtp": -1.6
+  },
+  "thumbnails": {
+    "devpost": { "file": "ROACLAW_DEVPOST_3X2.png", "width": 1800, "height": 1200, "sizeBytes": 516857 },
+    "youtube": { "file": "ROACLAW_YOUTUBE_16X9.jpg", "width": 3840, "height": 2160, "sizeBytes": 418251 }
+  },
+  "publication": "HOLD"
+}

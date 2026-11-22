@@ -8,6 +8,7 @@ const appUrl = new URL('/app/', origin).href;
 const profile = resolve('.local/g0-chrome');
 const dest = resolve(process.env.ROACLAW_HOSTED_EVIDENCE ?? 'qa/evidence/web');
 const recordVideo = process.env.ROACLAW_CAPTURE_VIDEO === '1';
+const allowAppCheckDenial = process.env.ROACLAW_TEST_APP_CHECK_DENIAL === '1';
 await mkdir(dest, { recursive: true });
 const holdMs = Math.round(1000 * Number(process.env.ROACLAW_CAPTURE_HOLD_SECONDS || '2.2'));
 let recordingStart;
@@ -139,7 +140,10 @@ try {
 
   await modes.selectOption('hybrid');
   await page.getByRole('button', { name: 'Run again' }).click();
-  await page.getByText('Review · In cloud', { exact: true }).waitFor({ timeout: 90000 });
+  const cloudLabel = page.getByText('Review · In cloud', { exact: true });
+  const localAfterDenial = page.getByText('Page inspected on this device. Firebase App Check blocked the cloud review.', { exact: true });
+  await (allowAppCheckDenial ? cloudLabel.or(localAfterDenial) : cloudLabel).waitFor({ timeout: 90000 });
+  const cloudReview = await cloudLabel.isVisible();
   await page.getByText('Page · On device', { exact: true }).waitFor();
   await page.getByRole('heading', { name: /campaign tracking|campaign tag|UTM/i }).waitFor();
   await page.getByRole('heading', { name: /ROAS|return on ad spend/i }).waitFor();
@@ -201,9 +205,10 @@ try {
   await page.getByRole('button', { name: 'Run Growth Audit' }).click();
   await page.getByText('The page evidence supports no discrepancies.', { exact: true }).waitFor({ timeout: 90000 });
   await page.locator('select[aria-label="Workspace"]').selectOption('sable-stem');
-  await page.getByText('Review · In cloud', { exact: true }).waitFor();
+  const restored = cloudReview ? cloudLabel : page.getByText(/Advertised \$99 vs landing page \$119/);
+  await restored.waitFor();
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.getByText('Review · In cloud', { exact: true }).waitFor();
+  await restored.waitFor();
   await page.getByRole('button', { name: 'Automations', exact: true }).click();
   await page.getByText('The fixture storefront displays $119.', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Run due checks' }).click();
@@ -220,8 +225,13 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth), true);
   await page.screenshot({ path: resolve(dest, '04-mobile.png'), fullPage: !recordVideo });
 
-  assert.ok(responses.some((response) => response.kind === 'generation' && response.status === 200));
-  const report = { origin, appUrl, marketingEntryVerified: true, marketingKeyboardProofView: true, offlineAppAuditAndSync: true, offlineAiRequestAttempts, passed: true, appCheckResponses: responses, deviceAnalysis: true, cloudReview: true, firestoreReload: true, workspaceIsolationInView: true, fixtureRecheck: true, mobileNoOverflow: true, selectChevronInsetVerified: true, leadAuditVerified: true, retailAuditVerified: true, taggedNotesAfterReload: true, textLookupVerified: true, auditExportVerified: true };
+  if (cloudReview) assert.ok(responses.some((response) => response.kind === 'generation' && response.status === 200));
+  else {
+    assert.ok(allowAppCheckDenial);
+    assert.ok(responses.some((response) => response.kind === 'app-check' && response.status >= 400));
+    assert.ok(!responses.some((response) => response.kind === 'generation'));
+  }
+  const report = { origin, appUrl, marketingEntryVerified: true, marketingKeyboardProofView: true, offlineAppAuditAndSync: true, offlineAiRequestAttempts, passed: true, appCheckResponses: responses, deviceAnalysis: true, cloudReview, deviceOnlyAfterAppCheckDenial: !cloudReview, firestoreReload: true, workspaceIsolationInView: true, fixtureRecheck: true, mobileNoOverflow: true, selectChevronInsetVerified: true, leadAuditVerified: true, retailAuditVerified: true, taggedNotesAfterReload: true, textLookupVerified: true, auditExportVerified: true };
   await writeFile(resolve(dest, 'runtime.json'), JSON.stringify(report, null, 2) + '\n');
   passed = true;
   console.log(JSON.stringify(report, null, 2));

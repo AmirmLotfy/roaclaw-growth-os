@@ -13,7 +13,7 @@ This is a submission-grade working SaaS + Chrome extension, **not** a static red
 - Keep real integrations test-only/read-only until authorizations and approvals are verified.
 
 ## Design and content
-Use the current charcoal, lime, and paper-green design in `design/DESIGN_LANGUAGE.md`. Mobbin/Refero references must be captured and synthesized, not cloned. Copy is concrete and factual; UI uses semantic labels, strong contrast, nondecorative icons, minimal animation, and no theatrical AI claims.
+Use the graphite, neutral paper, and vermilion design in `design/DESIGN_LANGUAGE.md`. Mobbin/Refero references must be captured and synthesized, not cloned. Copy is concrete and factual; UI uses semantic labels, strong contrast, nondecorative icons, minimal animation, and no theatrical AI claims.
 
 ## Engineering
 Typed contracts, data tenancy, structured errors, deterministic fixtures, small reusable components, idempotent jobs, retries/backoff, bounded AI budgets, privacy controls, and no secrets in source. Firebase AI Logic required for every runtime inference call. Keep evidence of local and cloud execution separately.

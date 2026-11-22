@@ -1,0 +1,22 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "browser": "Chrome/158.0.8127.37",
+  "extensionVersion": "0.3.1",
+  "publicLandingPage": "https://www.ifixit.com/products/essential-electronics-toolkit",
+  "operatorAuthoredBrief": true,
+  "actualPrice": "$29.95",
+  "expectedPrice": "$24.95",
+  "expectedCtaFound": true,
+  "tagsProposed": true,
+  "ambiguousPriceNeedsReview": true,
+  "capturedInNativeChromeSidePanel": true,
+  "handoffFocusedOriginalTab": true,
+  "clipboardReadback": "https://www.ifixit.com/products/essential-electronics-toolkit?utm_source=newsletter&utm_medium=email&utm_campaign=repair-week",
+  "reportVerified": true,
+  "mobileWidth": 390,
+  "axeViolations": 0,
+  "draftRestoredAndCleared": true,
+  "deviceInferenceVerified": true,
+  "requestCount": 0,
+  "passed": true
+}

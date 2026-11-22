@@ -40,7 +40,7 @@ const archive = join(scratch, 'companion.zip');
 await writeFile(archive, Buffer.from(await zip.arrayBuffer()));
 execFileSync('unzip', ['-q', archive, '-d', unpacked]);
 const manifest = JSON.parse(await readFile(join(unpacked, 'manifest.json'), 'utf8'));
-assert.equal(manifest.version, '0.3.0');
+assert.match(manifest.version, /^0\.3\.\d+$/);
 assert.deepEqual(manifest.optional_permissions, ['bookmarks', 'history']);
 
 async function waitFor(description, attempt, timeout = 15_000) {

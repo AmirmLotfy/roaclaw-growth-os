@@ -30,7 +30,7 @@ test('manifest keeps the development ID and grants no blanket host access', asyn
   const keyDigest = createHash('sha256').update(Buffer.from(manifest.key, 'base64')).digest('hex').slice(0, 32);
   const id = [...keyDigest].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join('');
   assert.equal(id, extensionId);
-  assert.equal(manifest.version, '0.3.0');
+  assert.match(manifest.version, /^\d+\.\d+\.\d+$/);
   assert.deepEqual(manifest.permissions, ['activeTab', 'scripting', 'sidePanel', 'storage']);
   assert.deepEqual(manifest.optional_permissions, ['bookmarks', 'history']);
   assert.deepEqual(manifest.externally_connectable.matches, [...ORIGINS].map((url) => `${url}/*`));

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 · Graphite and vermilion
+
+- Apply the revised visual system to the product site, Growth Audit, Campaign Preflight, exported reports and Chrome companion.
+- Create separate Devpost and YouTube thumbnails and bring the film and its archived captures into the same palette.
+- Preserve a verified on-device Growth Audit when App Check denies a Prefer device run and report the unavailable cloud review.
+
 ## 0.3.0 · Campaign Preflight
 
 - Check an operator-entered campaign brief against evidence captured from a public landing page.

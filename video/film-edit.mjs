@@ -1,5 +1,5 @@
 const media = (file, sourceWidth, sourceHeight, start = 0, rate = 1, crop) => ({ file, sourceWidth, sourceHeight, start, rate, crop });
-const web = (start, rate, crop) => media('growth-web.webm', 1440, 920, start, rate, crop);
+const web = (start, rate, crop) => media('growth-web.mp4', 1440, 920, start, rate, crop);
 const chrome = (start, rate, crop) => media('growth-chrome.mp4', 360, 766, start, rate, crop);
 
 export const duration = 127;
@@ -14,21 +14,22 @@ export const shots = [
   [17.52, 22.5, 'wide', 'Switch to Prefer device', 'Growth Audit · Hybrid mode', web(54.29, .87, [252, 322, 1160, 459]), true],
   [22.5, 29.52, 'split', 'Separate\ncloud review.', 'Firebase AI Logic', web(57.15, .78, [255, 482, 740, 422]), false, null, 'The two source labels show where each part ran.'],
   [29.52, 34.3, 'wide', 'Run the audit offline', 'Chrome · Offline · Device only', web(46.35, .92, [248, 0, 1172, 466]), true],
-  [34.3, 41.2, 'split', 'Zero external\nrequests.', 'Verified offline run', web(47.9, .55, [252, 536, 745, 380]), false, null, 'The model returned the same $119 offer.'],
+  [34.3, 41.2, 'split', 'Zero external\nrequests.', 'Verified offline run', web(47.9, .55, [250, 490, 737, 430]), false, null, 'The model returned the same $119 offer.'],
   [41.2, 46.1, 'wide', 'Read the discrepancy', 'Growth Audit · Sable & Stem', web(59.39, .86, [252, 493, 1148, 426]), true],
   [46.1, 56.4, 'numbers', 'Return on ad spend', 'Sable & Stem · Synthetic campaign figures', null, true, '3.315×', 'The figures measure the gap. The cause needs more evidence.', '3.6×'],
   [56.4, 60.24, 'panel', 'Pair the\nworkspace.', 'Chrome companion', media('growth-pair.png', 360, 765), false, null, 'The request names the workspace before Chrome accepts it.'],
   [60.24, 67.36, 'panel', 'Capture what\nthe page shows.', 'Chrome companion', chrome(.45, .64), true, null, 'Headings, price and button labels.'],
-  [67.36, 71.12, 'split', 'Review the\nexact link.', 'Growth Audit · Tracking', media('growth-receipt.png', 1170, 625, 0, 1, [590, 0, 580, 355]), false, null, 'The proposed URL adds the missing campaign tag.'],
+  [67.36, 71.12, 'split', 'Review the\nexact link.', 'Growth Audit · Tracking', web(65.0, .8, [897, 500, 530, 326]), false, null, 'The proposed URL adds the missing campaign tag.'],
   [71.12, 75.3, 'panel', 'Save in\nChrome.', 'Approved browser action', chrome(5.65, .67), false, null, 'The user reviews the destination and confirms the save.'],
   [75.3, 78.96, 'split', 'Chrome reads\nit back.', 'Verified bookmark receipt', media('growth-receipt.png', 1170, 625, 0, 1, [487, 62, 683, 419]), true],
   [78.96, 82.16, 'wide', 'Switch client workspace', 'Growth Audit · Workspace switch', web(78.62, 1.06, [20, 0, 1380, 545])],
-  [82.16, 92.4, 'split', 'A booking\nhypothesis.', 'Morrow Dental · Lead generation demo', media('growth-lead.png', 1440, 920, 0, 1, [246, 463, 912, 454]), true, null, 'The goal is an appointment. The page says Contact us.'],
+  [82.16, 92.4, 'split', 'A booking\nhypothesis.', 'Morrow Dental · Lead generation demo', media('growth-lead.png', 1440, 920, 0, 1, [252, 443, 780, 475]), true, null, 'The goal is an appointment. The page says Contact us.'],
   [92.4, 96.1, 'wide', 'Find the saved research', 'Workspace Memory', media('growth-memory.png', 1440, 920, 0, 1, [245, 67, 1163, 466])],
   [96.1, 103.6, 'wide', 'Run a due storefront check', 'Growth Audit · Follow-up', web(73.2, .74, [245, 54, 1170, 465]), true],
-  [103.6, 107.4, 'wide', 'Enter your own campaign brief', 'Campaign Preflight', media('preflight-web.webm', 1440, 920, 1.3, .83, [146, 202, 1055, 419])],
+  [103.6, 107.4, 'wide', 'Enter your own campaign brief', 'Campaign Preflight', media('preflight-web.mp4', 1440, 920, 1.3, .83, [146, 202, 1055, 419])],
   [107.4, 111.7, 'panel', 'Capture the\nlanding page.', 'Campaign Preflight · Chrome', media('preflight-panel.mp4', 360, 786, .03, 1), true, null, 'Pair the campaign and inspect its public destination.'],
-  [111.7, 116.6, 'wide', 'Check the offer. Copy the fix.', 'Campaign Preflight · Evidence report', media('preflight-proof.png', 1440, 1976, 0, 1, [159, 1095, 1120, 446])],
+  [111.7, 114.4, 'wide', 'Check the offer', 'Campaign Preflight · Evidence report', media('preflight-proof.png', 1440, 1976, 0, 1, [159, 1095, 1120, 446])],
+  [114.4, 116.6, 'wide', 'Take the tracked link and report', 'Campaign Preflight · Handoff', media('preflight-proof.png', 1440, 1976, 0, 1, [159, 1511, 1120, 446]), true],
   [116.6, 119.85, 'wide', 'Open the live demo', 'ROACLAW · Website', web(9.8, .88, [37, 0, 1340, 527]), true],
   [119.85, duration, 'outro', 'Run your first audit.', null, null, true, 'roaclaw-growth-os-2026.web.app', 'Try Growth Audit or bring your own brief to Campaign Preflight.'],
 ].map(([from, to, layout, title, section, source, light, value, detail, contrast]) => ({

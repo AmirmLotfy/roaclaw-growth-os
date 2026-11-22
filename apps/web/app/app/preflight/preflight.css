@@ -31,7 +31,7 @@
   align-items: stretch;
   gap: 20px;
   padding-inline-start: 24px;
-  border-inline-start: 1px solid #435346;
+  border-inline-start: 1px solid var(--color-nav-border);
   font-size: .875rem;
 }
 
@@ -40,7 +40,7 @@
   min-height: 44px;
   align-items: center;
   text-decoration: none;
-  color: #d2ded1;
+  color: var(--color-nav-muted);
 }
 
 .preflight-nav nav a:hover {
@@ -92,7 +92,7 @@
 .preflight-panel-head {
   padding: 17px 20px;
   border-bottom: 1px solid var(--color-divider);
-  background: #f8faf6;
+  background: var(--color-surface-quiet);
 }
 
 .preflight-panel-head h2 {
@@ -181,7 +181,7 @@
 
 .preflight-connection--pending {
   color: var(--color-warning);
-  background: #fff5e3;
+  background: var(--color-warning-surface);
 }
 
 .preflight-connection--paired {
@@ -290,7 +290,7 @@
 }
 
 .preflight-local svg {
-  color: var(--color-brand);
+  color: var(--color-text-secondary);
 }
 
 .preflight-notices > :not(:empty) {
@@ -301,7 +301,7 @@
 
 .preflight-notices [role="alert"] {
   color: var(--color-danger);
-  background: #fff1f5;
+  background: var(--color-danger-surface);
 }
 
 .preflight-report {
@@ -393,12 +393,12 @@
 
 .preflight-check--mismatch {
   color: var(--color-danger);
-  background: #fce9ef;
+  background: var(--color-danger-surface);
 }
 
 .preflight-check--review {
   color: var(--color-warning);
-  background: #fff1d9;
+  background: var(--color-warning-surface);
 }
 
 .preflight-exports,
@@ -427,7 +427,7 @@
 
 .preflight-exports .preflight-copy-notice,
 .preflight-report-footer .preflight-device-notice {
-  color: var(--color-brand);
+  color: var(--color-text-secondary);
   font-size: .8125rem;
 }
 
