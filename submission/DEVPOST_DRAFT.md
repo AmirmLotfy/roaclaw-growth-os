@@ -42,13 +42,13 @@ Firebase AI Logic, Gemini Nano 4, Gemini 3.5 Flash-Lite, Firebase App Check, Fir
 
 ## Judge links
 
-- [Start Growth Audit](https://roaclaw-growth-os-2026.web.app/app/) and choose **Open demo**, then **Ecommerce**. Run **Prefer device** to see the extraction and review labels. Use **Device only** on compatible Chrome with the model ready.
-- [Product site and install guide](https://roaclaw-growth-os-2026.web.app/)
-- [Chrome companion ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip)
+- [Start Growth Audit](https://roaclaw.com/app/) and choose **Open demo**, then **Ecommerce**. Run **Prefer device** to see the extraction and review labels. Use **Device only** on compatible Chrome with the model ready. [Firebase fallback](https://roaclaw-growth-os-2026.web.app/app/)
+- [Product site and install guide](https://roaclaw.com/)
+- [Chrome companion ZIP](https://roaclaw.com/roaclaw-extension.zip)
 - [Public Apache 2.0 repository](https://github.com/AmirmLotfy/roaclaw-growth-os)
 - [Judge walkthrough](https://github.com/AmirmLotfy/roaclaw-growth-os/blob/main/submission/JUDGE_GUIDE.md)
 - [Screenshots](https://github.com/AmirmLotfy/roaclaw-growth-os/tree/main/docs/screenshots)
-- Add the public YouTube URL after verifying public playback of the 127-second master.
+- [Public 127-second demo with English captions](https://youtu.be/V-a7CwUjY1U)
 
 ## Disclosures
 

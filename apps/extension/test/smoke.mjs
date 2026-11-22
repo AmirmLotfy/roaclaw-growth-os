@@ -332,8 +332,13 @@ const firebaseResponses = [];
 try {
   if (withNano) {
     const labProfile = fileURLToPath(new URL('../../../.local/g0-chrome/', import.meta.url));
+    const extensionCaches = new Set([
+      'Extensions', 'Extension Rules', 'Extension Scripts', 'Extension State',
+      'Local Extension Settings', 'Sync Extension Settings', 'Service Worker', 'Code Cache',
+    ]);
+    // Keep the downloaded model and omit workers and scripts from earlier companion builds.
     await cp(labProfile, profile, { recursive: true, mode: constants.COPYFILE_FICLONE,
-      filter: (path) => !basename(path).startsWith('Singleton') });
+      filter: (path) => !basename(path).startsWith('Singleton') && !extensionCaches.has(basename(path)) });
   }
   let unpacked = extensionPath;
   if (hostedZip) {

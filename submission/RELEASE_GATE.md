@@ -1,6 +1,6 @@
 # #BuildHybridAI release audit
 
-Checked 22 November 2026 against the organizer’s overview, Resources, Official Rules, and FAQ. Campaign Preflight and the Growth Audit demo are live. The narrated film, English captions and separate artwork are ready. YouTube upload is authorized and blocked by browser access. Devpost submission remains on hold.
+Checked 22 November 2026 against the organizer’s overview, Resources, Official Rules, and FAQ. Campaign Preflight and Growth Audit are live. The narrated demo and English captions are public on YouTube. Devpost submission remains on hold.
 
 ## Organizer requirements
 
@@ -8,12 +8,12 @@ Checked 22 November 2026 against the organizer’s overview, Resources, Official
 |---|---|---|
 | Enter one supported platform | The dashboard and Chrome companion are one Web (Chrome) project. | Select Web (Chrome) on the existing draft. |
 | Firebase AI Logic in the runtime | Isolated Chrome verified Nano 4 page inspection and a separate, attested Firebase cloud review. The hosted 0.3.2 ZIP passed the hybrid audit and the native bookmark flow. | Production App Check remains enforced. The passing run returned HTTP 200 for exchange and review. Earlier retests recorded 403 and 500. [Hosted audit](../qa/evidence/app-check-repair/hosted.json) · [0.3.2 Chrome companion](../qa/evidence/release-0.3.2/companion.json) · [Cloud retries](../qa/evidence/release-0.3.2/cloud-retries.json) |
-| Explain problem, features, and Firebase use | The [updated English draft](DEVPOST_DRAFT.md) explains the campaign and page mismatch, the Chrome approval flow, and the observed Firebase behavior. | Current copy and judge links are ready. Add the final video URL after playback review. |
+| Explain problem, features, and Firebase use | The [updated English draft](DEVPOST_DRAFT.md) explains the campaign and page mismatch, the Chrome approval flow, and the observed Firebase behavior. | The local draft includes the verified public video and demo links. |
 | Public repository and open-source license | Public GitHub detects Apache-2.0. The README links actual Firebase runtime code, a judge walkthrough, a screenshot gallery, and test evidence. [Repository](https://github.com/AmirmLotfy/roaclaw-growth-os) · [Project checks](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) | Use the verified package in Releases. |
-| Public YouTube video and English | The [127-second film](../video/VIDEO_QA_REPORT.md) passed decode and scene review. Device and cloud proof are shown in the first 30 seconds. The English captions and both thumbnails are ready. | Internal browser access was unavailable for upload. Public playback is pending. |
-| Testing experience | Firebase Hosting has the product site, anonymous demo, and extension package. [Judge walkthrough](JUDGE_GUIDE.md) · [Screenshots](../docs/screenshots/README.md) | Use the Firebase app URL for judging. The branded domain is registered in Hosting and awaits DNS, TLS and a full browser verification. Keep free access through 16 December at 14:00 PST. |
+| Public YouTube video and English | YouTube Studio confirmed the 127-second demo was published. The public player played at 1080p with English captions available. [Public video](https://youtu.be/V-a7CwUjY1U) · [Video QA](../video/VIDEO_QA_REPORT.md) | Use the verified public URL in the submission when authorized. |
+| Testing experience | The branded site passed HTTPS, an anonymous hybrid Growth Audit and Chrome companion approval. [Judge walkthrough](JUDGE_GUIDE.md) · [Screenshots](../docs/screenshots/README.md) · [HTTPS evidence](../qa/evidence/release-0.3.2/branded-https.json) · [Branded Chrome evidence](../qa/evidence/release-0.3.2/branded-companion.json) | The judge walkthrough uses the branded link and provides a Firebase fallback. Keep free access through 16 December at 14:00 PST. |
 | Accurate eligibility and work history | The account holder confirmed a new individual project in Egypt, no organization, started 22 November 2026, and confirmed the required attestations. | Confirm the final action at submission time. |
-| Deadline | 30 November 2026 at 14:00 PST, which is midnight entering 1 December in Cairo. | Finish playback verification before opening the submission form. |
+| Deadline | 30 November 2026 at 14:00 PST, which is midnight entering 1 December in Cairo. | Devpost submission remains on hold. |
 
 [Contest overview](https://firebasehybridaihackathon.devpost.com/) · [Resources](https://firebasehybridaihackathon.devpost.com/resources) · [Official rules](https://firebasehybridaihackathon.devpost.com/rules) · [FAQ](https://firebasehybridaihackathon.devpost.com/details/faqs)
 
@@ -31,4 +31,4 @@ Checked 22 November 2026 against the organizer’s overview, Resources, Official
 
 ## Publication hold
 
-The owner authorized uploading the latest video through the internal browser and asked to hold Devpost submission. The current chat lacks internal browser control. Earlier YouTube and Devpost entries remain drafts. The current verification used isolated Chrome QA profiles and the published Firebase Hosting build.
+The internal browser uploaded and published the final video after branded HTTPS passed. The live Devpost entry was left untouched. The local draft contains the verified public video link.

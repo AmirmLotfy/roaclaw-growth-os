@@ -23,5 +23,19 @@
     "devpost": { "file": "ROACLAW_DEVPOST_3X2.png", "width": 1800, "height": 1200, "sizeBytes": 516857 },
     "youtube": { "file": "ROACLAW_YOUTUBE_16X9.jpg", "width": 3840, "height": 2160, "sizeBytes": 418251 }
   },
-  "publication": "HOLD"
+  "publication": "PUBLIC",
+  "youtube": {
+    "url": "https://youtu.be/V-a7CwUjY1U",
+    "channel": "Frameless",
+    "studioConfirmedPublished": true,
+    "customThumbnailUploaded": true,
+    "subtitleTrack": "English",
+    "subtitleSource": "Imported timed SRT",
+    "playbackResolution": "1920x1080",
+    "playbackSecondsObserved": 44.31642,
+    "anonymousOEmbed": "HTTP 200",
+    "initialCopyrightAndCommunityChecks": "No issues found",
+    "aiUseDisclosed": true,
+    "subscriberNotificationsEnabled": false
+  }
 }

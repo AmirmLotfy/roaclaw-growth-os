@@ -14,7 +14,7 @@
 - [x] Source, fonts, icons, storefront artwork and owner-supplied audio provenance documented. Keep supplied audio stems out of Git.
 - [x] The 127.019-second final film passed full decode, all 26 shot checks and English captions QA.
 - [x] Separate 3:2 Devpost cover, 16:9 YouTube cover and authentic product screenshots prepared.
-- [ ] YouTube upload is publicly visible (not unlisted), fully processed and open logged out.
+- [x] YouTube Studio confirmed public visibility. The watch page played at 1080p with an English subtitle option, and anonymous oEmbed returned HTTP 200. [Public video](https://youtu.be/V-a7CwUjY1U)
 - [ ] Devpost project category Web/Chrome, description, technology, repo, video, test URL, permissions and disclosures complete.
 - [x] The owner confirmed the eligibility attestations. Authenticated Devpost submission remains on hold.
 - [ ] Click/complete final Submit and confirm status and project URL before deadline.
@@ -53,4 +53,4 @@ The existing [RoaClaw Devpost draft](https://devpost.com/software/roaclaw-o1637x
 
 The account holder confirmed Growth OS is a new, independent build started on 22 November 2026, and confirmed the required eligibility attestations. Submitter type is Individual, country is Egypt, and organization is N/A. Final submission approval remains pending.
 
-The [published packages](https://github.com/AmirmLotfy/roaclaw-growth-os/releases) and [project checks](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) document the build. The entry copy is in [DEVPOST_DRAFT.md](DEVPOST_DRAFT.md). The [judge walkthrough](JUDGE_GUIDE.md) and [screenshot gallery](../docs/screenshots/README.md) use the verified Firebase Hosting URL. The [final film report](../video/VIDEO_QA_REPORT.md) describes the narrated local master, captions and two covers. The judging period ends 16 December at 14:00 PST. [Official rules](https://firebasehybridaihackathon.devpost.com/rules)
+The [published packages](https://github.com/AmirmLotfy/roaclaw-growth-os/releases) and [project checks](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) document the build. The local [Devpost copy](DEVPOST_DRAFT.md) and [judge walkthrough](JUDGE_GUIDE.md) use the verified branded domain. The [final film report](../video/VIDEO_QA_REPORT.md) records the [public demo](https://youtu.be/V-a7CwUjY1U), captions and two covers. The judging period ends 16 December at 14:00 PST. [Official rules](https://firebasehybridaihackathon.devpost.com/rules)

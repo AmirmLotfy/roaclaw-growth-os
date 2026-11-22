@@ -1,4 +1,4 @@
-# YouTube draft metadata
+# Published YouTube metadata
 
 ## Title
 
@@ -12,7 +12,7 @@ See the source evidence, the exact tagged destination, and the Chrome bookmark r
 
 Campaign Preflight lets you enter your own brief and compare it with a public page you capture in Chrome. It produces a suggested tracking link and a downloadable report.
 
-Product site https://roaclaw-growth-os-2026.web.app/
+Product site https://roaclaw.com/
 
 Growth Audit https://roaclaw-growth-os-2026.web.app/app/
 
@@ -24,4 +24,4 @@ Built for Google #BuildHybridAI 2026.
 
 ## Assets and checks
 
-Use `.local/video/ROACLAW_YOUTUBE_16X9.jpg` and `.local/video/ROACLAW_CAMPAIGN_PREFLIGHT_FILM.srt`. The Devpost gallery uses its separate 3:2 cover. Once reviewed and authorized, set the final entry to Public and confirm HD processing and playback from the public link before updating Devpost.
+The video is public on the Frameless channel. The uploaded thumbnail is `ROACLAW_YOUTUBE_16X9.jpg` and the English subtitle track came from `ROACLAW_CAMPAIGN_PREFLIGHT_FILM.srt`. The Devpost gallery uses its separate 3:2 cover. [Public video](https://youtu.be/V-a7CwUjY1U) · [Playback QA](VIDEO_QA_REPORT.md)

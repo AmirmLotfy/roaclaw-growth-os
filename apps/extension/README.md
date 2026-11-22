@@ -2,7 +2,7 @@
 
 Load this directory with **Load unpacked** at `chrome://extensions` in Chrome 116 or newer. Turn on Developer mode first and pin ROACLAW to the toolbar. The unpacked extension ID is `loglkephefkogehklbohjpdnhdalgnmc`. Its manifest contains the public key for that development ID.
 
-For the public test, use the hosted package and Firebase URL in the [judge walkthrough](../../submission/JUDGE_GUIDE.md). Companion 0.3.2 also accepts the exact `https://roaclaw.com` origin. Test that hostname after Firebase Hosting connects it. Pair again when moving between origins.
+For the public test, use companion 0.3.2 and the branded URL in the [judge walkthrough](../../submission/JUDGE_GUIDE.md). Both Firebase Hosting origins are available as fallbacks. Pair again when moving between origins. [Branded Chrome evidence](../../qa/evidence/release-0.3.2/branded-companion.json)
 
 ## Campaign Preflight
 

@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-11-22T13:54:03.016Z",
+  "origin": "https://roaclaw.com",
+  "routes": {
+    "/": {
+      "status": 200
+    },
+    "/app/": {
+      "status": 200
+    },
+    "/app/preflight/": {
+      "status": 200
+    },
+    "/demo-store/": {
+      "status": 200
+    },
+    "/roaclaw-extension.zip": {
+      "status": 200,
+      "sha256": "37641a0f48ba03c256fa070610afded69f7becd62c21eafe13645fab9f06bd0c"
+    }
+  },
+  "wwwRedirect": {
+    "status": 301,
+    "to": "https://roaclaw.com/app/"
+  },
+  "tlsVerification": "PASS"
+}

@@ -22,7 +22,7 @@ The Firebase API returned these required changes for Namecheap Advanced DNS on 2
 | `@` | TXT | `hosting-site=roaclaw-growth-os-2026` | Add alongside the existing TXT records. |
 | `www` | CNAME | `roaclaw-growth-os-2026.web.app` | Replace the Namecheap parking CNAME. |
 
-Keep the existing MX, SPF, Google site verification and nameserver records. Verify authoritative DNS and Firebase certificate status, then verify the homepage, the `www` redirect, anonymous demo sign-in, attested cloud review and extension capture on the branded host. Keep the judge guide on the verified Firebase origin until these checks pass. [Firebase Hosting custom domains](https://firebase.google.com/docs/hosting/custom-domain) · [Namecheap host records](https://www.namecheap.com/support/knowledgebase/article.aspx/434/2237/how-do-i-set-up-host-records-for-a-domain/)
+Namecheap continues to serve the existing MX, SPF and nameserver records. The earlier Google site-verification TXT was absent at readback. The branded homepage and demo now serve valid HTTPS. The `www` alias redirects to the apex and preserves the path. The branded dashboard passed anonymous sign-in, attested cloud review and extension capture. The judge guide includes a verified Firebase fallback. [Branded HTTPS checks](../qa/evidence/release-0.3.2/branded-https.json) · [Chrome run](../qa/evidence/release-0.3.2/branded-companion.json) · [Firebase Hosting custom domains](https://firebase.google.com/docs/hosting/custom-domain)
 
 ## Judge access
 - Demo workspace seeded with synthetic values and visible `DEMO DATA` label; no real ad credentials.

@@ -2,7 +2,7 @@
 
 An ad offers a vase set for **$99**. Its landing page shows **$119**. ROACLAW compares the ad with the page, shows the evidence behind each finding, and lets you approve the exact tracked bookmark in Chrome.
 
-[Try Growth Audit](https://roaclaw-growth-os-2026.web.app/app/) · [Check your own landing page](https://roaclaw-growth-os-2026.web.app/app/preflight/) · [Download the Chrome companion](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip) · [Judge walkthrough](submission/JUDGE_GUIDE.md)
+[Watch the demo](https://youtu.be/V-a7CwUjY1U) · [Try Growth Audit](https://roaclaw.com/app/) · [Check your own landing page](https://roaclaw.com/app/preflight/) · [Download the Chrome companion](https://roaclaw.com/roaclaw-extension.zip) · [Judge walkthrough](submission/JUDGE_GUIDE.md)
 
 [![Growth Audit compares the $99 campaign offer with the $119 landing-page price and shows on-device inspection and cloud review.](docs/screenshots/growth-audit.webp)](docs/screenshots/README.md)
 
@@ -15,7 +15,7 @@ Built for **#BuildHybridAI 2026 · Web (Chrome)**. The public demo uses fictiona
 | Growth Audit | Open the ecommerce demo and run **Prefer device**. Then attach a Chrome capture and send the proposed link for review. | The $99 and $119 prices, missing campaign tag, actual inference sources, and the bookmark receipt after approval. |
 | Campaign Preflight | Enter an offer, destination and expected button. Pair Chrome, capture a public page, attach it and run the comparison. | Matches and mismatches with page evidence, explicit review for ambiguous prices, a tracked destination, and an HTML report. |
 
-[Step-by-step walkthrough](submission/JUDGE_GUIDE.md) · [Product website](https://roaclaw-growth-os-2026.web.app/) · [Verification evidence](qa/EVIDENCE_INDEX.md) · [Versioned releases](https://github.com/AmirmLotfy/roaclaw-growth-os/releases)
+[Step-by-step walkthrough](submission/JUDGE_GUIDE.md) · [Product website](https://roaclaw.com/) · [Verification evidence](qa/EVIDENCE_INDEX.md) · [Versioned releases](https://github.com/AmirmLotfy/roaclaw-growth-os/releases)
 
 ## Where Firebase runs
 

@@ -1,6 +1,8 @@
 # Judge walkthrough
 
-ROACLAW is a Web (Chrome) entry. [Growth Audit](https://roaclaw-growth-os-2026.web.app/app/) · [Campaign Preflight](https://roaclaw-growth-os-2026.web.app/app/preflight/) · [Chrome ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip) · [Screenshot gallery](../docs/screenshots/README.md)
+ROACLAW is a Web (Chrome) entry. [Growth Audit](https://roaclaw.com/app/) · [Campaign Preflight](https://roaclaw.com/app/preflight/) · [Chrome ZIP](https://roaclaw.com/roaclaw-extension.zip) · [Public walkthrough video](https://youtu.be/V-a7CwUjY1U) · [Screenshot gallery](../docs/screenshots/README.md)
+
+Use companion 0.3.2 on the branded site. Pair again if you switch to the Firebase origin. [Firebase fallback](https://roaclaw-growth-os-2026.web.app/app/)
 
 ## 1. Open the ecommerce demo
 
@@ -15,7 +17,7 @@ Choose **Open demo**, then **Open ecommerce demo**. Firebase creates an anonymou
 3. Open the demo storefront from the dashboard. Click the extension toolbar icon on the storefront tab and choose **Capture page evidence**. Return to the dashboard, choose **Get approved capture**, and run the audit.
 4. Choose **Send for Chrome approval**. In the side panel, review the exact URL, choose **Review save**, then **Save to Chrome**. Grant bookmarks access if prompted. In the dashboard, choose **Check receipt** and open **Memory**. The receipt includes the saved URL and Chrome bookmark ID.
 
-History search is optional and asks for its own permission. Capture remains limited to the selected tab. [Companion docs](../apps/extension/README.md) · [Verified Chrome run](../qa/evidence/app-check-repair/companion.json)
+History search is optional and asks for its own permission. Capture remains limited to the selected tab. [Companion docs](../apps/extension/README.md) · [Verified branded Chrome run](../qa/evidence/release-0.3.2/branded-companion.json)
 
 ## 3. Try Campaign Preflight with your own brief
 

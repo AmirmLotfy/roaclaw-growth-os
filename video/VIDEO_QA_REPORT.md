@@ -15,10 +15,10 @@ Verified on 22 November 2026. The graphite and vermilion edit opens with the $99
 
 The film passed a full FFmpeg decode. The midpoint of all 26 shots was inspected, including close-ups of the device, cloud, exact tagged link, Chrome capture, exported report and closing URL. The cloud review is visible at 00:22.500. Both thumbnails were inspected at 320px wide. [Devpost image guidance](https://help.devpost.com/article/126-know-your-submission-steps) · [YouTube image guidance](https://support.google.com/youtube/answer/72431)
 
-The edit uses the owner's supplied continuous narration and music. The score ducks under speech and bridges the captioned Preflight sequence. The delivered AAC measures -16.1 LUFS integrated and -1.6 dBTP. The close was checked against the supplied narration. The supplied stem hashes and final file hash are in the [film report](../qa/evidence/video/campaign-preflight-film.json). Supplied audio and the local export remain private to the workspace.
+The edit uses the owner's supplied continuous narration and music. The score ducks under speech and bridges the captioned Preflight sequence. The delivered AAC measures -16.1 LUFS integrated and -1.6 dBTP. The close was checked against the supplied narration. The supplied stem hashes and final file hash are in the [film report](../qa/evidence/video/campaign-preflight-film.json). The audio stems and local export files live outside Git.
 
 ## Publication
 
-The prior Studio upload and Devpost project remain drafts. The owner authorized uploading the final cut via the Codex internal browser. The browser-control session reported that access was unavailable. The final master and cover stay in the workspace pending authenticated upload and public playback. Devpost submission remains on hold.
+YouTube Studio confirmed the final cut was published on the Frameless channel on 22 November 2026. The custom 16:9 thumbnail and uploaded English captions were saved. The watch page played at 1920 × 1080 and listed the English track. An unauthenticated oEmbed request returned the expected title and channel. Studio's initial copyright and Community Guidelines checks reported no issues. Subscriber notifications were disabled for this upload. Devpost submission remains on hold. [Watch on YouTube](https://youtu.be/V-a7CwUjY1U)
 
 The [verified screenshot gallery](../docs/screenshots/README.md) accompanies the separate 3:2 Devpost cover. PNG copies for the gallery are in `.local/submission-gallery/`.
