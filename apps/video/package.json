@@ -1,0 +1,25 @@
+{
+  "name": "@roaclaw/video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit && node --check scripts/edit.mjs",
+    "ingest": "node scripts/edit.mjs ingest",
+    "preview": "node scripts/edit.mjs preview",
+    "render": "node scripts/edit.mjs render"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@remotion/cli": "4.0.545",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.545"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "typescript": "5.9.3"
+  }
+}

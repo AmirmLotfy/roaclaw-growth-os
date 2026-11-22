@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each anonymous Firebase UID owns a separate demo organization namespace.
+    // Its workspace document contains three bounded lists, a privacy mode, and
+    // an optional ISO UTC update timestamp. The UID comes exclusively from the path.
+    function ownsOrganization(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function isDemoWorkspace(workspaceId) {
+      return workspaceId in ['sable-stem', 'northline-retail', 'morrow-dental'];
+    }
+
+    function isWorkspaceState(data) {
+      return data.keys().hasAll(['audits', 'research', 'followups', 'privacy'])
+        && data.keys().hasOnly(['audits', 'research', 'followups', 'privacy', 'updatedAt'])
+        && data.audits is list && data.audits.size() <= 30
+        && data.research is list && data.research.size() <= 30
+        && data.followups is list && data.followups.size() <= 30
+        && data.privacy in ['local', 'hybrid', 'cloud']
+        && (!('updatedAt' in data) || (
+          data.updatedAt is string
+          && data.updatedAt.size() == 24
+          && data.updatedAt.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$')
+        ));
+    }
+
+    match /organizations/{uid}/workspaces/{workspaceId} {
+      allow get: if ownsOrganization(uid) && isDemoWorkspace(workspaceId);
+      allow create, update: if ownsOrganization(uid) && isDemoWorkspace(workspaceId)
+        && isWorkspaceState(request.resource.data);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

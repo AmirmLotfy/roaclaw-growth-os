@@ -1,0 +1,2 @@
+# Chrome manifest uses an ASN.1 public key to make the local ID reproducible.
+apps/extension/manifest.json:generic-api-key:7

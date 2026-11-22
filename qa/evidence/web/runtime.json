@@ -1,0 +1,22 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "passed": true,
+  "appCheckResponses": [
+    {
+      "kind": "app-check",
+      "host": "content-firebaseappcheck.googleapis.com",
+      "status": 200
+    },
+    {
+      "kind": "generation",
+      "host": "firebasevertexai.googleapis.com",
+      "status": 200
+    }
+  ],
+  "deviceAnalysis": true,
+  "cloudReview": true,
+  "firestoreReload": true,
+  "workspaceIsolationInView": true,
+  "fixtureRecheck": true,
+  "mobileNoOverflow": true
+}

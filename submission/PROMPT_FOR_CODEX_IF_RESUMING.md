@@ -1,0 +1,3 @@
+# Codex continuation / context-reset prompt
+
+Read `AGENTS.md`, `CODEX_MASTER_PROMPT.md`, `WORKLOG.md`, `qa/EVIDENCE_INDEX.md`, and `submission/SUBMISSION_CHECKLIST.md`. Resume **from the most recent actually verified gate**, not from prior claimed progress. Reinspect git status, the running app, Firebase logs, E2E results, captured video and current deadline. Re-evaluate any feature previously marked DONE without evidence. Continue end-to-end until deployed web and extension, public repo, public <=3-min YouTube video and confirmed Devpost submission (or report specific auth/tool blockers). Do not ask for requirements already in pack. Never fake a Firebase ON_DEVICE result, real ad action, video upload, or Devpost status.

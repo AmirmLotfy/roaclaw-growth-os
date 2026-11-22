@@ -1,0 +1,16 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.local/
+node_modules/
+dist/
+firebase-debug*.log
+
+.next/
+out/
+*.tsbuildinfo
+.firebase/
+playwright-report/
+test-results/
+apps/web/public/roaclaw-extension.zip

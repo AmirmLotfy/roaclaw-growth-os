@@ -1,0 +1,12 @@
+{
+  "name": "roaclaw",
+  "private": true,
+  "packageManager": "pnpm@10.34.9",
+  "scripts": {
+    "dev": "pnpm --filter @roaclaw/web dev",
+    "build": "pnpm package:extension && pnpm --filter @roaclaw/web build",
+    "check": "pnpm --filter @roaclaw/web check",
+    "test": "pnpm --filter @roaclaw/web test",
+    "package:extension": "node tools/package-extension.mjs"
+  }
+}

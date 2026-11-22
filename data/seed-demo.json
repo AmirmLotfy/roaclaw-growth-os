@@ -1,0 +1,74 @@
+{
+  "isSyntheticDemoData": true,
+  "datasetVersion": "2026-11-22.1",
+  "notice": "All brands, people, revenue and campaigns in this dataset are fictional fixtures. They are not actual advertising results.",
+  "organizations": [
+    {
+      "id": "demo-owner-org",
+      "name": "Sable & Stem Demo",
+      "kind": "business_owner",
+      "workspaces": ["sable-stem"]
+    },
+    {
+      "id": "demo-agency-org",
+      "name": "Northline Demo Agency",
+      "kind": "agency",
+      "workspaces": ["northline-retail", "morrow-dental"]
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "sable-stem",
+      "organizationId": "demo-owner-org",
+      "name": "Sable & Stem",
+      "category": "ecommerce",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "demoOnly": true,
+      "objective": {"metric": "roas", "target": 3.6, "period": "2026-11-09/2026-11-15"},
+      "metricSnapshot": {"source": "synthetic_fixture", "spend": 1200, "impressions": 80000, "clicks": 2400, "purchases": 34, "attributedRevenue": 3978, "roas": 3.315, "period": "2026-11-09/2026-11-15"},
+      "campaign": {
+        "id": "demo-retargeting-01",
+        "title": "Weekend everyday essentials",
+        "advertisedProduct": "Ceramic Vase Set",
+        "advertisedPrice": 99,
+        "destination": "https://demo.roaclaw.local/products/ceramic-vase-set?utm_source=meta&utm_medium=paid_social",
+        "utmCampaignMissing": true,
+        "source": "synthetic_fixture"
+      },
+      "selectedProductPage": {
+        "title": "Ceramic Vase Set | Demo Store",
+        "visibleProductPrice": 119,
+        "visibleCTA": "Add to cart",
+        "note": "Codex must create a local or hosted fixture page with these exact visible values. Never pretend this URL is a functioning public store."
+      },
+      "expectedAudit": [
+        {"id": "offer-mismatch", "kind": "verified_fixture_discrepancy", "evidence": "Advertised $99 vs landing page $119", "severity": "high"},
+        {"id": "utm-gap", "kind": "verified_fixture_discrepancy", "evidence": "Destination missing utm_campaign parameter", "severity": "medium"},
+        {"id": "roas-target-gap", "kind": "observation_not_causation", "evidence": "3.315 observed ROAS vs 3.6 target", "severity": "medium"}
+      ]
+    },
+    {
+      "id": "northline-retail",
+      "organizationId": "demo-agency-org",
+      "name": "Northline Retail (Demo Client)",
+      "category": "ecommerce",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "demoOnly": true,
+      "metricSnapshot": {"source": "synthetic_fixture", "spend": 860, "purchases": 21, "attributedRevenue": 2600, "period": "2026-11-09/2026-11-15"}
+    },
+    {
+      "id": "morrow-dental",
+      "organizationId": "demo-agency-org",
+      "name": "Morrow Dental (Demo Client)",
+      "category": "lead_generation",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "demoOnly": true,
+      "metricSnapshot": {"source": "synthetic_fixture", "spend": 620, "leads": 31, "bookings": 8, "period": "2026-11-09/2026-11-15"},
+      "landingPage": {"visibleCTA": "Contact us", "campaignGoal": "Appointment booking", "potentialMismatch": true}
+    }
+  ],
+  "fixtureSecurity": {"allEmailsSynthetic": true, "allUrlsRequireCreationOrReplacement": true, "neverSendRealAds": true}
+}

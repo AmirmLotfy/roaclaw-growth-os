@@ -1,0 +1,22 @@
+name: Project checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm install --frozen-lockfile
+      - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm check
+      - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm test
+      - run: node --test apps/extension/tests/*.test.js

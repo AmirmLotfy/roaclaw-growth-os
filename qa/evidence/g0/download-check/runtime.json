@@ -1,0 +1,259 @@
+{
+  "mode": "local-only",
+  "browser": {
+    "product": "Chrome/158.0.8127.37",
+    "secureOrigin": true,
+    "launch": {
+      "enabledFlags": [
+        "gemma4-for-built-in-ai",
+        "prompt-api",
+        "prompt-api-multimodal-input"
+      ],
+      "blockingSwitches": []
+    }
+  },
+  "machine": {
+    "arch": "arm64",
+    "availableCpuCores": 8,
+    "memoryBytes": 8589934592,
+    "chromeVolumeFreeBytes": 21832065024
+  },
+  "setup": "Chrome model availability: downloadable. Cloud checks need App Check configuration.",
+  "local": {
+    "source": "TIMEOUT",
+    "sdkSource": null,
+    "detail": "Waiting for Firebase AI Logic.",
+    "sample": null,
+    "browserOnline": true,
+    "requests": [],
+    "generationHttpStatuses": [],
+    "debugExchangeHttpStatuses": [],
+    "debugExchangeErrors": [],
+    "attachedAppCheck": false
+  },
+  "chromeModel": {
+    "title": "On-device Internals",
+    "tables": [
+      {
+        "columns": [],
+        "rows": []
+      },
+      {
+        "columns": [],
+        "rows": []
+      },
+      {
+        "columns": [
+          "Name",
+          "Version",
+          "State",
+          "Progress",
+          "Error"
+        ],
+        "rows": [
+          [
+            "laya_ml_wint8_component",
+            "2026.10.26.748",
+            "Not Installed",
+            "0%",
+            "None"
+          ],
+          [
+            "nano_v3_gpu_component",
+            "2025.8.8.1141",
+            "Not Installed",
+            "0%",
+            "None"
+          ],
+          [
+            "proofreader_small_expert_model_component",
+            "2026.6.3.1603",
+            "Not Installed",
+            "0%",
+            "None"
+          ],
+          [
+            "gemma4_component",
+            "2026.11.3.1140",
+            "Foreground Installing",
+            "1.0 GB / 2.0 GB",
+            "None"
+          ],
+          [
+            "summarizer_small_expert_model_component",
+            "2026.6.3.1604",
+            "Not Installed",
+            "0%",
+            "None"
+          ],
+          [
+            "laya_en_wint8_component",
+            "2026.10.26.748",
+            "Not Installed",
+            "0%",
+            "None"
+          ],
+          [
+            "speech_recognition_small_expert_model_component",
+            "2026.7.23.1621",
+            "Not Installed",
+            "0%",
+            "None"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "Name",
+          "Requested",
+          "Unavailable Reason"
+        ],
+        "rows": [
+          [
+            "compose",
+            "",
+            "Not Supported"
+          ],
+          [
+            "history_query_intent",
+            "",
+            "Not Supported"
+          ],
+          [
+            "history_search",
+            "",
+            "Not Supported"
+          ],
+          [
+            "laya_en_wint8",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "laya_ml_wint8",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "permissions_ai",
+            "",
+            "Not Supported"
+          ],
+          [
+            "prompt_api",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "prompt_api_gemma4",
+            "",
+            "Pending Assets"
+          ],
+          [
+            "proofreader_api",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "scam_detection",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "speech_recognition",
+            "",
+            "Not Supported"
+          ],
+          [
+            "speech_recognition_small_expert_model",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "summarizer_api",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "summarizer_gemma4",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "summarizer_small_expert_model",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "test",
+            "",
+            "Not Supported"
+          ],
+          [
+            "writing_assistance_api",
+            "",
+            "Pending Usage"
+          ],
+          [
+            "writing_assistance_api_gemma4",
+            "",
+            "Pending Usage"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "Name",
+          "Folder Size",
+          "Weights Path",
+          "Backend Type"
+        ],
+        "rows": [
+          [
+            "gemma4_gpu_low_tier_model",
+            "0 MiB",
+            "",
+            "GPU (fastest inference)"
+          ],
+          [
+            "laya_en_wint8",
+            "0 MiB",
+            "",
+            "CPU"
+          ],
+          [
+            "laya_ml_wint8",
+            "0 MiB",
+            "",
+            "CPU"
+          ],
+          [
+            "nano_v3_gpu_low_tier_model",
+            "0 MiB",
+            "",
+            "GPU (fastest inference)"
+          ],
+          [
+            "proofreader_small_expert_model",
+            "0 MiB",
+            "",
+            "CPU"
+          ],
+          [
+            "speech_recognition_small_expert_model",
+            "0 MiB",
+            "",
+            "GPU (fastest inference)"
+          ],
+          [
+            "summarizer_small_expert_model",
+            "0 MiB",
+            "",
+            "CPU"
+          ]
+        ]
+      }
+    ],
+    "visibleText": "On-Device Internals Broker Properties Broker Type ManifestBrokerState Performance Class Medium Possible Capabilities Image Manifest Path <chrome-profile>/OptimizationGuideModelsManifest/1.20261108.2 Manifest Loaded true Model crash count (current/maximum): 0/3 Reset View global crash reports (chrome://crashes) Manifest Criteria Enabled by feature flag Enabled by enterprise policy Enabled by user setting Enough VRAM true (5461 MiB actual, 3000 MiB required) Device Capable Enough disk space to install true (20816 MiB available, 20480 MiB required) Enough disk space to retain true (20816 MiB available, 5120 MiB required) Assets Name Version State Progress Error laya_ml_wint8_component 2026.10.26.748 Not Installed 0% None nano_v3_gpu_component 2025.8.8.1141 proofreader_small_expert_model_component 2026.6.3.1603 gemma4_component 2026.11.3.1140 Foreground Installing 1.0 GB / 2.0 GB summarizer_small_expert_model_component 2026.6.3.1604 laya_en_wint8_component speech_recognition_small_expert_model_component 2026.7.23.1621 Use Cases Requested Unavailable Reason compose Not Supported history_query_intent history_search laya_en_wint8 Pending Usage laya_ml_wint8 permissions_ai prompt_api prompt_api_gemma4 Pending Assets proofreader_api scam_detection speech_recognition speech_recognition_small_expert_model summarizer_api summarizer_gemma4 summarizer_small_expert_model test writing_assistance_api writing_assistance_api_gemma4 Models Folder Size Weights Path Backend Type gemma4_gpu_low_tier_model 0 MiB GPU (fastest inference) CPU nano_v3_gpu_low_tier_model proofreader_small_expert_model Uninstall Models"
+  }
+}

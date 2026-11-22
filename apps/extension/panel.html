@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ROACLAW companion</title>
+    <link rel="stylesheet" href="panel.css">
+    <script type="module" src="panel.js"></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <span class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>ROACLAW</span>
+      <span class="header-label">Browser companion</span>
+    </header>
+    <main>
+      <section class="workspace" aria-labelledby="workspace-name">
+        <div>
+          <h1 id="workspace-name">Connect a workspace</h1>
+          <p id="workspace-origin">Request pairing in Growth Audit.</p>
+        </div>
+        <button id="disconnect" class="text-button" type="button" hidden>Disconnect</button>
+      </section>
+      <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+
+      <section id="pair-review" class="section approval" aria-labelledby="pair-heading" hidden>
+        <h2 id="pair-heading">Confirm connection</h2>
+        <h3 id="pair-name"></h3>
+        <p id="pair-origin" class="technical"></p>
+        <p id="pair-copy">This workspace can retrieve your captures and propose bookmarks for review.</p>
+        <div class="button-row">
+          <button id="confirm-pair" class="primary" type="button">Connect workspace</button>
+          <button id="decline-pair" type="button">Decline</button>
+        </div>
+      </section>
+
+      <section id="actions" class="section approval" aria-labelledby="actions-title" hidden>
+        <div class="section-heading">
+          <h2 id="actions-title">Confirm bookmark</h2>
+          <span id="action-status" class="status" hidden></span>
+        </div>
+        <article id="bookmark" hidden>
+          <h3 id="bookmark-title"></h3>
+          <p id="bookmark-url" class="source-url"></p>
+          <dl class="action-details">
+            <div><dt>Chrome folder</dt><dd id="bookmark-folder">Other bookmarks</dd></div>
+            <div id="bookmark-id-row" hidden><dt>Bookmark ID</dt><dd id="bookmark-id" class="technical"></dd></div>
+          </dl>
+          <p id="bookmark-copy"></p>
+          <div id="bookmark-buttons" class="button-row" hidden>
+            <button id="review-bookmark" class="primary" type="button" hidden>Review save</button>
+            <button id="save-bookmark" class="primary" type="button" hidden>Save to Chrome</button>
+            <button id="cancel-bookmark" type="button">Cancel</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="inspect" class="section" aria-labelledby="inspect-title" hidden>
+        <div class="section-heading">
+          <h2 id="inspect-title">Inspect current page</h2>
+          <span id="page-state" class="status">Tab access needed</span>
+        </div>
+        <p id="page-url" class="source-url" hidden></p>
+        <p id="page-help">Open a public landing page and click the ROACLAW toolbar icon on that tab.</p>
+        <button id="capture" class="primary" type="button" disabled>Capture page evidence</button>
+
+        <article id="capture-review" class="capture-result" aria-labelledby="capture-title" hidden>
+          <div class="section-heading">
+            <h3 id="capture-title"></h3>
+            <button id="clear-capture" class="text-button" type="button">Clear</button>
+          </div>
+          <p id="capture-url" class="technical"></p>
+          <p id="capture-counts" class="capture-counts"></p>
+          <details>
+            <summary>View captured fields</summary>
+            <dl id="capture-fields"></dl>
+          </details>
+        </article>
+      </section>
+
+      <section id="research" class="section research" aria-label="Research" hidden>
+        <details>
+          <summary>Search Chrome bookmarks</summary>
+          <p>Chrome may ask for bookmark access. Search results stay here.</p>
+          <form id="search-form">
+            <label for="search-text">Bookmark title or URL</label>
+            <div class="search-control">
+              <input id="search-text" type="search" minlength="2" maxlength="120" required>
+              <button type="submit">Search</button>
+            </div>
+          </form>
+          <ul id="search-results" class="search-results"></ul>
+        </details>
+      </section>
+    </main>
+    <footer>Captures expire after 15 minutes. Connections expire after one hour.</footer>
+  </body>
+</html>

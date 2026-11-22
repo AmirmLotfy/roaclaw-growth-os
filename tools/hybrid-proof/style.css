@@ -1,0 +1,57 @@
+@import "../../design/tokens.css";
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font: 1rem/1.55 var(--font-ui);
+}
+
+main {
+  width: min(49rem, calc(100% - 3rem));
+  margin: clamp(2rem, 9vh, 6rem) auto;
+}
+
+header {
+  border-top: 3px solid var(--color-brand);
+  padding-top: var(--space-3);
+  color: var(--color-text-secondary);
+  font: 0.8rem var(--font-mono);
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.1;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+button {
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled { color: var(--color-text-secondary); cursor: default; }
+button:not(:disabled):hover { border-color: var(--color-brand); }
+button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+section {
+  margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+}
+
+h2 { margin: 0; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); }

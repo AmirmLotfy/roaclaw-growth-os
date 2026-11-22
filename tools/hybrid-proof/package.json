@@ -1,0 +1,19 @@
+{
+  "name": "@roaclaw/hybrid-proof",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.9",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --strictPort",
+    "check": "tsc --noEmit && vite build",
+    "verify": "node verify.mjs"
+  },
+  "dependencies": {
+    "firebase": "13.4.0"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.8"
+  }
+}

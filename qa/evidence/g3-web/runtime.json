@@ -1,0 +1,49 @@
+{
+  "browser": "Chrome/158.0.8127.37",
+  "app": "https://roaclaw-growth-os-2026.web.app",
+  "extensionId": "loglkephefkogehklbohjpdnhdalgnmc",
+  "capture": {
+    "capturedAt": "2026-11-22T10:04:52.348Z",
+    "ctas": [
+      "Add to cart"
+    ],
+    "headings": [
+      "Ceramic Vase Set"
+    ],
+    "title": "Ceramic Vase Set | Demo Store",
+    "url": "https://roaclaw-growth-os-2026.web.app/demo-store/",
+    "visiblePriceText": [
+      "$119"
+    ]
+  },
+  "receipts": [
+    {
+      "bookmarkId": "5",
+      "folder": "Other Bookmarks",
+      "proposalId": "51bc63d0-e729-482e-b146-a9e6dc90c203-bookmark",
+      "title": "Ceramic Vase Set · Campaign research",
+      "url": "https://roaclaw-growth-os-2026.web.app/demo-store/?utm_source=meta&utm_medium=paid_social&utm_campaign=weekend-everyday-essentials",
+      "verifiedAt": "2026-11-22T10:05:05.062Z",
+      "workspaceId": "sable-stem"
+    },
+    {
+      "bookmarkId": "6",
+      "folder": "Other Bookmarks",
+      "proposalId": "roaclaw-smoke-plain",
+      "title": "ROACLAW smoke storefront",
+      "url": "https://roaclaw-growth-os-2026.web.app/demo-store/",
+      "verifiedAt": "2026-11-22T10:05:05.763Z",
+      "workspaceId": "sable-stem"
+    }
+  ],
+  "canceledVerified": true,
+  "searchMatches": 2,
+  "persistedBookmarks": 2,
+  "webUiPairAndCapture": true,
+  "webAudit": {
+    "inferenceSourceLabel": "Page · In cloud",
+    "priceMismatchVerified": true,
+    "bookmarkReceiptVerified": true,
+    "memoryReceiptAfterReload": true
+  }
+}

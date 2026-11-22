@@ -1,0 +1,97 @@
+{
+  "browser": {
+    "product": "Chrome/158.0.8127.37",
+    "secureOrigin": true
+  },
+  "machine": {
+    "arch": "arm64",
+    "memoryBytes": 8589934592,
+    "chromeVolumeFreeBytes": 12850130944
+  },
+  "setup": "Chrome model availability: unavailable. App Check configured for cloud requests.",
+  "local": {
+    "source": "UNAVAILABLE",
+    "sdkSource": null,
+    "detail": "Firebase inference did not complete (api-not-enabled).",
+    "sample": null,
+    "requests": [],
+    "generationHttpStatuses": [],
+    "debugExchangeHttpStatuses": [],
+    "debugExchangeErrors": [],
+    "attachedAppCheck": false
+  },
+  "cloud": {
+    "source": "IN_CLOUD",
+    "sdkSource": "in_cloud",
+    "detail": "Firebase SDK source and fixture output verified.",
+    "sample": {
+      "priceUsd": 119,
+      "cta": "Add to cart"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "host": "content-firebaseappcheck.googleapis.com",
+        "aiGeneration": false
+      },
+      {
+        "method": "POST",
+        "host": "firebasevertexai.googleapis.com",
+        "aiGeneration": true
+      }
+    ],
+    "generationHttpStatuses": [
+      200
+    ],
+    "debugExchangeHttpStatuses": [
+      200
+    ],
+    "debugExchangeErrors": [],
+    "attachedAppCheck": true
+  },
+  "hybrid": {
+    "source": "IN_CLOUD",
+    "sdkSource": "in_cloud",
+    "detail": "Firebase SDK source and fixture output verified.",
+    "sample": {
+      "priceUsd": 119,
+      "cta": "Add to cart"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "host": "firebasevertexai.googleapis.com",
+        "aiGeneration": true
+      }
+    ],
+    "generationHttpStatuses": [
+      200
+    ],
+    "debugExchangeHttpStatuses": [],
+    "debugExchangeErrors": [],
+    "attachedAppCheck": true
+  },
+  "withoutAttestation": {
+    "source": "UNAVAILABLE",
+    "sdkSource": null,
+    "detail": "Firebase inference did not complete (fetch-error).",
+    "sample": null,
+    "requests": [
+      {
+        "method": "POST",
+        "host": "firebasevertexai.googleapis.com",
+        "aiGeneration": true
+      }
+    ],
+    "generationHttpStatuses": [
+      401
+    ],
+    "debugExchangeHttpStatuses": [],
+    "debugExchangeErrors": [],
+    "attachedAppCheck": false
+  },
+  "chromeModel": {
+    "title": "On-device Internals",
+    "visibleText": "On-Device Internals Broker Properties Manifest Criteria Assets Name Version State Progress Error Use Cases Requested Unavailable Reason Models Folder Size Weights Path Backend Type Uninstall Models"
+  }
+}

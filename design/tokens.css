@@ -1,0 +1,38 @@
+:root {
+  --color-canvas: #F4F7FB;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #E9F1FD;
+  --color-ink: #14243D;
+  --color-text-secondary: #4C5B70;
+  --color-muted: #65758C;
+  --color-brand: #1853D8;
+  --color-nav: #132642;
+  --color-focus: #1853D8;
+  --color-border: #CBD8E5;
+  --color-divider: #E0E7F0;
+  --color-success: #17674F;
+  --color-warning: #79460F;
+  --color-danger: #9C2348;
+  --font-ui: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-display: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --duration-micro: 140ms;
+  --duration-standard: 280ms;
+  --duration-expressive: 480ms;
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

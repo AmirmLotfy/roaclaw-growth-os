@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-11-22T09:36:47.735121+00:00",
+  "projectId": "roaclaw-growth-os-2026",
+  "billing": {
+    "preflightBillingEnabled": false,
+    "postProvisionReadHttp": 200,
+    "postProvisionBillingEnabled": false
+  },
+  "auth": {
+    "anonymousEnabled": true
+  },
+  "firestore": {
+    "databaseId": "(default)",
+    "locationId": "europe-west1",
+    "edition": "STANDARD",
+    "mode": "FIRESTORE_NATIVE",
+    "freeTier": true,
+    "rulesRelease": "projects/roaclaw-growth-os-2026/releases/cloud.firestore",
+    "ruleset": "projects/roaclaw-growth-os-2026/rulesets/4a4d3225-e10b-448f-84c9-6578046d1403",
+    "matchesLocalSource": true,
+    "rulesSha256": "6179d3580ae7f189a2dcd927b083531393bc09856b37ef7bff8aa66622624ae6"
+  },
+  "appCheck": {
+    "webAppId": "1:1003872487777:web:c54b147ad565a4f39e1d20",
+    "provider": "reCAPTCHA Enterprise",
+    "integrationType": "SCORE",
+    "websiteDomains": [
+      "roaclaw-growth-os-2026.firebaseapp.com",
+      "roaclaw-growth-os-2026.web.app"
+    ],
+    "tokenTtl": "3600s",
+    "aiLogicEnforcementMode": "ENFORCED"
+  }
+}
