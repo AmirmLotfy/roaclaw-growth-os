@@ -21,3 +21,9 @@ jobs:
       - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm test
       - run: node --test apps/extension/tests/*.test.js
       - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm build
+        env:
+          # Static export initializes Auth during prerender. This configuration is for compilation only.
+          NEXT_PUBLIC_FIREBASE_API_KEY: roaclaw-static-export-ci-placeholder
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: demo-roaclaw
+          NEXT_PUBLIC_FIREBASE_APP_ID: '1:000000000000:web:0000000000000000000000'
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: demo-roaclaw.invalid
