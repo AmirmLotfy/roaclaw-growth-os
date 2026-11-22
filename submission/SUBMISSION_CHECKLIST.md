@@ -15,7 +15,7 @@
 - [x] The 127.019-second final film passed full decode, all 26 shot checks and English captions QA.
 - [x] Separate 3:2 Devpost cover, 16:9 YouTube cover and authentic product screenshots prepared.
 - [x] YouTube Studio confirmed public visibility. The watch page played at 1080p with an English subtitle option, and anonymous oEmbed returned HTTP 200. [Public video](https://youtu.be/V-a7CwUjY1U)
-- [ ] Devpost project category Web/Chrome, description, technology, repo, video, test URL, permissions and disclosures complete.
+- [x] Saved and verified the Devpost Web (Chrome) category, story, technology, repository, license, public video, demo URL, testing instructions, disclosures, 3:2 cover and four captioned screenshots.
 - [x] The owner confirmed the eligibility attestations. Authenticated Devpost submission remains on hold.
 - [ ] Click/complete final Submit and confirm status and project URL before deadline.
 

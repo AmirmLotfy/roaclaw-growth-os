@@ -2,7 +2,7 @@
 
 ## Tagline
 
-Compare a campaign offer with its landing page, then approve a tracked bookmark in Chrome.
+See where your ad and landing page disagree, then approve the exact tracked bookmark in Chrome.
 
 ## Inspiration
 
