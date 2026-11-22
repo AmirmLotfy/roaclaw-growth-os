@@ -16,8 +16,8 @@
 - [x] Separate 3:2 Devpost cover, 16:9 YouTube cover and authentic product screenshots prepared.
 - [x] YouTube Studio confirmed public visibility. The watch page played at 1080p with an English subtitle option, and anonymous oEmbed returned HTTP 200. [Public video](https://youtu.be/V-a7CwUjY1U)
 - [x] Saved and verified the Devpost Web (Chrome) category, story, technology, repository, license, public video, demo URL, testing instructions, disclosures, 3:2 cover and four captioned screenshots.
-- [x] The owner confirmed the eligibility attestations. Authenticated Devpost submission remains on hold.
-- [ ] Click/complete final Submit and confirm status and project URL before deadline.
+- [x] The owner confirmed eligibility and checked the final rules agreement in Devpost.
+- [x] Devpost confirmed submission under #BuildHybridAI 2026 before the deadline. [Public project](https://devpost.com/software/roaclaw-o1637x)
 
 ## Automation/tool usage policy
 1. Discover genuine Devpost MCP/plugin actions. If there is a supported draft/create/update/submit action and authenticated permission, use it.
@@ -47,10 +47,10 @@ Limitations: [ACTUAL]
 Manual actions needed: [NONE OR EXACT]
 ```
 
-## 22 November 2026 status
+## 23 November 2026 submission confirmation
 
-The existing [RoaClaw Devpost draft](https://devpost.com/software/roaclaw-o1637x) is associated with #BuildHybridAI 2026 and has no submission timestamp. Cloud inference, consented fallback, App Check, on-device extraction and the independent offline inference check passed. See the [evidence index](../qa/EVIDENCE_INDEX.md).
+Devpost lists ROACLAW Growth Audit as submitted to #BuildHybridAI 2026 at **00:09:51 Cairo on 23 November 2026**. The public entry and its video link were verified. [Submitted project](https://devpost.com/software/roaclaw-o1637x) · [Evidence index](../qa/EVIDENCE_INDEX.md)
 
-The account holder confirmed Growth OS is a new, independent build started on 22 November 2026, and confirmed the required eligibility attestations. Submitter type is Individual, country is Egypt, and organization is N/A. Final submission approval remains pending.
+The account holder confirmed Growth OS is a new, independent build started on 22 November 2026, confirmed the required eligibility attestations and checked the rules agreement. The entry is for an individual in Egypt.
 
 The [published packages](https://github.com/AmirmLotfy/roaclaw-growth-os/releases) and [project checks](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) document the build. The local [Devpost copy](DEVPOST_DRAFT.md) and [judge walkthrough](JUDGE_GUIDE.md) use the verified branded domain. The [final film report](../video/VIDEO_QA_REPORT.md) records the [public demo](https://youtu.be/V-a7CwUjY1U), captions and two covers. The judging period ends 16 December at 14:00 PST. [Official rules](https://firebasehybridaihackathon.devpost.com/rules)

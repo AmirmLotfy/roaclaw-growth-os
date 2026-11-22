@@ -19,6 +19,6 @@ The edit uses the owner's supplied continuous narration and music. The score duc
 
 ## Publication
 
-YouTube Studio confirmed the final cut was published on the Frameless channel on 22 November 2026. The custom 16:9 thumbnail and uploaded English captions were saved. The watch page played at 1920 × 1080 and listed the English track. An unauthenticated oEmbed request returned the expected title and channel. Studio's initial copyright and Community Guidelines checks reported no issues. Subscriber notifications were disabled for this upload. Devpost submission remains on hold. [Watch on YouTube](https://youtu.be/V-a7CwUjY1U)
+YouTube Studio confirmed the final cut was published on the Frameless channel on 22 November 2026. The custom 16:9 thumbnail and uploaded English captions were saved. The watch page played at 1920 × 1080 and listed the English track. An unauthenticated oEmbed request returned the expected title and channel. Studio's initial copyright and Community Guidelines checks reported no issues. Subscriber notifications were disabled for this upload. The confirmed Devpost entry includes the public video. [Watch on YouTube](https://youtu.be/V-a7CwUjY1U) · [Submitted project](https://devpost.com/software/roaclaw-o1637x)
 
 The [verified screenshot gallery](../docs/screenshots/README.md) accompanies the separate 3:2 Devpost cover. PNG copies for the gallery are in `.local/submission-gallery/`.
