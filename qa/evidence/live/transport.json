@@ -1,0 +1,27 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "sdk": "13.4.0",
+  "model": "gemini-3.1-flash-live-preview",
+  "appCheckObtained": true,
+  "connected": false,
+  "code": "response-error",
+  "invalidAppCheck": false,
+  "events": [
+    {
+      "phase": "start",
+      "host": "firebasevertexai.googleapis.com",
+      "queryKeys": [
+        "key"
+      ]
+    },
+    {
+      "phase": "open"
+    },
+    {
+      "phase": "close",
+      "code": 1008,
+      "invalidAppCheck": true
+    }
+  ],
+  "microphoneUsed": false
+}

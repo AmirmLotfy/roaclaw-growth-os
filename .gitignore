@@ -6,6 +6,7 @@
 node_modules/
 dist/
 firebase-debug*.log
+firestore-debug*.log
 
 .next/
 out/

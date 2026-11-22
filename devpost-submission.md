@@ -24,7 +24,7 @@ Next.js exports the public app to Firebase Hosting. Anonymous Firebase Auth and 
 
 ## Judge instructions
 
-1. Open [the demo](https://roaclaw-growth-os-2026.web.app/) and select **Open demo**. No credentials are required.
+1. Open [Growth Audit](https://roaclaw-growth-os-2026.web.app/app/), select **Open demo**, and choose **Open ecommerce demo**. No credentials are required.
 2. Use **Device only** to verify Nano 4 on compatible Chrome. Google documents the 22 GB cold-download requirement. Enable **Gemma 4 for Built-in AI** if required and wait for the model to become ready. Use **Prefer device** for the cloud review or fallback.
 3. Use Sable & Stem to see the **$99** campaign price compared with the **$119** synthetic storefront. The audit also checks the missing campaign tag and the difference between **3.315×** observed ROAS and the **3.6×** target.
 4. To exercise Chrome, [download the ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip), extract it and load the unpacked folder through `chrome://extensions`. Pair the workspace, send the prepared change, verify its destination in the Chrome side panel and select **Save to Chrome**. Check the receipt in the dashboard.
@@ -36,7 +36,8 @@ The Growth OS web app and Chrome companion are a new project started on 22 Novem
 
 ## Links and assets
 
-- Product: https://roaclaw-growth-os-2026.web.app/
+- Website: https://roaclaw-growth-os-2026.web.app/
+- Dashboard: https://roaclaw-growth-os-2026.web.app/app/
 - Proposed public repository: https://github.com/AmirmLotfy/roaclaw-growth-os
 - Apache 2.0 license: https://github.com/AmirmLotfy/roaclaw-growth-os/blob/main/LICENSE
 - Final demonstration video: pending public YouTube playback verification

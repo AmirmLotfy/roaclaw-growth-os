@@ -42,6 +42,7 @@ export type Workspace = {
     source: "synthetic_fixture";
   };
   selectedProductPage?: { title: string; visibleProductPrice: number; visibleCTA: string };
+  pagePath: string;
   landingPage?: { visibleCTA: string; campaignGoal: string; potentialMismatch: boolean };
 };
 
@@ -68,12 +69,18 @@ export type AuditResult = {
   findings: AuditFinding[];
   commentary: string | null;
   priceComparison?: { campaign: number; page: number };
+  action?: { status: 'pending' | 'approved' | 'declined' | 'expired' | 'verification_failed' | 'executed'; updatedAt: string };
   proposal: { id: string; title: string; url: string; before: string } | null;
 };
 
 export type PageExtraction = { priceUsd: number | null; cta: string | null };
 
 const demoStorePath = "/demo-store/";
+const pagePaths: Record<string, string> = {
+  'sable-stem': demoStorePath,
+  'northline-retail': '/northline-offer/',
+  'morrow-dental': '/morrow-booking/',
+};
 
 export const workspaces: Workspace[] = seed.workspaces.map((workspace) => ({
   id: workspace.id,
@@ -83,6 +90,7 @@ export const workspaces: Workspace[] = seed.workspaces.map((workspace) => ({
   currency: workspace.currency,
   timezone: workspace.timezone,
   demoOnly: workspace.demoOnly,
+  pagePath: pagePaths[workspace.id],
   objective: workspace.objective,
   metricSnapshot: { ...workspace.metricSnapshot, source: "synthetic_fixture" },
   campaign: workspace.campaign && {
@@ -90,7 +98,7 @@ export const workspaces: Workspace[] = seed.workspaces.map((workspace) => ({
     title: workspace.campaign.title,
     advertisedProduct: workspace.campaign.advertisedProduct,
     advertisedPrice: workspace.campaign.advertisedPrice,
-    destination: `${demoStorePath}${new URL(workspace.campaign.destination).search}`,
+    destination: `${pagePaths[workspace.id]}${new URL(workspace.campaign.destination).search}`,
     source: "synthetic_fixture",
   },
   selectedProductPage: workspace.selectedProductPage && {
@@ -124,13 +132,13 @@ const usd = new Intl.NumberFormat("en-US", {
 export function fixtureSnapshot(workspace: Workspace, origin: string): PageSnapshot {
   const page = workspace.selectedProductPage;
   const safeOrigin = safeWebUrl(origin);
-  const pageUrl = page && safeOrigin ? new URL(demoStorePath, safeOrigin).href : "";
+  const pageUrl = safeOrigin ? new URL(workspace.pagePath, safeOrigin).href : "";
   const cta = page?.visibleCTA ?? workspace.landingPage?.visibleCTA;
 
   return {
     url: pageUrl,
-    title: page?.title ?? workspace.name,
-    headings: workspace.campaign ? [workspace.campaign.advertisedProduct] : [],
+    title: page?.title ?? "Booking page fixture",
+    headings: workspace.campaign ? [workspace.campaign.advertisedProduct] : workspace.landingPage ? ["Book a dental cleaning"] : [],
     prices: page ? [usd.format(page.visibleProductPrice)] : [],
     ctas: cta ? [cta] : [],
     capturedAt: new Date().toISOString(),

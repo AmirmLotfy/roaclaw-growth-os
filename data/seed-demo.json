@@ -56,7 +56,23 @@
       "currency": "USD",
       "timezone": "America/New_York",
       "demoOnly": true,
-      "metricSnapshot": {"source": "synthetic_fixture", "spend": 860, "purchases": 21, "attributedRevenue": 2600, "period": "2026-11-09/2026-11-15"}
+      "objective": {"metric": "roas", "target": 3.0, "period": "2026-11-09/2026-11-15"},
+      "metricSnapshot": {"source": "synthetic_fixture", "spend": 860, "purchases": 21, "attributedRevenue": 2600, "roas": 3.023, "period": "2026-11-09/2026-11-15"},
+      "campaign": {
+        "id": "demo-retail-01",
+        "title": "Field Notebook launch",
+        "advertisedProduct": "Field Notebook",
+        "advertisedPrice": 18,
+        "destination": "https://demo.roaclaw.local/northline-offer/?utm_campaign=field-notebook-launch",
+        "utmCampaignMissing": false,
+        "source": "synthetic_fixture"
+      },
+      "selectedProductPage": {
+        "title": "Field Notebook | Northline Retail",
+        "visibleProductPrice": 18,
+        "visibleCTA": "Add to cart",
+        "note": "Synthetic retail fixture."
+      }
     },
     {
       "id": "morrow-dental",

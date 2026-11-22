@@ -1,450 +1,139 @@
-'use client';
-
-import {
-  Activity, ArrowDownRight, ArrowRight, ArrowUpRight, Bookmark, CalendarClock, Check,
-  ChevronDown, ClipboardList, Database, Globe, LayoutDashboard, Link2,
-  ListChecks, LockKeyhole, ScanLine, ShieldCheck, Users, X,
-} from 'lucide-react';
+import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
-import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
-import { useEffect, useRef, useState } from 'react';
-import {
-  analyzeAudit, fixtureSnapshot, workspaces,
-  type AuditResult, type PageSnapshot, type PrivacyMode, type Workspace,
-} from '../lib/audit';
-import { browserSession, contactExtension, type ExtensionReceipt } from '../lib/bridge';
-import { inspectPage, reasonFromFindings } from '../lib/inference';
-import { auth, openDemoSession, readWorkspace, saveWorkspace } from '../lib/store';
+import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookmarkCheck, PanelRight, ScanLine } from 'lucide-react';
+import './site.css';
 
-type View = 'Overview' | 'Growth Audit' | 'Campaigns' | 'Clients' | 'Agent' | 'Memory' | 'Automations' | 'Settings';
-type FollowUp = { id: string; runAt: string; status: 'scheduled' | 'completed'; description: string; result?: string };
-type ResearchItem = ExtensionReceipt;
-type WorkspaceData = { audits: AuditResult[]; research: ResearchItem[]; followups: FollowUp[]; privacy: PrivacyMode; updatedAt?: string };
+const source = 'https://github.com/AmirmLotfy/roaclaw-growth-os';
+const extension = '/roaclaw-extension.zip';
 
-const initial: WorkspaceData = { audits: [], research: [], followups: [], privacy: 'hybrid' };
-const navigation = [
-  { name: 'Overview', icon: LayoutDashboard }, { name: 'Growth Audit', icon: ScanLine },
-  { name: 'Campaigns', icon: Activity }, { name: 'Clients', icon: Users },
-  { name: 'Agent', icon: ListChecks }, { name: 'Memory', icon: Bookmark },
-  { name: 'Automations', icon: CalendarClock }, { name: 'Settings', icon: ShieldCheck },
-] as const;
+export const metadata: Metadata = {
+  title: 'ROACLAW | Check the ad against the page',
+  description: 'Find the gap between your campaign and its landing page. Inspect the offer, verify tracking, and approve the exact follow-up in Chrome.',
+};
 
-const runLabel = { local: 'Device only', hybrid: 'Prefer device', cloud: 'Cloud only' };
-const maximum = 30;
-const initials = { 'sable-stem': 'SS', 'northline-retail': 'NR', 'morrow-dental': 'MD' } as Record<string, string>;
-
-function friendly(error: unknown) {
-  if (error instanceof Error && 'code' in error) {
-    if (error.code === 'api-not-enabled') return 'Chrome’s local model is unavailable. Device-only mode kept the page on this device.';
-    if (error.code === 'permission-denied') return 'Firebase rejected access to this workspace. Reopen the demo session and try again.';
-    return 'The request failed (' + String(error.code).slice(0, 70) + '). Try again.';
-  }
-  return error instanceof Error ? error.message : 'The request could not be completed.';
+function SiteBrand() {
+  return <Link href="/" className="brand brand-home" aria-label="ROACLAW home">
+    <span className="brand-mark" aria-hidden="true"><b /><b /><b /></span><strong>ROACLAW</strong>
+  </Link>;
 }
 
-function dateTime(value: string, timezone: string) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: timezone }).format(new Date(value));
-}
-
-function workspaceMetrics(workspace: Workspace) {
-  const metrics = workspace.metricSnapshot;
-  const money = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: workspace.currency, maximumFractionDigits: 0 }).format(amount);
-  const items = [{ name: 'Spend', value: money(metrics.spend), detail: workspace.currency }];
-  if (metrics.purchases !== undefined) items.push({ name: 'Purchases', value: String(metrics.purchases), detail: 'Attributed orders' });
-  if (metrics.attributedRevenue !== undefined) {
-    items.push({ name: 'Revenue', value: money(metrics.attributedRevenue), detail: workspace.currency });
-    items.push({ name: 'Observed ROAS', value: (metrics.attributedRevenue / metrics.spend).toFixed(3) + '×', detail: workspace.objective ? 'Goal ' + workspace.objective.target + '×' : 'Revenue / spend' });
-  }
-  if (metrics.leads !== undefined) items.push({ name: 'Leads', value: String(metrics.leads), detail: 'Fixture records' });
-  if (metrics.bookings !== undefined) items.push({ name: 'Bookings', value: String(metrics.bookings), detail: 'Fixture records' });
-  return items;
-}
-
-export default function Page() {
-  const [user, setUser] = useState<User | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-  const [view, setView] = useState<View>('Growth Audit');
-  const [workspace, setWorkspace] = useState(workspaces[0]);
-  const [workspaceData, setWorkspaceData] = useState(initial);
-  const [ready, setReady] = useState(false);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [capture, setCapture] = useState<PageSnapshot | null>(null);
-  const [currentAudit, setCurrentAudit] = useState<AuditResult | null>(null);
-  const [bookmarkState, setBookmarkState] = useState<string>('unrequested');
-  const [showCapture, setShowCapture] = useState(false);
-  const [search, setSearch] = useState('');
-  const [timing, setTiming] = useState('tomorrow');
-  const [pair, setPair] = useState('unpaired');
-  const [mobileNav, setMobileNav] = useState(false);
-  const [command, setCommand] = useState('');
-  const [agentReply, setAgentReply] = useState('');
-  const dataRef = useRef(workspaceData);
-  const currentWorkspace = useRef(workspace.id);
-
-  useEffect(() => onAuthStateChanged(auth, (session) => {
-    setUser(session);
-    setAuthReady(true);
-  }), []);
-  useEffect(() => {
-    let cancelled = false;
-    currentWorkspace.current = workspace.id;
-    setCurrentAudit(null);
-    setCapture(null);
-    setShowCapture(false);
-    setBookmarkState('unrequested');
-    setPair('unpaired');
-    setReady(false);
-    setError(null);
-    setNotice(null);
-    setAgentReply('');
-    dataRef.current = initial;
-    setWorkspaceData(initial);
-    if (!user) return;
-    readWorkspace<WorkspaceData>(user.uid, workspace.id).then((stored) => {
-      if (!cancelled) {
-        dataRef.current = stored ?? initial;
-        setWorkspaceData(dataRef.current);
-        setCurrentAudit(dataRef.current.audits[0] ?? null);
-        setReady(true);
-      }
-    }).catch((problem: unknown) => { if (!cancelled) setError(friendly(problem)); });
-    return () => { cancelled = true; };
-  }, [user, workspace.id]);
-
-  async function doWork(label: string, task: () => Promise<void>) {
-    setBusy(label);
-    setError(null);
-    setNotice(null);
-    try { await task(); } catch (problem) { setError(friendly(problem)); } finally { setBusy(null); }
-  }
-
-  async function persist(patch: Partial<WorkspaceData>) {
-    if (!user || !ready) throw new Error('Open your demo workspace first.');
-    const current = { ...dataRef.current, ...patch, updatedAt: new Date().toISOString() };
-    await saveWorkspace(user.uid, workspace.id, current);
-    if (currentWorkspace.current === workspace.id) {
-      dataRef.current = current;
-      setWorkspaceData(current);
-    }
-  }
-
-  function setClient(id: string) {
-    const found = workspaces.find((entry) => entry.id === id);
-    if (found) setWorkspace(found);
-  }
-
-  function common() { return { workspaceId: workspace.id, sessionId: browserSession(workspace.id) }; }
-
-  function pairExtension() {
-    return doWork('Contacting the extension', async () => {
-      const response = await contactExtension({ type: 'ROACLAW_PAIR', ...common(), workspaceName: workspace.name });
-      setPair(response.status);
-      setNotice(response.status === 'paired'
-        ? 'This tab is paired with the Chrome extension.'
-        : 'Open the ROACLAW side panel, confirm this workspace, then check pairing again here.');
-    });
-  }
-
-  function getCapture() {
-    return doWork('Reading the approved capture', async () => {
-      const response = await contactExtension({ type: 'ROACLAW_CAPTURE', ...common() });
-      if (!response.capture) throw new Error('Use Capture current page in the Chrome side panel first.');
-      const { visiblePriceText, ...snapshot } = response.capture;
-      const location = new URL(snapshot.url);
-      setCapture({ ...snapshot, prices: visiblePriceText, isSynthetic: location.origin === window.location.origin && location.pathname === '/demo-store/' });
-      setCurrentAudit(null);
-      setBookmarkState('unrequested');
-      setNotice('Approved Chrome capture attached.');
-    });
-  }
-
-  function runAudit() {
-    return doWork('Inspecting page evidence', async () => {
-      const page = capture ?? fixtureSnapshot(workspace, window.location.origin);
-      if (!page.headings.length && !page.prices.length && !page.ctas.length) {
-        throw new Error('This workspace needs a page capture. Attach an approved Chrome capture or choose Sable & Stem.');
-      }
-      const privacy = workspaceData.privacy;
-      const extracted = await inspectPage(page, privacy);
-      let result = analyzeAudit(workspace, page, extracted.fields, extracted.source);
-      if (privacy !== 'local' && result.findings.length) {
-        setBusy('Reviewing findings in the cloud');
-        try {
-          const commentary = await reasonFromFindings(result.findings);
-          result = { ...result, commentary, reasoningSource: 'in_cloud' };
-        } catch {
-          setNotice('Page inspection finished. The cloud review was unavailable.');
-        }
-      }
-      setCurrentAudit(result);
-      setBookmarkState('unrequested');
-      if (page.isSynthetic) await persist({ audits: [result, ...dataRef.current.audits].slice(0, maximum) });
-    });
-  }
-
-  function sendBookmark() {
-    return doWork('Sending to Chrome for review', async () => {
-      if (!currentAudit?.proposal) throw new Error('Run an audit with a proposed destination first.');
-      const { id, title, url } = currentAudit.proposal;
-      const response = await contactExtension({ type: 'ROACLAW_PROPOSE_BOOKMARK', ...common(), proposal: { id, title, url } });
-      setBookmarkState(response.status);
-      setNotice('Review the bookmark destination in the Chrome side panel.');
-      if (response.receipt) await saveReceipt(response.receipt);
-    });
-  }
-
-  async function saveReceipt(receipt: ExtensionReceipt) {
-    if (receipt.workspaceId !== workspace.id || receipt.proposalId !== currentAudit?.proposal?.id) {
-      throw new Error('Chrome returned a receipt for a different workspace or request.');
-    }
-    if (!currentAudit?.page.isSynthetic) return;
-    if (!dataRef.current.research.some((item) => item.proposalId === receipt.proposalId)) {
-      await persist({ research: [receipt, ...dataRef.current.research].slice(0, maximum) });
-    }
-  }
-
-  function checkReceipt() {
-    return doWork('Checking Chrome’s receipt', async () => {
-      const proposalId = currentAudit?.proposal?.id;
-      if (!proposalId) return;
-      const response = await contactExtension({ type: 'ROACLAW_RECEIPT', ...common(), proposalId });
-      setBookmarkState(response.status);
-      if (response.receipt) {
-        await saveReceipt(response.receipt);
-        setNotice('Chrome saved and verified the bookmark in ' + response.receipt.folder + '.');
-      } else {
-        setNotice(response.status === 'declined' ? 'The bookmark was declined.' : 'Chrome has not returned a verified bookmark receipt.');
-      }
-    });
-  }
-
-  function schedule() {
-    return doWork('Saving the follow-up', async () => {
-      if (workspace.id !== 'sable-stem' || !currentAudit?.page.isSynthetic) throw new Error('Finish the Sable & Stem demo audit to schedule a fixture check.');
-      const when = new Date(Date.now() + (timing === 'minute' ? 60_000 : 24 * 60 * 60_000)).toISOString();
-      const followUp: FollowUp = { id: crypto.randomUUID(), runAt: when, status: 'scheduled', description: 'Recheck the Sable & Stem landing-page price' };
-      await persist({ followups: [followUp, ...dataRef.current.followups].slice(0, maximum) });
-      setNotice('Follow-up saved for ' + dateTime(when, workspace.timezone) + '.');
-    });
-  }
-
-  function runDueChecks() {
-    return doWork('Checking due follow-ups', async () => {
-      const due = dataRef.current.followups.filter((item) => item.status === 'scheduled' && Date.parse(item.runAt) <= Date.now());
-      if (!due.length) { setNotice('No follow-ups are due.'); return; }
-      const page = await fetch('/demo-store/', { cache: 'no-store' });
-      if (!page.ok) throw new Error('The demo storefront was unavailable. The checks are still scheduled.');
-      const document = new DOMParser().parseFromString(await page.text(), 'text/html');
-      const price = document.querySelector('.fixture-price')?.textContent?.trim();
-      if (!price) throw new Error('The storefront did not expose a price. The checks are still scheduled.');
-      const checkIds = new Set(due.map((item) => item.id));
-      await persist({ followups: dataRef.current.followups.map((item) => checkIds.has(item.id)
-        ? { ...item, status: 'completed' as const, result: 'The fixture storefront displays ' + price + '.' }
-        : item) });
-      setNotice(due.length + ' due ' + (due.length === 1 ? 'check completed.' : 'checks completed.'));
-    });
-  }
-
-  function reviewCommand(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!command.trim()) return;
-    const query = command.toLowerCase();
-    if (/(audit|offer|price|campaign|utm)/.test(query) && currentAudit) {
-      setAgentReply(currentAudit.findings.map((item) => item.title).join(' · ') || 'The current audit found no supported discrepancy.');
-    } else if (/(bookmark|research|saved)/.test(query)) {
-      const item = dataRef.current.research[0];
-      setAgentReply(item ? 'Latest verified bookmark: ' + item.title + ' · ' + item.folder : 'No bookmark receipts in this workspace.');
-    } else {
-      setAgentReply('Ask for findings from an audit, or for the latest verified bookmark in this workspace.');
-    }
-  }
-
-  const switchView = (selected: View) => { setView(selected); setMobileNav(false); setNotice(null); setError(null); };
-  const metrics = workspaceMetrics(workspace);
-  const receipt = workspaceData.research.find((entry) => entry.proposalId === currentAudit?.proposal?.id);
-  const recent = workspaceData.audits[0];
-  const priceComparison = currentAudit?.priceComparison;
-  const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: workspace.currency, maximumFractionDigits: 2 });
-  const bundledPageTitle = workspace.selectedProductPage?.title ?? (workspace.landingPage ? 'Booking page fixture' : null);
-  const activePageTitle = capture?.title ?? bundledPageTitle ?? 'No page attached';
-  const pageAttached = Boolean(capture || bundledPageTitle);
-
-  return (
-    <div className="workbench">
-      <a className="skip-link" href="#main">Skip to main content</a>
-      <aside className={'sidebar' + (mobileNav ? ' expanded' : '')} aria-label="Workspace navigation">
-        <div className="brand"><i className="brand-mark" aria-hidden="true"><b /><b /><b /></i><strong>ROACLAW</strong></div>
-        <button className="mobile-toggle button" onClick={() => setMobileNav(!mobileNav)} aria-expanded={mobileNav}>{mobileNav ? 'Close menu' : 'Menu'}</button>
-        <div className="sidebar-body">
-          <label className="workspace-select">
-            <span className="avatar">{initials[workspace.id]}</span>
-            <span><small>Workspace</small><strong>{workspace.name}</strong></span>
-            <ChevronDown size={15} aria-hidden="true" />
-            <select aria-label="Workspace" value={workspace.id} disabled={Boolean(busy)} onChange={(event) => setClient(event.target.value)}>
-              {workspaces.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
-            </select>
-          </label>
-          <nav>
-            <ul>{navigation.map(({ name, icon: Icon }) => <li key={name}>
-              <button className={view === name ? 'nav-item active' : 'nav-item'} aria-current={view === name ? 'page' : undefined} onClick={() => switchView(name)}>
-                <Icon size={18} strokeWidth={1.65} aria-hidden="true" />{name}
-              </button>
-            </li>)}</ul>
-          </nav>
-          <div className="sidebar-foot"><span className="dot" /><div><strong>Demo data</strong><small>No live ad account</small></div></div>
-        </div>
-      </aside>
-      <div className="canvas">
-        <header className="topbar">
-          <div className="breadcrumb"><span>{workspace.name}</span><span aria-hidden="true">/</span><strong>{view}</strong></div>
-          {user && ready ? <span className="session-state" data-testid="demo-ready"><ShieldCheck size={15} /> Demo session active</span> : <span className="session-state"><ShieldCheck size={15} /> Demo workspace</span>}
-        </header>
-        <main className="main" id="main">
-          <div className="page-head">
-            <div><h1>{view}</h1>{view === 'Growth Audit' && <p>Check that the landing page matches the ad.</p>}</div>
-            {!user && <button className="button primary" disabled={!authReady || Boolean(busy)} onClick={() => void doWork('Opening demo workspace', async () => { setUser(await openDemoSession()); })}>Open demo <ArrowRight size={17} aria-hidden="true" /></button>}
-            {user && view === 'Overview' && <button className="button primary" onClick={() => switchView('Growth Audit')}>New audit <ArrowRight size={17} /></button>}
-          </div>
-          <div className="feedback" aria-live="polite">
-            {busy && <p role="status"><span className="pulse" />{busy}…</p>}
-            {error && <p className="error" role="alert">{error}</p>}
-            {notice && <p className="notice">{notice}</p>}
-          </div>
-          {view !== 'Settings' && view !== 'Clients' && <div className="data-band"><span><Database size={15} aria-hidden="true"/> Synthetic campaign data</span><span>{workspace.metricSnapshot.period.replace('/', ' – ')} <span aria-hidden="true">·</span> {workspace.timezone}</span></div>}
-          {(view === 'Overview' || view === 'Growth Audit') && <div className="metric-strip" aria-label="Workspace metrics">
-            {metrics.map((item) => <div className="metric" key={item.name}><span>{item.name}</span><strong>{item.value}</strong><small>{item.detail}</small></div>)}
-          </div>}
-          {view === 'Overview' && <section className="panel brief">
-            <h2>{workspace.name}</h2>
-            <ul className="simple-list">
-              <li><span>Audits saved to this demo workspace</span><strong>{workspaceData.audits.length}</strong></li>
-              <li><span>Verified Chrome bookmarks</span><strong>{workspaceData.research.length}</strong></li>
-              <li><span>Scheduled follow-ups</span><strong>{workspaceData.followups.filter((item) => item.status === 'scheduled').length}</strong></li>
-            </ul>
-            {recent && <button className="button" onClick={() => { setCurrentAudit(recent); switchView('Growth Audit'); }}>Open latest audit <ArrowUpRight size={16} /></button>}
-          </section>}
-
-          {view === 'Growth Audit' && <>
-            <section className="panel audit-input" aria-labelledby="input-title">
-              <div className="input-main">
-                <div className="input-detail">
-                  <h2 id="input-title">Page to inspect</h2>
-                  <div className="source-row">
-                    <span className="source-icon"><Globe size={18} aria-hidden="true" /></span>
-                    <div><strong>{activePageTitle}</strong>{pageAttached && <small>{capture ? 'Approved Chrome capture' : 'Demo page'}</small>}</div>
-                    {!capture && workspace.selectedProductPage && <Link href="/demo-store/" target="_blank" className="icon-link" aria-label="Open demo storefront in a new tab"><ArrowUpRight size={17} /></Link>}
-                  </div>
-                </div>
-                <div className="input-run">
-                  <div className="audit-controls">
-                    <label className="field"><span>Inference mode</span><select value={workspaceData.privacy} disabled={!ready || Boolean(busy)} onChange={(event) => { const privacy = event.target.value as PrivacyMode; void doWork('Saving inference mode', () => persist({ privacy })); }}>{Object.entries(runLabel).map(([mode, label]) => <option key={mode} value={mode}>{label}</option>)}</select></label>
-                    <button className="button primary" disabled={!ready || Boolean(busy) || !pageAttached} onClick={() => void runAudit()}>{currentAudit ? 'Run again' : 'Run Growth Audit'} <ArrowRight size={17} aria-hidden="true" /></button>
-                  </div>
-                  <p className="field-help">{workspaceData.privacy === 'local' ? 'Chrome reads the page on this device. Cloud review is off.' : 'Cloud inference can receive page headings, prices, and button labels.'}</p>
-                </div>
-              </div>
-              <div className="capture-box">
-                <button className="text-link" aria-expanded={showCapture} onClick={() => setShowCapture(!showCapture)}><Link2 size={16} aria-hidden="true" /> {showCapture ? 'Hide Chrome capture options' : 'Use an approved Chrome capture'}</button>
-                {showCapture && <div className="capture-actions">
-                  <p>Pair this tab. Open the page you want and approve the capture in the ROACLAW side panel.</p>
-                  <button className="button" disabled={!ready || Boolean(busy)} onClick={() => void pairExtension()}>{pair === 'pending' ? 'Check pairing' : pair === 'paired' ? 'Confirm pairing' : 'Pair Chrome extension'}</button>
-                  <button className="button" disabled={!ready || Boolean(busy)} onClick={() => void getCapture()}>Get approved capture</button>
-                  {capture && <button className="text-link" onClick={() => { setCapture(null); setCurrentAudit(null); }}>Use demo storefront</button>}
-                  <a className="text-link" href="/roaclaw-extension.zip" download>Download Chrome extension <ArrowDownRight size={15} aria-hidden="true" /></a>
-                </div>}
-              </div>
-            </section>
-
-            <div className="audit-grid">
-              <section className="panel evidence-panel" aria-labelledby="evidence-title">
-                <header className="section-bar">
-                  <h2 id="evidence-title">Audit findings</h2>
-                  {currentAudit && <div className="source-status">
-                    <span className="flag"><ScanLine size={13} aria-hidden="true" />Page · {currentAudit.pageSource === 'on_device' ? 'On device' : 'In cloud'}</span>
-                    {currentAudit.reasoningSource && <span className="flag"><Activity size={13} aria-hidden="true" />Review · In cloud</span>}
-                  </div>}
-                </header>
-                {currentAudit ? <>
-                  {priceComparison && <div className="offer-compare" aria-label="Verified price comparison">
-                    <div><span>Campaign price</span><strong>{currency.format(priceComparison.campaign)}</strong></div>
-                    <div><span>Landing page price</span><strong>{currency.format(priceComparison.page)}</strong></div>
-                  </div>}
-                  <ul className="findings">{currentAudit.findings.map((finding) => <li key={finding.id}>
-                    <span className={'severity ' + finding.severity}>{finding.type === 'unknown' ? 'Unverified' : finding.type === 'hypothesis' ? 'Hypothesis' : finding.severity + ' priority'}</span>
-                    <div><h3>{finding.title}</h3><p>{finding.explanation}</p><blockquote>{finding.evidence}</blockquote></div>
-                  </li>)}</ul>
-                  {!currentAudit.findings.length && <p className="empty-state">The page evidence supports no discrepancies.</p>}
-                  {currentAudit.commentary && <div className="interpretation"><strong>Cloud review</strong><p>{currentAudit.commentary}</p></div>}
-                </> : <div className="empty-state"><ScanLine size={26} strokeWidth={1.5} aria-hidden="true" /><p>{user ? 'Run the audit to check price, tracking, and campaign performance.' : 'Open a demo session to run your first audit.'}</p></div>}
-              </section>
-              <aside className="audit-rail" aria-label="Bookmark approval and audit history">
-                <section className="panel action-panel">
-                  <header className="section-bar"><h2>Chrome bookmark</h2><ClipboardList size={18} aria-hidden="true" /></header>
-                  {currentAudit?.proposal ? <>
-                    <h3>{receipt ? 'Bookmark verified' : 'Save a tagged URL'}</h3>
-                    <p>{receipt ? 'Chrome confirmed the saved title and destination.' : 'Check the destination in the side panel before saving it.'}</p>
-                    <dl className="diff">
-                      <dt>Current destination</dt><dd>{currentAudit.proposal.before}</dd>
-                      <dt>With campaign tag</dt><dd>{currentAudit.proposal.url}</dd>
-                    </dl>
-                    {receipt ? <p className="receipt"><Check size={16} aria-hidden="true" /> {receipt.folder} · {dateTime(receipt.verifiedAt, workspace.timezone)}</p> : <>
-                      {pair !== 'paired' && !showCapture && <button className="button" disabled={Boolean(busy)} onClick={() => void pairExtension()}>{pair === 'pending' ? 'Check pairing' : 'Pair Chrome extension'}</button>}
-                      <div className="rail-actions"><button className="button primary" disabled={Boolean(busy) || pair !== 'paired'} onClick={() => void sendBookmark()}>Send for Chrome approval</button>
-                        {bookmarkState !== 'unrequested' && <button className="button" disabled={Boolean(busy)} onClick={() => void checkReceipt()}>Check receipt</button>}</div>
-                    </>}
-                  </> : <p className="action-empty">When a campaign tag is missing, the audit prepares a link you can review and bookmark.</p>}
-                </section>
-                <section className="panel log-panel">
-                  <header className="section-bar"><h2>Audit history</h2><Activity size={18} aria-hidden="true" /></header>
-                  {!workspaceData.audits.length ? <p className="action-empty">No saved audits yet.</p> : <ul>
-                    {workspaceData.audits.slice(0, 3).map((audit) => <li key={audit.id}><button className="text-link" onClick={() => setCurrentAudit(audit)}>{audit.page.title}<ArrowUpRight size={14} aria-hidden="true" /></button><small>{dateTime(audit.createdAt, workspace.timezone)}</small></li>)}
-                  </ul>}
-                </section>
-              </aside>
-            </div>
-          </>}
-
-          {view === 'Campaigns' && <section className="panel table-panel"><h2>Campaign record</h2>
-            {workspace.campaign ? <dl className="detail-list">
-              <div><dt>Campaign</dt><dd>{workspace.campaign.title}</dd></div>
-              <div><dt>Advertised product</dt><dd>{workspace.campaign.advertisedProduct}</dd></div>
-              <div><dt>Advertised price</dt><dd>${workspace.campaign.advertisedPrice}</dd></div>
-              <div><dt>Destination</dt><dd><Link className="text-link" href={workspace.campaign.destination}>{workspace.campaign.destination} <ArrowUpRight size={15} /></Link></dd></div>
-            </dl> : <p>This workspace has metric fixtures only. Choose Sable &amp; Stem to inspect the demo campaign.</p>}
-          </section>}
-          {view === 'Clients' && <section className="panel table-panel"><h2>Demo clients</h2><ul className="simple-list">
-            {workspaces.map((entry) => <li key={entry.id}><span>{entry.name}<small> {entry.category.replace('_', ' ')}</small></span><button className="button" disabled={Boolean(busy) || workspace.id === entry.id} onClick={() => setClient(entry.id)}>{workspace.id === entry.id ? 'Current workspace' : 'Open workspace'}</button></li>)}
-          </ul></section>}
-          {view === 'Agent' && <section className="panel table-panel">
-            <h2>Look up a workspace record</h2><p>Find the current audit findings or the latest verified bookmark.</p>
-            <form className="command-form" onSubmit={reviewCommand}><label className="field grow"><span>Question</span><input value={command} onChange={(event) => setCommand(event.target.value)} required maxLength={180} placeholder="What did the latest audit find?" /></label><button className="button primary" type="submit">Find in workspace</button></form>
-            {agentReply && <p className="interpretation" aria-live="polite">{agentReply}</p>}
-          </section>}
-          {view === 'Memory' && <section className="panel table-panel">
-            <h2>Verified research bookmarks</h2><label className="field"><span>Search titles or URLs</span><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
-            <ul className="simple-list">{workspaceData.research.filter((entry) => (entry.title + ' ' + entry.url).toLowerCase().includes(search.toLowerCase())).map((item) => <li key={item.proposalId}><a className="text-link" href={item.url} target="_blank" rel="noreferrer">{item.title} <ArrowUpRight size={15} /></a><small>{dateTime(item.verifiedAt, workspace.timezone)}</small></li>)}</ul>
-            {!workspaceData.research.length && <p>No Chrome bookmarks have been verified for this workspace.</p>}
-            {Boolean(workspaceData.research.length) && !workspaceData.research.some((entry) => (entry.title + ' ' + entry.url).toLowerCase().includes(search.toLowerCase())) && <p>No bookmarks match your search.</p>}
-          </section>}
-          {view === 'Automations' && <section className="panel table-panel">
-            <h2>Follow-up checks</h2><p>Set a time to recheck the storefront price. Open this page when the check is due and run it here.</p>
-            <div className="command-form"><label className="field"><span>Schedule</span><select value={timing} onChange={(event) => setTiming(event.target.value)}><option value="tomorrow">In 24 hours</option><option value="minute">In one minute</option></select></label>
-              <button className="button primary" disabled={!ready || !currentAudit || workspace.id !== 'sable-stem' || Boolean(busy)} onClick={() => void schedule()}>Schedule follow-up</button>
-              <button className="button" disabled={!ready || Boolean(busy)} onClick={() => void runDueChecks()}>Run due checks</button>
-            </div>
-            <ul className="simple-list">{workspaceData.followups.map((item) => <li key={item.id}><div><strong>{item.description}</strong><small>{dateTime(item.runAt, workspace.timezone)}</small>{item.result && <small>{item.result}</small>}</div><span className="flag ink">{item.status}</span></li>)}</ul>
-            {!workspaceData.followups.length && <p>No follow-ups are scheduled for this workspace.</p>}
-          </section>}
-          {view === 'Settings' && <section className="panel table-panel">
-            <header className="section-bar"><h2>Page capture and cloud access</h2><LockKeyhole size={18} aria-hidden="true" /></header>
-            <p>Device-only mode keeps inference local. Synthetic audits and verified demo receipts are saved to your Firebase workspace. Captures outside the fixture stay in the current tab.</p>
-            <button className="button" onClick={() => switchView('Growth Audit')}>Manage inference mode in Growth Audit</button>
-            {user && <button className="button quiet" disabled={Boolean(busy)} onClick={() => void doWork('Closing demo session', () => signOut(auth))}><X size={16} /> Close demo session</button>}
-          </section>}
-        </main>
+export default function Site() {
+  return <div className="site">
+    <a href="#product" className="skip-link">Skip to content</a>
+    <header className="site-header">
+      <div className="site-wrap site-nav">
+        <SiteBrand />
+        <nav aria-label="Product website"><ul>
+          <li><a href="#workflow">How it works</a></li>
+          <li><a href="#chrome">Chrome extension</a></li>
+          <li><a href="#privacy">Privacy</a></li>
+        </ul></nav>
+        <Link href="/app/" className="button site-header-cta">Open app <ArrowUpRight size={17} aria-hidden="true" /></Link>
       </div>
-    </div>
-  );
+    </header>
+
+    <main id="product">
+      <section className="site-hero">
+        <div className="site-wrap hero-layout">
+          <div className="hero-copy">
+            <h1>Does the landing page match the ad?</h1>
+            <p>Compare the advertised offer, landing page, and tracking in one audit. See the evidence before you change anything.</p>
+            <div className="site-actions">
+              <Link href="/app/" className="button primary">Open Growth Audit <ArrowRight size={17} aria-hidden="true" /></Link>
+              <a href="#workflow" className="site-link">See how it works</a>
+            </div>
+          </div>
+          <figure className="hero-demo">
+            <Image src="/site/growth-audit.webp" width={1260} height={809}
+              alt="ROACLAW Growth Audit showing a $99 campaign price, a $119 page price, and a tagged Chrome bookmark to review"
+              sizes="(max-width: 880px) 95vw, 60vw" unoptimized priority />
+            <figcaption>Growth Audit run on the Sable &amp; Stem demo</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section className="site-wrap site-section workflow-section" id="workflow" aria-labelledby="workflow-heading">
+        <div className="site-section-title">
+          <h2 id="workflow-heading">Follow the evidence</h2>
+          <p>Start with the demo campaign or attach a page you’ve approved in Chrome.</p>
+        </div>
+        <ol className="workflow-list">
+          <li>
+            <ScanLine size={24} aria-hidden="true" />
+            <h3>Inspect the page</h3>
+            <p>Capture visible headings, prices, and button labels. Choose where Firebase AI Logic runs the inspection.</p>
+          </li>
+          <li>
+            <ArrowUpRight size={24} aria-hidden="true" />
+            <h3>See what changed</h3>
+            <p>Check the landing page against the campaign price and destination. Review the source under each finding.</p>
+          </li>
+          <li>
+            <BookmarkCheck size={24} aria-hidden="true" />
+            <h3>Keep a verified link</h3>
+            <p>Review the proposed tracking URL in Chrome. The dashboard records the bookmark after Chrome confirms the saved destination.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section className="site-chrome" id="chrome" aria-labelledby="chrome-heading">
+        <div className="site-wrap chrome-layout">
+          <div className="chrome-copy">
+            <h2 id="chrome-heading">The audit follows you into Chrome.</h2>
+            <p>Capture a page from the ROACLAW side panel. Approve the exact bookmark destination and find it again with local search.</p>
+            <ol className="install-steps">
+              <li>Download and unzip the extension.</li>
+              <li>Open <code>chrome://extensions</code>, turn on <strong>Developer mode</strong>, and choose <strong>Load unpacked</strong>.</li>
+              <li>Open Growth Audit and choose <strong>Use an approved Chrome capture</strong> to pair.</li>
+            </ol>
+            <a className="button primary" href={extension} download><ArrowDownToLine size={17} aria-hidden="true" /> Download extension ZIP</a>
+          </div>
+          <figure className="chrome-demo">
+            <div className="chrome-demo-bar"><PanelRight size={16} aria-hidden="true" /> Chrome side panel</div>
+            <Image src="/site/chrome-bookmark.webp" width={540} height={1148}
+              alt="Chrome side panel after saving the exact campaign URL to Other Bookmarks and verifying it in Chrome"
+              sizes="(max-width: 700px) 75vw, 320px" unoptimized />
+          </figure>
+        </div>
+      </section>
+
+      <section className="site-wrap site-section privacy-layout" id="privacy" aria-labelledby="privacy-heading">
+        <div className="site-section-title"><h2 id="privacy-heading">Choose where page analysis runs.</h2>
+          <p>Each audit shows what Firebase reported for page analysis and cloud review.</p></div>
+        <dl className="privacy-list">
+          <div><dt>Device only</dt><dd>Gemini Nano 4 on compatible Chrome inspects page fields on this device. Cloud review is off.</dd></div>
+          <div><dt>Prefer device</dt><dd>Start on Chrome when the local model is ready. This mode allows cloud review and a cloud fallback.</dd></div>
+          <div><dt>Cloud only</dt><dd>Firebase AI Logic sends the selected fields to Gemini for extraction and review. The hosted app requires App Check.</dd></div>
+        </dl>
+      </section>
+
+      <section className="site-wrap site-section site-questions" aria-labelledby="questions-heading">
+        <h2 id="questions-heading">Before you try it</h2>
+        <div className="site-faq">
+          <details><summary>Do I need an account?</summary><p>Choose <strong>Open demo</strong> in the app to start a private demo session. The sample campaign, prices, and performance figures are synthetic.</p></details>
+          <details><summary>What does the Chrome extension read?</summary><p>The extension reads the page you choose after you click <strong>Capture page evidence</strong>. You can review the captured title, headings, prices, and button labels in the side panel.</p></details>
+          <details><summary>What does the app store?</summary><p>The demo stores fixture audits, verified bookmark receipts, preferences, and follow-ups in your Firebase workspace. Captures of other pages stay in the open audit tab. Chrome stores approved bookmarks in your browser.</p></details>
+        </div>
+      </section>
+
+      <div className="site-final">
+        <div className="site-wrap site-final-inner">
+          <h2>Run the audit on a real page.</h2>
+          <Link href="/app/" className="button primary">Open Growth Audit <ArrowRight size={17} aria-hidden="true" /></Link>
+        </div>
+      </div>
+    </main>
+
+    <footer className="site-header site-footer">
+      <div className="site-wrap site-nav">
+        <SiteBrand />
+        <nav aria-label="Footer"><ul>
+          <li><Link href="/demo-store/">Demo storefront</Link></li>
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href={source}>Source code <ArrowUpRight size={15} aria-hidden="true" /></a></li>
+        </ul></nav>
+      </div>
+    </footer>
+  </div>;
 }

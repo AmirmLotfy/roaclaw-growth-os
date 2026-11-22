@@ -1,5 +1,7 @@
 {
   "origin": "https://roaclaw-growth-os-2026.web.app",
+  "appUrl": "https://roaclaw-growth-os-2026.web.app/app/",
+  "marketingEntryVerified": true,
   "passed": true,
   "appCheckResponses": [
     {
@@ -18,5 +20,11 @@
   "firestoreReload": true,
   "workspaceIsolationInView": true,
   "fixtureRecheck": true,
-  "mobileNoOverflow": true
+  "mobileNoOverflow": true,
+  "selectChevronInsetVerified": true,
+  "leadAuditVerified": true,
+  "retailAuditVerified": true,
+  "taggedNotesAfterReload": true,
+  "textLookupVerified": true,
+  "auditExportVerified": true
 }

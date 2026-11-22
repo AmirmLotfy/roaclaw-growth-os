@@ -22,8 +22,8 @@ describe("demo audit", () => {
       ctas: ["Add to cart"],
       isSynthetic: true,
     });
-    expect(fixtureSnapshot(dental, origin)).toMatchObject({ url: "", prices: [], ctas: ["Contact us"] });
-    expect(fixtureSnapshot(retail, origin)).toMatchObject({ url: "", prices: [], ctas: [] });
+    expect(fixtureSnapshot(dental, origin)).toMatchObject({ url: `${origin}/morrow-booking/`, prices: [], ctas: ["Contact us"] });
+    expect(fixtureSnapshot(retail, origin)).toMatchObject({ url: `${origin}/northline-offer/`, prices: ["$18"], ctas: ["Add to cart"] });
   });
 
   it("reports the original synthetic discrepancies and keeps inference provenance", () => {
@@ -110,6 +110,7 @@ describe("demo audit", () => {
     ]);
     expect(lead.proposal).toBeNull();
     expect(missing.findings).toEqual([]);
-    expect(blank.findings).toEqual([]);
+    expect(blank.findings).toMatchObject([{ id: "offer-unverified", type: "unknown" }]);
+    expect(analyzeAudit(retail, fixtureSnapshot(retail, origin), { priceUsd: 18, cta: "Add to cart" }, "on_device").findings).toEqual([]);
   });
 });

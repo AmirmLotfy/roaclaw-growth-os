@@ -15,10 +15,11 @@ service cloud.firestore {
 
     function isWorkspaceState(data) {
       return data.keys().hasAll(['audits', 'research', 'followups', 'privacy'])
-        && data.keys().hasOnly(['audits', 'research', 'followups', 'privacy', 'updatedAt'])
+        && data.keys().hasOnly(['audits', 'research', 'followups', 'privacy', 'updatedAt', 'notes'])
         && data.audits is list && data.audits.size() <= 30
         && data.research is list && data.research.size() <= 30
         && data.followups is list && data.followups.size() <= 30
+        && (!('notes' in data) || (data.notes is list && data.notes.size() <= 30))
         && data.privacy in ['local', 'hybrid', 'cloud']
         && (!('updatedAt' in data) || (
           data.updatedAt is string

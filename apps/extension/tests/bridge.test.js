@@ -26,7 +26,7 @@ test('manifest keeps the development ID and grants no blanket host access', asyn
   const id = [...keyDigest].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join('');
   assert.equal(id, extensionId);
   assert.deepEqual(manifest.permissions, ['activeTab', 'scripting', 'sidePanel', 'storage']);
-  assert.deepEqual(manifest.optional_permissions, ['bookmarks']);
+  assert.deepEqual(manifest.optional_permissions, ['bookmarks', 'history']);
   assert.deepEqual(manifest.externally_connectable.matches, [...ORIGINS].map((url) => `${url}/*`));
   assert.equal(manifest.host_permissions, undefined);
   assert.equal(manifest.incognito, 'not_allowed');
@@ -140,6 +140,11 @@ test('requires local pairing and capture, isolates origin, workspace, tab and se
   assert.deepEqual(pulled.capture.visiblePriceText, ['$119']);
   await internal('PANEL_CLEAR_CAPTURE', { pairId });
   assert.equal((await external(capture)).status, 'empty');
+  const disconnect = { ...capture, type: 'ROACLAW_DISCONNECT' };
+  await external({ ...disconnect, sessionId: 'other-session-123456' });
+  assert.equal((await external(capture)).status, 'empty');
+  assert.equal((await external(disconnect)).status, 'disconnected');
+  assert.equal((await external(capture)).code, 'NOT_PAIRED');
 });
 
 test('bookmark requires two panel clicks, optional permission, verified readback and idempotency', async () => {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,7 +11,7 @@ const extensionPath = fileURLToPath(new URL('../', import.meta.url));
 const panelUrl = `chrome-extension://${extensionId}/panel.html`;
 const baseArg = process.argv[2];
 if (!baseArg || baseArg === '--help') {
-  console.log('Usage: node apps/extension/test/smoke.mjs <app URL> [--evidence-dir <path>] [--web-flow]');
+  console.log('Usage: node apps/extension/test/smoke.mjs <app URL> [--evidence-dir <path>] [--web-flow] [--history] [--pregrant-test-permissions]');
   process.exit(baseArg ? 0 : 1);
 }
 const base = new URL(baseArg);
@@ -19,6 +19,8 @@ assert.ok(ORIGINS.has(base.origin), 'Use a ROACLAW companion origin from the man
 const evidenceFlag = process.argv.indexOf('--evidence-dir');
 const evidence = evidenceFlag < 0 ? null : resolve(process.argv[evidenceFlag + 1]);
 const useWebFlow = process.argv.includes('--web-flow');
+const exerciseHistory = process.argv.includes('--history');
+const pregranted = process.argv.includes('--pregrant-test-permissions');
 const fixture = new URL('/demo-store/', base).href;
 const tagged = `${fixture}?utm_source=meta&utm_medium=paid_social&utm_campaign=weekend-everyday-essentials`;
 const id = { workspaceId: 'sable-stem', sessionId: crypto.randomUUID() };
@@ -168,12 +170,17 @@ function waitWeb(page, text, timeout) {
 
 async function webPair(page) {
   await page.getByRole('heading', { name: 'Growth Audit', exact: true }).waitFor();
-  if (await webButton(page, 'Open demo').isVisible()) await clickWeb(page, 'Open demo');
+  if (await webButton(page, 'Open demo').isVisible()) {
+    await clickWeb(page, 'Open demo');
+    await clickWeb(page, 'Open ecommerce demo');
+  }
   await waitWeb(page, 'Demo session active');
-  await clickWeb(page, 'Use an approved Chrome capture');
-  await clickWeb(page, 'Pair Chrome extension');
+  if (await webButton(page, 'Use an approved Chrome capture').isVisible()) await clickWeb(page, 'Use an approved Chrome capture');
+  const pairButton = page.locator('.capture-actions').getByRole('button', { name: 'Pair Chrome extension', exact: true });
+  await webCondition(page, 'enabled capture pairing', async () => await pairButton.isVisible() && await pairButton.isEnabled());
+  await pairButton.click();
   await webCondition(page, 'pending web pairing', () => webButton(page, 'Check pairing').isVisible());
-  const sessionId = await page.evaluate(() => sessionStorage.getItem('roaclaw.session.sable-stem'));
+  const sessionId = await page.evaluate(() => sessionStorage.getItem(Object.keys(sessionStorage).find((key) => key.startsWith('roaclaw.session.') && key.endsWith('.sable-stem'))));
   assert.ok(sessionId, 'Growth Audit did not create its companion session.');
   return { workspaceId: 'sable-stem', sessionId };
 }
@@ -240,7 +247,7 @@ async function checkWebMemory(source, receipt) {
 }
 
 async function searchSaved(panel) {
-  await panel.click('#research summary');
+  await panel.click('#research details:first-child summary');
   const query = useWebFlow ? 'demo-store' : 'ROACLAW smoke';
   await panel.evaluate((text) => { document.querySelector('#search-text').value = text; }, query);
   await panel.click('#search-form button');
@@ -253,15 +260,27 @@ let context;
 let source;
 let stage = 'launch';
 try {
+  let unpacked = extensionPath;
+  if (pregranted) {
+    unpacked = join(profile, 'unpacked-test-copy');
+    await cp(extensionPath, unpacked, { recursive: true });
+    const path = join(unpacked, 'manifest.json');
+    const manifest = JSON.parse(await readFile(path, 'utf8'));
+    manifest.permissions.push('bookmarks');
+    if (exerciseHistory) manifest.permissions.push('history');
+    manifest.optional_permissions = manifest.optional_permissions.filter((permission) => !manifest.permissions.includes(permission));
+    await writeFile(path, JSON.stringify(manifest));
+  }
   context = await chromium.launchPersistentContext(profile, {
     channel: 'chrome', headless: false, viewport: null, ignoreDefaultArgs: ['--disable-extensions'],
     args: ['--enable-unsafe-extension-debugging', '--window-size=1280,900'],
   });
   const devtools = await context.browser().newBrowserCDPSession();
   const version = await devtools.send('Browser.getVersion');
-  const { id: loaded } = await devtools.send('Extensions.loadUnpacked', { path: extensionPath });
+  const { id: loaded } = await devtools.send('Extensions.loadUnpacked', { path: unpacked });
   assert.equal(loaded, extensionId);
   source = context.pages()[0] ?? await context.newPage();
+  if (useWebFlow) await source.setViewportSize({ width: 1440, height: 920 });
   await ensureSource(source);
   stage = 'pair';
   const workspaceName = 'Sable & Stem';
@@ -326,6 +345,17 @@ try {
   await searchSaved(panel);
   await panel.screenshot('04-bookmark-search.png');
 
+  if (exerciseHistory) {
+    stage = 'recent Chrome history';
+    await panel.click('#history-search summary');
+    await panel.evaluate(() => { document.querySelector('#history-text').value = 'demo-store'; });
+    await panel.click('#history-form button');
+    await hasText(panel, '#history-results', fixture, 90_000);
+    await panel.screenshot('08-history.png');
+    await panel.click('#clear-history');
+    await until('history results cleared', () => panel.evaluate(() => document.querySelector('#history-results').children.length === 0));
+  }
+
   stage = 'bookmark persistence';
   await source.reload({ waitUntil: 'domcontentloaded', timeout: 45_000 });
   for (const entry of receipts) {
@@ -336,6 +366,29 @@ try {
     stage = 'Memory receipt persistence after reload';
     await waitWeb(source, 'Demo session active');
     await checkWebMemory(source, receipts[0]);
+    stage = 'non-demo capture mode';
+    const outside = new URL('/morrow-booking/', base).href;
+    await landing.goto(outside, { waitUntil: 'domcontentloaded' });
+    await triggerToolbar(landing, devtools, context);
+    await hasText(panel, '#page-url', outside);
+    await panel.click('#capture');
+    await hasText(panel, '#capture-url', outside);
+    await panel.click('#open-dashboard');
+    await clickWeb(source, 'Growth Audit');
+    await clickWeb(source, 'Use an approved Chrome capture');
+    await clickWeb(source, 'Get approved capture');
+    await waitWeb(source, 'Pages outside the demo use device-only analysis.');
+    const mode = source.getByLabel('Inference mode');
+    assert.equal(await mode.inputValue(), 'local');
+    assert.equal(await mode.isEnabled(), false);
+    stage = 'pairing revocation after sign-out';
+    await clickWeb(source, 'Settings');
+    await clickWeb(source, 'Close demo session');
+    await webCondition(source, 'signed-out demo', () => webButton(source, 'Open demo').isVisible());
+    assert.equal((await sendFromPage(source, scope, 'ROACLAW_CAPTURE')).code, 'NOT_PAIRED');
+    const newScope = await webPair(source);
+    assert.notEqual(newScope.sessionId, scope.sessionId);
+    assert.equal((await sendFromPage(source, newScope, 'ROACLAW_CAPTURE')).code, 'NOT_PAIRED');
   }
   await context.close();
   context = null;
@@ -343,8 +396,8 @@ try {
   function flatten(nodes) { return nodes.flatMap((node) => [node, ...flatten(node.children ?? [])]); }
   const entries = flatten(Object.values(saved.roots));
   for (const entry of receipts) assert.ok(entries.some(({ id, name, url }) => id === entry.bookmarkId && name === entry.title && url === entry.url));
-  const report = { browser: version.product, app: base.origin, extensionId, capture, receipts, canceledVerified: true, searchMatches: 2, persistedBookmarks: receipts.length, webUiPairAndCapture: useWebFlow,
-    ...(useWebFlow ? { webAudit: { inferenceSourceLabel: webInference, priceMismatchVerified: true, bookmarkReceiptVerified: true, memoryReceiptAfterReload: true } } : {}),
+  const report = { browser: version.product, app: base.origin, extensionId, capture, receipts, canceledVerified: true, searchMatches: 2, persistedBookmarks: receipts.length, webUiPairAndCapture: useWebFlow, historyVerified: exerciseHistory, permissionPrompt: pregranted ? 'pregranted in a disposable test manifest' : 'native Chrome',
+    ...(useWebFlow ? { webAudit: { inferenceSourceLabel: webInference, priceMismatchVerified: true, bookmarkReceiptVerified: true, memoryReceiptAfterReload: true, externalCaptureDeviceOnly: true, sessionRotatedAfterSignOut: true } } : {}),
   };
   if (evidence) await writeFile(join(evidence, 'runtime.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));

@@ -1,0 +1,106 @@
+[
+  {
+    "label": "website-desktop",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 25,
+    "violations": []
+  },
+  {
+    "label": "demo-setup",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 24,
+    "violations": []
+  },
+  {
+    "label": "audit-laptop",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 24,
+    "violations": []
+  },
+  {
+    "label": "overview",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 23,
+    "violations": []
+  },
+  {
+    "label": "campaigns",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 25,
+    "violations": []
+  },
+  {
+    "label": "clients",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 23,
+    "violations": []
+  },
+  {
+    "label": "agent",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 24,
+    "violations": []
+  },
+  {
+    "label": "memory",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 25,
+    "violations": []
+  },
+  {
+    "label": "automations",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 23,
+    "violations": []
+  },
+  {
+    "label": "settings",
+    "width": 1280,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 23,
+    "violations": []
+  },
+  {
+    "label": "extension-360",
+    "width": 360,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 19,
+    "violations": []
+  },
+  {
+    "label": "extension-420",
+    "width": 420,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 19,
+    "violations": []
+  },
+  {
+    "label": "audit-mobile",
+    "width": 390,
+    "noHorizontalOverflow": true,
+    "reduceMotion": true,
+    "rulesPassed": 22,
+    "violations": []
+  }
+]

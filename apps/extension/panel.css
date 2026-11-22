@@ -108,3 +108,9 @@ footer { color: var(--secondary); font-size: 12px; padding-block: 11px 16px; }
   .masthead, main, footer { padding-inline: 11px; }
   .workspace, .section { padding-inline: 10px; }
 }
+
+
+.dashboard-link { margin-bottom: 10px; justify-self: start; }
+#research details + details { border-top: 1px solid var(--line, #cbd8e5); margin-top: 10px; padding-top: 10px; }
+#clear-history { margin-top: 8px; }
+.search-results time { color: #4c5b70; font-size: 11px; }

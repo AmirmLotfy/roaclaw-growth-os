@@ -22,7 +22,7 @@ export default function DemoStore() {
           <DemoCheckout />
         </div>
       </section>
-      <Link className="text-link" href="/">Return to ROACLAW</Link>
+      <Link className="text-link" href="/app/">Return to ROACLAW</Link>
     </main>
   );
 }

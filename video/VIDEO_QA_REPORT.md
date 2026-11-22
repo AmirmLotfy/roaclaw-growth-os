@@ -1,15 +1,25 @@
 # ROACLAW video QA
 
-**Waiting for footage of the redesigned interface.** The source project is in `apps/video/`. The pre-redesign footage and timing draft are in `.local/footage/`. The ten-cut timing draft is 46.67 seconds. The checks below describe that draft.
+The final **47.680-second** export uses the redesigned production interface at [ROACLAW Growth Audit](https://roaclaw-growth-os-2026.web.app). It shows Gemini Nano 4 on-device extraction and cloud review in the first 12 seconds. The bookmark and dashboard receipts come from the connected Chrome run.
 
-| Check | Status | Evidence |
+## Release files
+
+| Deliverable | Local path | Format |
 |---|---|---|
-| Hosted footage source | Pass | `roaclaw-web.webm` is VP9 WebM at 1440×920. Sampled source frames show the synthetic storefront, an actual `Page · On device` result, and an actual `Review · In cloud` result. |
-| Claims review | Pass at source | Captions cover the fixture price mismatch, missing campaign tag, ROAS gap, UTM diff, workspace switch, and follow-up scheduling. Chrome capture, bookmark readback, and the dashboard receipt use stills from the connected run. The dashboard still crops to the original verification banner. [Chrome capture](../qa/evidence/g3-web/02-captured-evidence.png), [Chrome receipt](../qa/evidence/g3-web/03-verified-bookmark.png), [dashboard receipt](../qa/evidence/g3-web/06-web-receipt.png) |
-| Edit and caption generation | Pass | Standalone type and syntax checks passed. Ingest verified all ten cuts and generated the English SRT. |
-| Redesigned video framing | Source updated | Remotion now uses the app’s navy, cool surfaces, blue signal, IBM Plex typography, and direct action captions. The redesigned film will be checked against the new recording. |
-| Render and artifact validation | On hold | Re-record the redesigned interface before rendering. The render checks H.264, 1920×1080, 30fps, AAC, at most 180 seconds, and a 1280×720 PNG. |
-| Visual samples and full playback | Pending | Inspect the rendered first frame and five sampled timestamps. Review the full video for accuracy, clipping, awkward cuts, legibility, timing, and audio. |
-| Narration and music | Pending | The composition accepts original, supplied narration. The recorded browser clip contains no audio. |
+| Master | `.local/video/ROACLAW_BuildHybridAI_2026_FINAL.mp4` | 1920×1080, H.264, 30 fps, 1,430 video frames, 5,094,623 bytes |
+| Thumbnail | `.local/video/ROACLAW_BuildHybridAI_2026_THUMBNAIL.png` | 1280×720 PNG |
+| English subtitles | `.local/video/ROACLAW_BuildHybridAI_2026_EN.srt` | 14 cues through 00:47.667. The same English captions are visible in the master. |
+| Edit | `.local/footage/edit-redesign.json` | Remotion source in `apps/video/`. Run `npm --prefix apps/video run render -- .local/footage/edit-redesign.json` from the repository root. |
 
-The screen recordings show synthetic business data. Include an optional segment only after checking the source recording for the corresponding proof. The follow-up caption describes scheduling. Use the Chrome completion caption only with a visible verified receipt.
+Audio is a silent 48 kHz stereo AAC track. Narration and music were unavailable for this export.
+
+## Checks
+
+| Check | Result | Evidence |
+|---|---|---|
+| Evidence and claims | Pass | The source footage shows the real fixture storefront, both Firebase inference labels, the three findings, the proposed UTM change, a completed fixture recheck, and the workspace switch. The connected stills show actual Chrome capture, bookmark readback, and the dashboard verification banner. [Hosted runtime](../qa/evidence/web/runtime.json), [Chrome capture](../qa/evidence/g3-web/02-captured-evidence.png), [Chrome receipt](../qa/evidence/g3-web/03-verified-bookmark.png), [dashboard receipt](../qa/evidence/g3-web/06-web-receipt.png) |
+| Format and duration | Pass | Remotion 4.0.545 rendered the video and thumbnail. ffprobe confirmed the final duration, resolution, frame rate, and AAC track. Local evidence in `.local/video/qa/probe.json`. |
+| Playback and visual review | Pass | FFmpeg decoded all 1,430 frames without a black interval. Reviewed the contact sheet across the full timeline, all ten footage cuts, and the first frame plus samples at 04.967, 13.100, 21.700, 33.300, and 43.567 seconds. Local evidence in `.local/video/qa/`. |
+| Color and thumbnail | Pass | Thumbnail pixels match cool canvas `#F4F7FB` and signal blue `#1853D8`. Encoded navy reads `#132742` against source `#132642`, within one channel level. The captured thumbnail shows the same redesigned interface. |
+
+A brief gray viewport edge appears near 00:08 while the captured browser resizes. The gray area stays outside the audit content and captions. The side-panel capture, bookmark result, and dashboard receipt are labeled QA stills.

@@ -1,5 +1,6 @@
+export const PRIMARY_ORIGIN = 'https://roaclaw-growth-os-2026.web.app';
 export const ORIGINS = new Set([
-  'https://roaclaw-growth-os-2026.web.app',
+  PRIMARY_ORIGIN,
   'https://roaclaw-growth-os-2026.firebaseapp.com',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
@@ -54,6 +55,7 @@ export function publicPageUrl(value) {
     if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return null;
     if (PRIVATE_HOST.test(url.hostname) || url.hostname === 'ads.google.com' || url.hostname === 'adsmanager.facebook.com') return null;
     const path = decodeURIComponent(url.pathname);
+    if (ORIGINS.has(url.origin) && /^\/app(?:\/|$)/.test(path)) return null;
     if (PRIVATE_PATH.test(path) || path.length > 420 || !cleanText(path, 420) || CONTACT.test(path)) return null;
     // Strip search parameters and fragments before the page address leaves the extension.
     return `${url.origin}${url.pathname}`;
@@ -94,6 +96,7 @@ export function parseExternal(message, origin) {
       const workspaceName = cleanText(message.workspaceName, 100);
       return workspaceName ? { ...scope, type: message.type, workspaceName } : null;
     }
+    case 'ROACLAW_DISCONNECT':
     case 'ROACLAW_CAPTURE':
       return { ...scope, type: message.type };
     case 'ROACLAW_PROPOSE_BOOKMARK': {

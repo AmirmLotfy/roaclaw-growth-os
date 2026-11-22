@@ -1,5 +1,5 @@
 import { signInAnonymously, type User } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, runTransaction } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
 export { appCheck, auth, db, firebaseApp } from './firebase';
@@ -32,7 +32,14 @@ export async function readWorkspace<T>(uid: string, workspaceId: string): Promis
   return snapshot.exists() ? snapshot.data() as T : null;
 }
 
-export async function saveWorkspace<T extends object>(uid: string, workspaceId: string, data: T): Promise<void> {
+export async function updateWorkspace<T extends object>(uid: string, workspaceId: string, update: (stored: T | null) => T): Promise<T> {
   requireSession(uid);
-  await setDoc(doc(db, 'organizations', uid, 'workspaces', workspaceId), data);
+  const reference = doc(db, 'organizations', uid, 'workspaces', workspaceId);
+  return runTransaction(db, async (transaction) => {
+    const snapshot = await transaction.get(reference);
+    requireSession(uid);
+    const next = update(snapshot.exists() ? snapshot.data() as T : null);
+    transaction.set(reference, next);
+    return next;
+  });
 }

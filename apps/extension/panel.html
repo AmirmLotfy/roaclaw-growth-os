@@ -20,6 +20,7 @@
         </div>
         <button id="disconnect" class="text-button" type="button" hidden>Disconnect</button>
       </section>
+      <button id="open-dashboard" type="button" class="dashboard-link">Open Growth Audit</button>
       <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
 
       <section id="pair-review" class="section approval" aria-labelledby="pair-heading" hidden>
@@ -89,6 +90,19 @@
             </div>
           </form>
           <ul id="search-results" class="search-results"></ul>
+        </details>
+        <details id="history-search">
+          <summary>Search recent history</summary>
+          <p>Search public page titles and addresses from the last 24 hours. Chrome asks for history access. Results stay in this panel.</p>
+          <form id="history-form">
+            <label for="history-text">Page title or URL</label>
+            <div class="search-control">
+              <input id="history-text" type="search" minlength="2" maxlength="80" required>
+              <button type="submit">Search history</button>
+            </div>
+          </form>
+          <button type="button" class="text-button" id="clear-history" hidden>Clear history results</button>
+          <ul id="history-results" class="search-results"></ul>
         </details>
       </section>
     </main>

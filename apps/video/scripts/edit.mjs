@@ -17,7 +17,7 @@ const srt = resolve(outputDir, "ROACLAW_BuildHybridAI_2026_EN.srt");
 const propsPath = resolve(outputDir, "edit-props.json");
 const required = ["offer", "device", "cloud", "findings"];
 const videoExt = [".mp4", ".webm"];
-const screenshotBeats = ["capture", "bookmark", "receipt"];
+const screenshotBeats = ["capture", "bookmark", "receipt", "history", "lead"];
 const audioExt = [".wav", ".mp3", ".m4a", ".aiff"];
 const focuses = ["center", "top", "bottom", "left", "right"];
 
@@ -77,8 +77,9 @@ function ingest(path) {
   assert(link.protocol === "https:" && !link.username && !link.password && !link.search && !link.hash && link.href.length < 130,
     "Use the public HTTPS demo URL without credentials, query parameters, or fragment.");
   assert(Array.isArray(data.segments), "Enter the verified footage slices in segments.");
-  assert(required.every((kind, index) => data.segments[index]?.kind === kind),
-    `The opening four segments must be ${required.join(", ")}.`);
+  const opening = data.segments[0]?.kind === "home" ? data.segments.slice(1) : data.segments;
+  assert(required.every((kind, index) => opening[index]?.kind === kind),
+    `The core opening order is ${required.join(", ")}, with an optional homepage before it.`);
 
   const seen = new Set();
   const probes = new Map();

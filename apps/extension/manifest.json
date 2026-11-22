@@ -13,7 +13,8 @@
     "storage"
   ],
   "optional_permissions": [
-    "bookmarks"
+    "bookmarks",
+    "history"
   ],
   "background": {
     "service_worker": "service-worker.js",

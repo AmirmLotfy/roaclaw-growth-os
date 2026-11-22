@@ -4,6 +4,21 @@ export const outroFrames = 120;
 export const maxFrames = 180 * fps;
 
 export const beats = {
+  home: {
+    label: "Product website",
+    title: "Open the Growth Audit",
+    caption: "Open a demo and choose ecommerce, lead generation, or an agency client.",
+  },
+  history: {
+    label: "Chrome companion · Recent history",
+    title: "Find a recently visited page",
+    caption: "With permission, the side panel searches recent public pages in Chrome.",
+  },
+  lead: {
+    label: "Morrow Dental · Lead generation demo",
+    title: "Check the appointment goal",
+    caption: "The booking audit marks the Contact us button as a hypothesis to review.",
+  },
   offer: {
     label: "Synthetic storefront",
     title: "Compare the campaign and page prices",
@@ -55,6 +70,6 @@ export const beats = {
   followup: {
     label: "Scheduled follow-up",
     title: "Schedule a price recheck",
-    caption: "The workspace schedules a recheck of the demo product price.",
+    caption: "Run a due follow-up to check what price the storefront shows now.",
   },
 };

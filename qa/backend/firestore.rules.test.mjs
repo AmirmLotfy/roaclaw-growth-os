@@ -65,7 +65,7 @@ test('Spark demo workspace rules enforce identity, supported paths, and state sh
       await expectStatus('PATCH', owned, owner, 200, workspaceState());
       await expectStatus('GET', owned, owner, 200);
     }
-    const next = { ...workspaceState('hybrid'), updatedAt: string('2026-11-22T12:00:00.000Z') };
+    const next = { ...workspaceState('hybrid'), notes: list(), updatedAt: string('2026-11-22T12:00:00.000Z') };
     const written = await expectStatus('PATCH', path, owner, 200, next);
     assert.deepEqual(written.fields.privacy, next.privacy);
   });
@@ -114,6 +114,8 @@ test('Spark demo workspace rules enforce identity, supported paths, and state sh
       { ...workspaceState(), audits: list(Array(31).fill(audit)) },
       { ...workspaceState(), research: list(Array(31).fill(audit)) },
       { ...workspaceState(), followups: list(Array(31).fill(audit)) },
+      { ...workspaceState(), notes: list(Array(31).fill(audit)) },
+      { ...workspaceState(), notes: string('wrong field type') },
     ];
     const fresh = await anonymousSession();
     for (const fields of invalid) {

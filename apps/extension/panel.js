@@ -1,3 +1,4 @@
+import { searchRecentHistory } from './history.js';
 import { ERRORS, publicPageUrl } from './protocol.js';
 
 const $ = (id) => document.getElementById(id);
@@ -8,7 +9,8 @@ const actionCopy = {
   pending: ['Awaiting review', 'Check the address and folder before continuing.'],
   approved: ['Ready to save', 'Chrome may ask for bookmark access before saving.'],
   executed: ['Verified in Chrome', ''],
-  declined: ['Closed', 'The request ended before saving.'],
+  declined: ['Declined', 'The bookmark request was declined.'],
+  expired: ['Expired', 'The request expired before it was saved.'],
   verification_failed: ['Could not verify', 'Check Other bookmarks in Chrome before requesting another save.'],
 };
 
@@ -17,6 +19,7 @@ let activePage = null;
 let state = {};
 let busy = false;
 let refreshIndex = 0;
+let historyRequest;
 
 function notice(message, error = false) {
   $('notice').classList.toggle('error', error);
@@ -35,6 +38,7 @@ function detail(label, value) {
 function setButtons() {
   for (const button of document.querySelectorAll('main button')) button.disabled = busy;
   $('capture').disabled = busy || !state.binding || !activePage?.url;
+  $('clear-history').disabled = false;
 }
 
 function renderCapture(capture) {
@@ -124,6 +128,7 @@ async function refresh() {
     if (state.binding?.reviewId !== updated.binding?.reviewId) {
       $('search-results').replaceChildren();
       $('search-form').reset();
+      resetHistory();
     }
     state = updated;
     if (tab?.url && !tab.incognito) {
@@ -214,6 +219,55 @@ async function searchBookmarks(event) {
   }
 }
 
+function resetHistory() {
+  historyRequest?.abort();
+  $('history-form').reset();
+  $('history-results').replaceChildren();
+  show('clear-history', false);
+}
+
+async function searchHistory(event) {
+  event.preventDefault();
+  const query = $('history-text').value.trim();
+  const pairId = state.binding?.reviewId;
+  if (!pairId || busy) return;
+  historyRequest?.abort();
+  const controller = new AbortController();
+  historyRequest = controller;
+  busy = true;
+  setButtons();
+  notice('');
+  $('history-results').replaceChildren();
+  show('clear-history', true);
+  try {
+    const result = await searchRecentHistory(chrome, query, { signal: controller.signal });
+    if (controller.signal.aborted || state.binding?.reviewId !== pairId) return;
+    if (result.status !== 'ready') {
+      if (result.status === 'denied') notice('Chrome history access was declined.', true);
+      else if (result.status === 'invalid') notice('Enter 2 to 80 characters.', true);
+      else if (result.status === 'error') notice('Chrome could not search recent history.', true);
+      return;
+    }
+    for (const match of result.entries) {
+      const row = document.createElement('li');
+      const title = document.createElement('strong');
+      const address = document.createElement('span');
+      const when = document.createElement('time');
+      title.textContent = match.title;
+      address.textContent = match.url;
+      address.className = 'technical';
+      when.dateTime = new Date(match.lastVisitedAt).toISOString();
+      when.textContent = new Date(match.lastVisitedAt).toLocaleString();
+      row.append(title, address, when);
+      $('history-results').append(row);
+    }
+    if (!result.entries.length) notice('No matching public pages in the last 24 hours.');
+  } finally {
+    busy = false;
+    setButtons();
+  }
+}
+
 async function start() {
   try {
     ({ id: windowId } = await chrome.windows.getCurrent());
@@ -221,6 +275,9 @@ async function start() {
     notice(ERRORS.INTERNAL, true);
     return;
   }
+  $('open-dashboard').addEventListener('click', () => void run({ type: 'PANEL_OPEN_DASHBOARD' }));
+  $('history-form').addEventListener('submit', searchHistory);
+  $('clear-history').addEventListener('click', () => { resetHistory(); notice('History results cleared.'); });
   $('confirm-pair').addEventListener('click', () => pairAction('PANEL_CONFIRM_PAIR', 'Workspace connected.'));
   $('decline-pair').addEventListener('click', () => pairAction('PANEL_DECLINE_PAIR', 'Pairing request declined.'));
   $('disconnect').addEventListener('click', () => run({ type: 'PANEL_DISCONNECT' }, 'Workspace disconnected.'));

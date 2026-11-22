@@ -1,5 +1,5 @@
 import { readLandingPage, safeCapture } from './capture.js';
-import { matchesScope, parseExternal, publicPageUrl, responseError, senderScope } from './protocol.js';
+import { matchesScope, ORIGINS, parseExternal, PRIMARY_ORIGIN, publicPageUrl, responseError, senderScope } from './protocol.js';
 
 const STATE_KEY = 'roaclawSession';
 const PAIR_REQUEST_TTL = 2 * 60_000;
@@ -7,7 +7,7 @@ const PAIR_TTL = 60 * 60_000;
 const CAPTURE_TTL = 15 * 60_000;
 const ACTION_TTL = 10 * 60_000;
 const ACTION_LIMIT = 32;
-const finishedActions = new Set(['executed', 'declined', 'verification_failed']);
+const finishedActions = new Set(['executed', 'declined', 'expired', 'verification_failed']);
 let operations = Promise.resolve();
 
 function serial(operation) {
@@ -47,7 +47,7 @@ async function load() {
     if (item.status === 'executing') {
       await verifyBookmark(state, item);
     } else if (!finishedActions.has(item.status) && item.expiresAt <= now) {
-      item.status = 'declined';
+      item.status = 'expired';
       changed = true;
     }
   }
@@ -82,6 +82,17 @@ async function fromWorkspace(message, sender) {
     };
     await save(state);
     return { ok: true, status: 'pending' };
+  }
+
+  if (request.type === 'ROACLAW_DISCONNECT') {
+    if (paired) {
+      state.binding = null;
+      state.capture = null;
+      state.proposals = [];
+    }
+    if (matchesScope(state.pendingPair, scope)) state.pendingPair = null;
+    await save(state);
+    return { ok: true, status: 'disconnected' };
   }
 
   if (!paired) return responseError('NOT_PAIRED');
@@ -183,8 +194,25 @@ async function saveBookmark(state, item) {
   return verifyBookmark(state, item);
 }
 
+async function openDashboard(binding) {
+  const origin = ORIGINS.has(binding?.origin) ? binding.origin : PRIMARY_ORIGIN;
+  const destination = new URL('/app/', origin);
+  if (binding) {
+    const existingTab = await chrome.tabs.get(binding.tabId).catch(() => null);
+    const existingPage = URL.canParse(existingTab?.url) ? new URL(existingTab.url) : null;
+    if (!existingTab?.incognito && existingPage?.origin === origin && ['/app', '/app/'].includes(existingPage.pathname)) {
+      await chrome.tabs.update(existingTab.id, { active: true });
+      await chrome.windows.update(existingTab.windowId, { focused: true });
+      return { ok: true, status: 'focused' };
+    }
+  }
+  await chrome.tabs.create({ url: destination.href });
+  return { ok: true, status: 'opened' };
+}
+
 async function fromPanel(message) {
   const state = await load();
+  if (message.type === 'PANEL_OPEN_DASHBOARD') return openDashboard(state.binding);
   if (message.type === 'PANEL_STATE') {
     return {
       ok: true,

@@ -29,13 +29,21 @@ export type BridgeResponse = {
   };
 };
 
-export function browserSession(workspaceId: string) {
-  const key = 'roaclaw.session.' + workspaceId;
+const sessionPrefix = 'roaclaw.session.';
+
+export function browserSession(uid: string, workspaceId: string) {
+  const key = sessionPrefix + uid + '.' + workspaceId;
   const existing = sessionStorage.getItem(key);
   if (existing) return existing;
   const created = crypto.randomUUID();
   sessionStorage.setItem(key, created);
   return created;
+}
+
+export function clearBrowserSessions() {
+  for (const key of Object.keys(sessionStorage)) {
+    if (key.startsWith(sessionPrefix)) sessionStorage.removeItem(key);
+  }
 }
 
 export function contactExtension(message: object): Promise<BridgeResponse> {

@@ -30,7 +30,16 @@ Run the lightweight protocol and service-worker checks with `npm test` from this
 With current desktop Chrome and the hybrid proof tool’s Playwright dependency installed, the browser smoke runner uses a temporary Chrome profile and opens the native side panel. Run it from the repository root.
 
 ```sh
-node apps/extension/test/smoke.mjs https://roaclaw-growth-os-2026.web.app --evidence-dir qa/evidence/g3
+node apps/extension/test/smoke.mjs https://roaclaw-growth-os-2026.web.app/app/ --evidence-dir qa/evidence/g3
 ```
 
 Approve Chrome’s optional bookmark permission when prompted in that test window. The runner checks that approved bookmarks survive tab reload and are recorded in the Chrome profile after shutdown. Add `--web-flow` to use the Growth Audit buttons for pairing and retrieving capture evidence.
+
+
+## Recent history
+
+Under Research, open **Search recent history**. Enter 2 to 80 characters and grant the optional Chrome history permission if requested. The panel searches at most 12 results during the last 24 hours, filters unsupported or sensitive-looking URLs, removes query strings and fragments, and shows the page title, address and last-visit time. Results stay in the panel and clear when the connection changes. **Clear history results** clears the panel without editing Chrome history. Chrome’s extension settings control retained permission.
+
+Pass `--web-flow --history` to the smoke script to verify the dashboard round trip and recent-history lookup. Both optional permissions may prompt in a fresh Chrome profile.
+
+For unattended smoke testing, add `--pregrant-test-permissions`. It uses a disposable profile and a copy of the unpacked manifest with the requested test permissions installed. The release manifest continues to request optional permissions, and the denial path is covered by the unit tests.

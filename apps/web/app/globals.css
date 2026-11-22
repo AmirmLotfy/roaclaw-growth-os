@@ -21,14 +21,14 @@ button svg, a svg, .flag svg { flex: none; }
 
 .workbench { display: grid; grid-template-columns: 222px minmax(0, 1fr); min-height: 100svh; }
 .sidebar { position: sticky; top: 0; min-height: 100svh; height: fit-content; background: var(--color-nav); color: white; padding: 22px 15px 19px; display: flex; flex-direction: column; gap: 23px; }
-.brand { display: flex; align-items: center; gap: 11px; padding-inline: 8px; font-size: 18px; letter-spacing: .085em; line-height: 1; height: 32px; }
+.brand { text-decoration: none; display: flex; align-items: center; gap: 11px; padding-inline: 8px; font-size: 18px; letter-spacing: .085em; line-height: 1; height: 32px; }
 .brand-mark { display: grid; align-content: center; gap: 3px; width: 28px; height: 28px; background: #2872f5; padding-inline: 5px; overflow: hidden; }
 .brand-mark b { width: 14px; height: 2px; background: white; transform: skewX(-30deg); }
 .brand-mark b:nth-child(2) { translate: 3px 0; }
 .brand-mark b:nth-child(3) { translate: -2px 0; }
 .sidebar-body { display: flex; flex-direction: column; flex: 1; gap: 22px; }
 .sidebar :focus-visible, .sidebar .workspace-select:focus-within { outline-color: #a6c8ff; }
-.workspace-select { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; min-height: 55px; padding: 7px 9px; border: 1px solid #3d5270; border-radius: 5px; background: #1b304f; }
+.workspace-select { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; min-height: 55px; padding: 7px 14px 7px 9px; border: 1px solid #3d5270; border-radius: 5px; background: #1b304f; }
 .workspace-select .avatar { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 3px; color: #e1edff; background: #365987; font: 11px var(--font-mono); }
 .workspace-select small, .sidebar-foot small { display: block; font-size: 11px; line-height: 1.4; color: #adbed6; }
 .workspace-select strong { display: block; font-size: 13px; line-height: 1.25; }
@@ -89,6 +89,10 @@ nav ul { list-style: none; padding: 0; display: grid; gap: 3px; }
 .field { display: grid; gap: 4px; min-width: 0; color: var(--color-text-secondary); font-size: 12px; font-weight: 500; }
 .field select, .field input { border: 1px solid #aebfd3; border-radius: 5px; background: var(--color-surface); padding: 7px 10px; min-height: 44px; font-size: 14px; color: var(--color-ink); min-width: 0; }
 .field input { width: 100%; }
+.select-control { position: relative; display: grid; }
+.select-control select { appearance: none; padding-inline-end: 42px; }
+.select-control > svg { position: absolute; top: 50%; inset-inline-end: 14px; transform: translateY(-50%); pointer-events: none; color: #47678d; }
+.select-control > select:disabled + svg { opacity: .55; }
 .grow { flex: 1; min-width: min(100%, 220px); }
 .panel .field-help { font-size: 12px; margin-top: 6px; min-height: 18px; }
 .capture-box { border-top: 1px solid var(--color-divider); padding: 3px 17px; }
@@ -186,3 +190,25 @@ button.text-link, a.text-link { min-height: 36px; }
   .findings li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .page-head:has(> button) { flex-wrap: wrap; }
 }
+
+
+.setup-panel { margin-bottom: 17px; }
+.setup-panel ul { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; }
+.setup-panel li { display: grid; gap: 10px; align-content: space-between; justify-items: start; padding: 15px 14px; }
+.setup-panel li + li { border-left: 1px solid var(--color-divider); }
+.setup-panel p { margin-top: 5px; }
+@media (max-width: 670px) {
+  .setup-panel ul { grid-template-columns: minmax(0, 1fr); }
+  .setup-panel li + li { border-left: 0; border-top: 1px solid var(--color-divider); }
+}
+
+.fixture-summary { max-width: 700px; padding: 35px 0; }
+.fixture-summary p { margin-block: 10px; }
+.fixture-summary .fixture-price { font-size: 1.8rem; font-weight: 600; }
+.fixture-summary #contact { margin-top: 27px; border-top: 1px solid var(--color-border); padding-top: 14px; }
+
+.panel .action-state { color: #254878; font-weight: 600; margin-top: 7px; }
+
+.export-row { border-top: 1px solid var(--color-divider); padding-inline: 14px; }
+.research-notes { margin-top: 22px; border-top: 1px solid var(--color-border); padding-top: 17px; }
+.research-notes li p { overflow-wrap: anywhere; }
