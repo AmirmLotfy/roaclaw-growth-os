@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 · Campaign Preflight
+
+- Check an operator-entered campaign brief against evidence captured from a public landing page.
+- Pair Chrome to the Preflight tab, confirm the page scope, and return directly to the matching report.
+- Compare offer, destination, button, price and campaign tags. Review competing prices, copy a tracked destination and export a standalone report.
+- Compare evidence in the tab and optionally inspect it with Gemini Nano 4 through Firebase AI Logic.
+
 ## 0.2.1 · Chrome compatibility
 
 - Use dashboard handoff APIs available from the companion's Chrome 116 minimum. Rechecked the full Chrome workflow on 158 and tested the handoff without `URL.canParse`.

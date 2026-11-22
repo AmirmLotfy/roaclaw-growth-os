@@ -1,6 +1,6 @@
 # #BuildHybridAI release audit
 
-Checked 22 November 2026 against the organizer’s overview, Resources, Official Rules, and FAQ. The redesigned product is live. The current picture review is 85.803 seconds and the narrated master is waiting for the owner’s audio.
+Checked 22 November 2026 against the organizer’s overview, Resources, Official Rules, and FAQ. Campaign Preflight and the Growth Audit demo are live. The owner supplied narration and music for the new local film. YouTube and Devpost are on hold.
 
 ## Organizer requirements
 
@@ -23,6 +23,7 @@ Checked 22 November 2026 against the organizer’s overview, Resources, Official
 |---|---|
 | Product website | Responsive, original photography and actual UI captures, motion with reduced-motion support, keyboard proof tabs, judge access, installation, and privacy copy. |
 | Growth Audit | Isolated demo onboarding, three scenarios, SDK source, exact evidence, proposal, Chrome receipt, persisted notes, export, and safe offline behavior. |
+| Campaign Preflight | Verified public landing-page capture via the native Chrome panel, tab handoff, direct comparison, explicit price review, optional Nano inspection, tracked-link copy, and HTML report. [Hosted run](../qa/evidence/preflight-0.3.0.json) |
 | Chrome companion | Explicit pairing and active-tab capture, inspection/research/action views, local search, optional permissions, two-step approval, readback, cancellation, and session revocation. |
 | Follow-up | Store the due time, run the recheck on demand, record the actual fetched price, and preserve completed or canceled state across reload. |
 | Voice | Text lookup passes. The protected Firebase Web Live connection closes with code 1008 even after App Check token acquisition. Keep the voice limitation visible in the repository. |

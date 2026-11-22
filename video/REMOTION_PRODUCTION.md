@@ -24,6 +24,15 @@ Start with the two offer prices. Show both actual Firebase routes within 30 seco
 
 ## Export and release
 
+The Campaign Preflight film uses the supplied continuous narration and instrumental. Run from the repository root when the source clips are present. The edit inserts a captioned Preflight sequence during a natural pause before the final line.
+
+```sh
+ROACLAW_PREFLIGHT_RECORD=1 ROACLAW_PREFLIGHT_EVIDENCE=.local/film node qa/e2e/preflight.mjs
+npm --prefix apps/video run film
+```
+
+The film expects `narration.wav` and `music.mp3` in `.local/film`. The older Growth Audit clips come from the verified capture workflow above. The shot and subtitle timings are in [film-edit.mjs](film-edit.mjs). The render writes `ROACLAW_CAMPAIGN_PREFLIGHT_FILM.mp4`, the English SRT, and the thumbnail to `.local/video/`.
+
 Use the installed Remotion package. The picture-review command produces a separate local cut. If the edit sets `requireAudio`, the final render checks for both narration and score.
 
 ```sh

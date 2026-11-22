@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "tsc --noEmit && node --check scripts/edit.mjs",
+    "check": "tsc --noEmit && node --check scripts/edit.mjs && node --check scripts/film.mjs",
+    "film": "node scripts/film.mjs",
     "ingest": "node scripts/edit.mjs ingest",
     "preview": "node scripts/edit.mjs preview",
     "picture": "node scripts/edit.mjs picture",

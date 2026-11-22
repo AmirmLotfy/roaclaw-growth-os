@@ -1,5 +1,5 @@
 import { searchRecentHistory } from './history.js';
-import { ERRORS, publicPageUrl } from './protocol.js';
+import { ERRORS, PREFLIGHT, publicPageUrl } from './protocol.js';
 
 const $ = (id) => document.getElementById(id);
 const show = (id, visible) => { $(id).hidden = !visible; };
@@ -88,35 +88,51 @@ function renderAction(proposal) {
 
 function render() {
   const { binding, pendingPair, capture, proposal } = state;
+  const preflight = binding?.purpose === PREFLIGHT;
   text('workspace-name', binding?.workspaceName ?? 'Connect a workspace');
-  text('workspace-origin', binding?.origin ?? 'Request pairing in Growth Audit.');
+  text('workspace-origin', binding?.origin ?? 'Request pairing in Growth Audit or Campaign Preflight.');
   $('workspace-origin').classList.toggle('technical', Boolean(binding));
+  show('workspace-purpose', preflight);
+  show('workspace-destination', Boolean(preflight && binding.destinationHost));
+  text('workspace-destination-host', binding?.destinationHost ?? '');
+  text('open-dashboard', preflight ? 'Open Campaign Preflight' : 'Open Growth Audit');
+  show('open-dashboard', Boolean(binding) || pendingPair?.purpose !== PREFLIGHT);
   show('disconnect', Boolean(binding));
   show('pair-review', Boolean(pendingPair));
   if (pendingPair) {
+    const pendingPreflight = pendingPair.purpose === PREFLIGHT;
+    text('pair-heading', pendingPreflight ? 'Connect Campaign Preflight' : 'Confirm connection');
     text('pair-name', pendingPair.workspaceName);
     text('pair-origin', pendingPair.origin);
-    text('pair-copy', binding
-      ? 'Switching clears the previous workspace’s capture and action history from this panel.'
-      : 'This workspace can retrieve your captures and propose bookmarks for review.');
-    text('confirm-pair', binding ? 'Switch workspace' : 'Connect workspace');
+    text('pair-destination-host', pendingPair.destinationHost ?? '');
+    show('pair-destination', Boolean(pendingPreflight && pendingPair.destinationHost));
+    const access = pendingPreflight
+      ? 'This Campaign Preflight tab can retrieve page evidence you capture here.'
+      : 'This workspace can retrieve your captures and propose bookmarks for review.';
+    text('pair-copy', binding ? `${access} Switching clears the current connection’s capture and action history.` : access);
+    text('confirm-pair', pendingPreflight ? 'Connect Preflight' : binding ? 'Switch workspace' : 'Connect workspace');
   }
 
-  show('panel-nav', Boolean(binding));
+  show('panel-nav', Boolean(binding) && !preflight);
   for (const view of views) {
-    const selected = view === activeView;
+    const selected = view === (preflight ? 'inspect' : activeView);
     const tab = $('panel-' + view + '-tab');
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
     show(view, Boolean(binding) && selected);
   }
+  $('inspect').setAttribute('role', preflight ? 'region' : 'tabpanel');
+  $('inspect').setAttribute('aria-labelledby', preflight ? 'inspect-title' : 'panel-inspect-tab');
   if (binding) {
     text('page-state', activePage?.url ? 'Ready to capture' : 'Tab access needed');
     $('page-state').dataset.tone = activePage?.url ? 'success' : 'warning';
     show('page-url', Boolean(activePage?.url));
     text('page-url', activePage?.url ?? '');
+    const captureHelp = preflight
+      ? 'Capture the current page’s title, headings, prices, and action labels for this campaign.'
+      : 'Capture the page title, headings, prices, and action labels for this workspace.';
     text('page-help', activePage?.url
-      ? 'Capture the page title, headings, prices, and action labels for this workspace.'
+      ? captureHelp
       : activePage?.blocked ? 'Open a public landing page to capture evidence.' : ERRORS.TAB_UNAVAILABLE);
   }
   renderCapture(capture);
@@ -305,16 +321,23 @@ async function start() {
     tab.addEventListener('click', () => switchView(view));
     tab.addEventListener('keydown', viewKeys);
   }
-  $('open-dashboard').addEventListener('click', () => void run({ type: 'PANEL_OPEN_DASHBOARD' }));
+  $('open-dashboard').addEventListener('click', () => {
+    const type = state.binding?.purpose === PREFLIGHT ? 'PANEL_OPEN_PREFLIGHT' : 'PANEL_OPEN_DASHBOARD';
+    void run({ type });
+  });
   $('history-form').addEventListener('submit', searchHistory);
   $('clear-history').addEventListener('click', () => { resetHistory(); notice('History results cleared.'); });
-  $('confirm-pair').addEventListener('click', () => pairAction('PANEL_CONFIRM_PAIR', 'Workspace connected.'));
+  $('confirm-pair').addEventListener('click', () => pairAction('PANEL_CONFIRM_PAIR',
+    state.pendingPair?.purpose === PREFLIGHT ? 'Campaign Preflight connected.' : 'Workspace connected.'));
   $('decline-pair').addEventListener('click', () => pairAction('PANEL_DECLINE_PAIR', 'Pairing request declined.'));
   $('disconnect').addEventListener('click', () => run({ type: 'PANEL_DISCONNECT' }, 'Workspace disconnected.'));
   $('clear-capture').addEventListener('click', () => run({ type: 'PANEL_CLEAR_CAPTURE' }, 'Page evidence cleared.'));
   $('capture').addEventListener('click', () => {
     if (!activePage?.url) return;
-    void run({ type: 'PANEL_CAPTURE', windowId, tabId: activePage.id, displayedUrl: activePage.url }, 'Page evidence ready for the paired workspace.');
+    const success = state.binding?.purpose === PREFLIGHT
+      ? 'Page evidence captured. Open Campaign Preflight to retrieve it.'
+      : 'Page evidence ready for the paired workspace.';
+    void run({ type: 'PANEL_CAPTURE', windowId, tabId: activePage.id, displayedUrl: activePage.url }, success);
   });
   $('review-bookmark').addEventListener('click', () => bookmarkAction('PANEL_APPROVE_BOOKMARK'));
   $('save-bookmark').addEventListener('click', () => bookmarkAction('PANEL_SAVE_BOOKMARK', 'Bookmark saved and verified in Chrome.'));

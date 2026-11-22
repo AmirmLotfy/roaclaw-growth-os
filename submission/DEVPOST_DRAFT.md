@@ -14,6 +14,8 @@ Growth Audit opens a synthetic ecommerce, lead-generation or agency workspace. I
 
 The Chrome companion captures headings, displayed prices and button labels from a public page after the user requests it. The dashboard proposes the exact tagged link. The user reviews it in Chrome and saves it to Other Bookmarks. Chrome reads it back and the audit saves the verified receipt. The workspace also keeps research notes and lets the user run a due storefront price check.
 
+Campaign Preflight brings the page comparison to the user's own brief. Enter an offer, destination, button label, optional price and campaign tags, then attach an approved Chrome capture. The report shows matches, mismatches and evidence to review. It provides a copyable tagged link and an HTML export. The brief and comparison stay in the browser tab. On-device model inspection is optional.
+
 ## How we built it
 
 Next.js and TypeScript power the web app. Chrome Manifest V3 powers the companion. Firebase AI Logic runs structured page extraction with Gemini Nano 4 in compatible Chrome. With cloud processing enabled, it can fall back to Gemini 3.5 Flash-Lite for extraction and uses that model for a separate cloud review. The dashboard labels each source using the SDK. External page captures use device-only analysis.

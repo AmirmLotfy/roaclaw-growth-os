@@ -5,6 +5,8 @@ export const ORIGINS = new Set([
   'http://localhost:3000',
   'http://127.0.0.1:3000',
 ]);
+export const PREFLIGHT = 'campaign-preflight';
+export const GROWTH_AUDIT = 'growth-audit';
 
 export const ERRORS = {
   BAD_INPUT: 'The workspace sent an invalid request.',
@@ -12,6 +14,7 @@ export const ERRORS = {
   NOT_PAIRED: 'Request pairing in your workspace, then confirm it in this panel.',
   PAIR_BUSY: 'Review the current pairing request in the panel first.',
   PAIR_STALE: 'The pairing request changed or expired. Request it again from the workspace.',
+  PREFLIGHT_TAB_UNAVAILABLE: 'Return to the original Campaign Preflight tab to retrieve this capture.',
   TAB_UNAVAILABLE: 'Open a public landing page and click the ROACLAW toolbar icon on that tab.',
   TAB_CHANGED: 'The current tab changed. Review the active page before capturing again.',
   PRIVATE_PAGE: 'This page appears to contain private or account information. Open a public landing page.',
@@ -26,6 +29,7 @@ export const ERRORS = {
 
 export const ID = /^[A-Za-z0-9_-]{1,128}$/;
 const SESSION_ID = /^[A-Za-z0-9_-]{16,128}$/;
+const HOSTNAME = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.?$|^\[[a-f0-9:.]+\]$/i;
 const FORBIDDEN_DISPLAY = /[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u;
 const CONTACT = /[\w.!#$%&'*+/=?^_`{|}~-]+@[\w.-]+\.[a-z]{2,}|(?:\+\d{1,3}[\s.-]*)?\(?\d{3}\)?[\s.-]+\d{3}[\s.-]+\d{4}|\b(?:\d[ -]?){13,19}\b/i;
 const SECRET = /\b(?:api[-_ ]?key|bearer|password|passcode|access[-_ ]?token|refresh[-_ ]?token)\s*[:= ]\s*[a-z0-9._/-]{6,}|\b(?:eyJ[a-z0-9_-]{12,}|[a-z0-9_-]{42,})\b/i;
@@ -76,36 +80,59 @@ function bookmarkUrl(value, origin) {
   return matches ? url.href : null;
 }
 
+export function appPurpose(pathname) {
+  if (pathname === '/app/preflight' || pathname === '/app/preflight/') return PREFLIGHT;
+  if (pathname === '/app' || pathname === '/app/') return GROWTH_AUDIT;
+  return null;
+}
+
 export function senderScope(sender) {
   if (!sender || sender.frameId !== 0 || sender.tab?.incognito || !Number.isSafeInteger(sender.tab?.id)) return null;
   try {
-    const origin = new URL(sender.url).origin;
-    if (sender.origin !== origin || !ORIGINS.has(origin)) return null;
-    return { origin, tabId: sender.tab.id };
+    const url = new URL(sender.url);
+    const purpose = appPurpose(url.pathname);
+    if (url.username || url.password || !purpose || sender.origin !== url.origin || !ORIGINS.has(url.origin)) return null;
+    return { origin: url.origin, tabId: sender.tab.id, purpose };
   } catch {
     return null;
   }
 }
 
-export function parseExternal(message, origin) {
+function destinationHostname(value) {
+  if (typeof value !== 'string' || value.length > 253 || !HOSTNAME.test(value)) return null;
+  try {
+    return new URL(`https://${value}`).hostname;
+  } catch {
+    return null;
+  }
+}
+
+export function parseExternal(message, origin, purpose = GROWTH_AUDIT) {
   if (!message || typeof message !== 'object' || typeof message.workspaceId !== 'string' || !ID.test(message.workspaceId) ||
       typeof message.sessionId !== 'string' || !SESSION_ID.test(message.sessionId)) return null;
+  if ((purpose === PREFLIGHT) !== (message.workspaceId === PREFLIGHT)) return null;
   const scope = { workspaceId: message.workspaceId, sessionId: message.sessionId };
   switch (message.type) {
     case 'ROACLAW_PAIR': {
       const workspaceName = cleanText(message.workspaceName, 100);
-      return workspaceName ? { ...scope, type: message.type, workspaceName } : null;
+      if (!workspaceName) return null;
+      const pair = { ...scope, type: message.type, workspaceName };
+      if (purpose !== PREFLIGHT || message.destinationHost === undefined) return pair;
+      const destinationHost = destinationHostname(message.destinationHost);
+      return destinationHost ? { ...pair, destinationHost } : null;
     }
     case 'ROACLAW_DISCONNECT':
     case 'ROACLAW_CAPTURE':
       return { ...scope, type: message.type };
     case 'ROACLAW_PROPOSE_BOOKMARK': {
+      if (purpose === PREFLIGHT) return null;
       const { id, title: rawTitle, url: rawUrl } = message.proposal ?? {};
       const title = cleanText(rawTitle, 160);
       const url = bookmarkUrl(rawUrl, origin);
       return typeof id === 'string' && ID.test(id) && title && url ? { ...scope, type: message.type, proposal: { id, title, url } } : null;
     }
     case 'ROACLAW_RECEIPT':
+      if (purpose === PREFLIGHT) return null;
       return typeof message.proposalId === 'string' && ID.test(message.proposalId) ? { ...scope, type: message.type, proposalId: message.proposalId } : null;
     default:
       return null;
@@ -114,5 +141,6 @@ export function parseExternal(message, origin) {
 
 export function matchesScope(binding, request) {
   return binding && binding.origin === request.origin && binding.tabId === request.tabId &&
-    binding.workspaceId === request.workspaceId && binding.sessionId === request.sessionId;
+    binding.workspaceId === request.workspaceId && binding.sessionId === request.sessionId &&
+    (binding.purpose ?? GROWTH_AUDIT) === request.purpose;
 }

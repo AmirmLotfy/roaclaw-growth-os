@@ -35,7 +35,7 @@ button svg, a svg, .flag svg { flex: none; }
 .workspace-select select { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
 .workspace-select:focus-within { outline: 2px solid; outline-offset: 3px; }
 nav ul { list-style: none; padding: 0; display: grid; gap: 3px; }
-.nav-item { display: flex; align-items: center; gap: 11px; padding: 8px 10px; min-height: 44px; width: 100%; border: 1px solid transparent; border-radius: 4px; background: transparent; text-align: left; color: #d2ded1; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 8px 10px; min-height: 44px; width: 100%; border: 1px solid transparent; border-radius: 4px; background: transparent; text-align: left; text-decoration: none; color: #d2ded1; }
 .nav-item:hover { background: #283b2d; color: white; }
 .nav-item.active { border-color: #60734e; background: #344736; box-shadow: inset 3px 0 #d8f479; color: white; font-weight: 600; }
 .sidebar-foot { margin-top: auto; padding: 13px 9px 0; border-top: 1px solid #445549; display: flex; align-items: flex-start; gap: 10px; }

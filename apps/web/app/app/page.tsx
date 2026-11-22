@@ -430,7 +430,7 @@ export default function Page() {
               <button className={view === name ? 'nav-item active' : 'nav-item'} aria-current={view === name ? 'page' : undefined} onClick={() => switchView(name)}>
                 <Icon size={18} strokeWidth={1.65} aria-hidden="true" />{name}
               </button>
-            </li>)}</ul>
+            </li>)}<li><a className="nav-item" href="/app/preflight/"><ClipboardList size={18} strokeWidth={1.65} aria-hidden="true" />Campaign Preflight</a></li></ul>
           </nav>
           <div className="sidebar-foot"><span className="dot" /><div><strong>Demo data</strong><small>No live ad account</small></div></div>
         </div>

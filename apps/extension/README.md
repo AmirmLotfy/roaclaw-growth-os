@@ -2,6 +2,15 @@
 
 Load this directory with **Load unpacked** at `chrome://extensions` in Chrome 116 or newer. Turn on Developer mode first and pin ROACLAW to the toolbar. The unpacked extension ID is `loglkephefkogehklbohjpdnhdalgnmc`. Its manifest contains the public key for that development ID.
 
+## Campaign Preflight
+
+1. Open Campaign Preflight (`/app/preflight/`) and request pairing with the campaign and destination you want to check.
+2. Open the companion using the ROACLAW toolbar icon. Check the campaign and destination hostname, then click **Connect Preflight**.
+3. Open the intended public landing page in another tab. Click the ROACLAW toolbar icon on that tab, then click **Capture page evidence**. Review the captured fields in the panel.
+4. Click **Open Campaign Preflight** in the panel. Retrieve the evidence in the original Campaign Preflight tab. Keep that tab open during the review.
+
+The Preflight connection accepts page evidence from the panel and keeps its campaign name and optional destination hostname in Chrome session storage. Changing either of those fields requires a new confirmation and clears the previous capture. The panel displays the supplied hostname as context while you choose which page to capture.
+
 ## Verify the browser workflow
 
 1. Open Growth Audit on the ROACLAW hosted app or `http://localhost:3000`. Request pairing, click the ROACLAW toolbar icon, then choose **Connect workspace** in the panel. The browser tab that requested pairing must remain open.
@@ -14,14 +23,15 @@ The extension reads a bounded set of details from the active tab after both tool
 
 ## Bridge
 
-Call `chrome.runtime.sendMessage(extensionId, message, callback)` from the top-level app tab. Use a cryptographically random `sessionId` held in that tab’s `sessionStorage`, such as `crypto.randomUUID()`. A confirmed pairing binds that session ID with the workspace ID, Chrome tab, and exact origin. Workspace and proposal IDs use 1–128 ASCII letters, numbers, underscores, or hyphens. Session IDs use the same alphabet with a 16-character minimum.
+Call `chrome.runtime.sendMessage(extensionId, message, callback)` from the top-level app tab. Use a cryptographically random `sessionId` held in that tab’s `sessionStorage`, such as `crypto.randomUUID()`. A confirmed pairing binds the session ID to the workspace ID, Chrome tab, exact origin, and app purpose. Growth Audit uses `/app/` with its workspace ID. Campaign Preflight uses `/app/preflight/` with `workspaceId: 'campaign-preflight'` and supports pairing, retrieval, and disconnect. Both paths accept an optional trailing slash. Workspace and proposal IDs use 1–128 ASCII letters, numbers, underscores, or hyphens. Session IDs use the same alphabet with a 16-character minimum.
 
 | Request | Successful response |
 | --- | --- |
-| `{type:'ROACLAW_PAIR', workspaceId, sessionId, workspaceName}` | `{ok:true, status:'pending'}` before confirmation or `{ok:true, status:'paired'}` after confirmation. Poll with the same request. |
+| `{type:'ROACLAW_PAIR', workspaceId, sessionId, workspaceName, destinationHost?}` | `{ok:true, status:'pending'}` before confirmation or `{ok:true, status:'paired'}` after confirmation. Poll with the same request. For Campaign Preflight, pass the campaign name as `workspaceName` and optionally `new URL(destination).hostname` as `destinationHost`. |
 | `{type:'ROACLAW_CAPTURE', workspaceId, sessionId}` | `{ok:true, status:'empty'}` or `{ok:true, status:'captured', capture:{url,title,headings,visiblePriceText,ctas,capturedAt}}`. This retrieves existing panel evidence. |
-| `{type:'ROACLAW_PROPOSE_BOOKMARK', workspaceId, sessionId, proposal:{id,title,url}}` | `{ok:true, status:'pending'}` for a new proposal. Repeating the same proposal returns its latest status. |
-| `{type:'ROACLAW_RECEIPT', workspaceId, sessionId, proposalId}` | `{ok:true, status:'empty'}` for an unknown proposal. Otherwise `pending`, `approved`, `executed`, `declined`, or `verification_failed`. An `executed` response includes `receipt:{proposalId,workspaceId,bookmarkId,title,url,folder,verifiedAt}`. |
+| `{type:'ROACLAW_DISCONNECT', workspaceId, sessionId}` | `{ok:true, status:'disconnected'}` and clears the matching pairing and evidence. |
+| `{type:'ROACLAW_PROPOSE_BOOKMARK', workspaceId, sessionId, proposal:{id,title,url}}` | Growth Audit only. `{ok:true, status:'pending'}` for a new proposal. Repeating the same proposal returns its latest status. |
+| `{type:'ROACLAW_RECEIPT', workspaceId, sessionId, proposalId}` | Growth Audit only. `{ok:true, status:'empty'}` for an unknown proposal. Otherwise `pending`, `approved`, `executed`, `declined`, or `verification_failed`. An `executed` response includes `receipt:{proposalId,workspaceId,bookmarkId,title,url,folder,verifiedAt}`. |
 
 Errors return `{ok:false, code, message}`. Bookmark URLs use HTTP(S) and require a query-free URL without credentials or a fragment. The synthetic demo path `/demo-store/` on the paired origin supports exactly `utm_source=meta`, `utm_medium=paid_social`, and `utm_campaign=weekend-everyday-essentials` for its prepared UTM bookmark.
 

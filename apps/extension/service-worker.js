@@ -1,5 +1,8 @@
 import { readLandingPage, safeCapture } from './capture.js';
-import { matchesScope, ORIGINS, parseExternal, PRIMARY_ORIGIN, publicPageUrl, responseError, senderScope } from './protocol.js';
+import {
+  appPurpose, GROWTH_AUDIT, matchesScope, ORIGINS, parseExternal, PREFLIGHT,
+  PRIMARY_ORIGIN, publicPageUrl, responseError, senderScope,
+} from './protocol.js';
 
 const STATE_KEY = 'roaclawSession';
 const PAIR_REQUEST_TTL = 2 * 60_000;
@@ -61,22 +64,35 @@ function actionResponse(item) {
   return { ok: true, status: item.status };
 }
 
+function samePairContext(binding, request) {
+  return binding.purpose !== PREFLIGHT ||
+    (binding.workspaceName === request.workspaceName && binding.destinationHost === request.destinationHost);
+}
+
 async function fromWorkspace(message, sender) {
   const senderIdentity = senderScope(sender);
   if (!senderIdentity) return responseError('FORBIDDEN_ORIGIN');
-  const request = parseExternal(message, senderIdentity.origin);
+  const request = parseExternal(message, senderIdentity.origin, senderIdentity.purpose);
   if (!request) return responseError('BAD_INPUT');
   const scope = { ...senderIdentity, workspaceId: request.workspaceId, sessionId: request.sessionId };
   const state = await load();
   const paired = matchesScope(state.binding, scope);
 
   if (request.type === 'ROACLAW_PAIR') {
-    if (paired) return { ok: true, status: 'paired' };
-    if (matchesScope(state.pendingPair, scope)) return { ok: true, status: 'pending' };
-    if (state.pendingPair) return responseError('PAIR_BUSY');
+    if (paired && samePairContext(state.binding, request)) return { ok: true, status: 'paired' };
+    if (state.pendingPair) {
+      if (!matchesScope(state.pendingPair, scope)) return responseError('PAIR_BUSY');
+      if (samePairContext(state.pendingPair, request)) return { ok: true, status: 'pending' };
+    }
+    if (paired) {
+      state.binding = null;
+      state.capture = null;
+      state.proposals = [];
+    }
     state.pendingPair = {
       ...scope,
       workspaceName: request.workspaceName,
+      ...(request.destinationHost ? { destinationHost: request.destinationHost } : {}),
       reviewId: crypto.randomUUID(),
       expiresAt: Date.now() + PAIR_REQUEST_TTL,
     };
@@ -123,8 +139,8 @@ async function fromWorkspace(message, sender) {
 
 function viewBinding(binding) {
   if (!binding) return null;
-  const { workspaceId, workspaceName, origin, expiresAt, reviewId } = binding;
-  return { workspaceId, workspaceName, origin, expiresAt, reviewId };
+  const { workspaceId, workspaceName, origin, purpose = GROWTH_AUDIT, destinationHost, expiresAt, reviewId } = binding;
+  return { workspaceId, workspaceName, origin, purpose, destinationHost, expiresAt, reviewId };
 }
 
 async function capture(state, windowId, tabId, displayedUrl) {
@@ -197,17 +213,35 @@ async function saveBookmark(state, item) {
 async function openDashboard(binding) {
   const origin = ORIGINS.has(binding?.origin) ? binding.origin : PRIMARY_ORIGIN;
   const destination = new URL('/app/', origin);
-  if (binding) {
+  if (binding && binding.purpose !== PREFLIGHT) {
     const existingTab = await chrome.tabs.get(binding.tabId).catch(() => null);
     const existingPage = existingTab?.url ? new URL(existingTab.url) : null;
-    if (!existingTab?.incognito && existingPage?.origin === origin && ['/app', '/app/'].includes(existingPage.pathname)) {
-      await chrome.tabs.update(existingTab.id, { active: true });
-      await chrome.windows.update(existingTab.windowId, { focused: true });
-      return { ok: true, status: 'focused' };
+    if (!existingTab?.incognito && existingPage?.origin === origin && appPurpose(existingPage.pathname) === GROWTH_AUDIT) {
+      return focusTab(existingTab);
     }
   }
   await chrome.tabs.create({ url: destination.href });
   return { ok: true, status: 'opened' };
+}
+
+async function focusTab(tab) {
+  await chrome.tabs.update(tab.id, { active: true });
+  await chrome.windows.update(tab.windowId, { focused: true });
+  return { ok: true, status: 'focused' };
+}
+
+async function openPreflight(binding) {
+  const tab = await chrome.tabs.get(binding.tabId).catch(() => null);
+  if (!tab || tab.incognito || tab.id !== binding.tabId || !Number.isSafeInteger(tab.windowId)) {
+    return responseError('PREFLIGHT_TAB_UNAVAILABLE');
+  }
+  // Chrome may withhold this tab's URL without activeTab access. The confirmed binding can focus the tab, never navigate it.
+  const url = tab.pendingUrl || tab.url;
+  if (url) {
+    const page = new URL(url);
+    if (page.origin !== binding.origin || appPurpose(page.pathname) !== PREFLIGHT) return responseError('PREFLIGHT_TAB_UNAVAILABLE');
+  }
+  return focusTab(tab).catch(() => responseError('PREFLIGHT_TAB_UNAVAILABLE'));
 }
 
 async function fromPanel(message) {
@@ -236,6 +270,10 @@ async function fromPanel(message) {
   }
 
   if (!state.binding || state.binding.reviewId !== message.pairId) return responseError('NOT_PAIRED');
+  if (message.type === 'PANEL_OPEN_PREFLIGHT') {
+    if (state.binding.purpose !== PREFLIGHT) return responseError('NOT_PAIRED');
+    return openPreflight(state.binding);
+  }
   if (message.type === 'PANEL_DISCONNECT') {
     await save(emptyState());
     return { ok: true };

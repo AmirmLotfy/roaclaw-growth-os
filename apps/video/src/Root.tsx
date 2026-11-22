@@ -4,6 +4,7 @@ import "@fontsource/ibm-plex-mono/latin-500.css";
 import { AbsoluteFill, Composition, Html5Audio, Img, OffthreadVideo, Sequence, interpolate, registerRoot, staticFile, useCurrentFrame } from "remotion";
 import type { CSSProperties } from "react";
 import { beats, fps, outroFrames } from "./edit.mjs";
+import { SubmissionFilm, type FilmProps } from "./Film";
 
 type Beat = keyof typeof beats;
 type Segment = {
@@ -162,6 +163,7 @@ function Thumbnail({ segments, cover }: DemoProps) {
 }
 
 const emptyProps: DemoProps = { segments: [], duration: outroFrames, demoUrl: "", cover: null };
+const emptyFilm: FilmProps = { shots: [], subtitles: [], duration: 30, image: "" };
 
 function Root() {
   return <>
@@ -169,6 +171,8 @@ function Root() {
       defaultProps={emptyProps} calculateMetadata={({ props }) => ({ durationInFrames: props.duration })} />
     <Composition id="ROACLAW-Thumbnail" component={Thumbnail} width={1280} height={720} fps={fps} durationInFrames={1}
       defaultProps={emptyProps} />
+    <Composition id="ROACLAW-Submission-Film" component={SubmissionFilm} width={1920} height={1080} fps={fps}
+      durationInFrames={30} defaultProps={emptyFilm} calculateMetadata={({ props }) => ({ durationInFrames: props.duration })} />
   </>;
 }
 

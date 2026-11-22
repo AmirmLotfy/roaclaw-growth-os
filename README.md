@@ -2,9 +2,18 @@
 
 An ad offers a vase set for **$99**. Its landing page shows **$119**. ROACLAW brings the two sources into one audit, checks the tracking tag, and lets you approve the exact bookmark in Chrome.
 
-[Product website](https://roaclaw-growth-os-2026.web.app/) · [Open Growth Audit](https://roaclaw-growth-os-2026.web.app/app/) · [Download the Chrome companion](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip) · [Test evidence](qa/EVIDENCE_INDEX.md)
+[Product website](https://roaclaw-growth-os-2026.web.app/) · [Campaign Preflight](https://roaclaw-growth-os-2026.web.app/app/preflight/) · [Growth Audit demo](https://roaclaw-growth-os-2026.web.app/app/) · [Chrome companion ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip) · [Test evidence](qa/EVIDENCE_INDEX.md)
 
 ![ROACLAW Growth Audit with the captured price, two Firebase source labels, and a proposed Chrome bookmark](qa/evidence/web/02-hybrid-audit.png)
+
+## Check your own landing page
+
+1. Open **Campaign Preflight** and enter the advertised offer, its public destination, and the expected button label. Add a price and tracking parameters if the campaign uses them.
+2. Load the Chrome companion and request pairing from the Preflight tab. Confirm the campaign and hostname in the side panel. Open the destination, click the toolbar icon on the destination tab, and **Capture page evidence**.
+3. Return with **Open Campaign Preflight**, attach the capture, and run the comparison. If Chrome found several prices, identify the one shown beside your offer. Evidence that remains incomplete is marked for review.
+4. Copy the suggested tracked URL and download a standalone HTML report. Preflight checks the tags in the supplied URL. Measuring analytics delivery takes a separate test.
+
+Preflight works without a sign-in. The brief stays in the current browser tab and the report is exported at the operator’s request. Optional **Inspect on device** uses the installed Gemini Nano 4 model through Firebase AI Logic. Direct checks work from captured evidence when Nano is unavailable.
 
 ## Try it in Chrome
 

@@ -38,6 +38,14 @@
 .site-button:hover svg, .site-text-link:hover svg, .site-top-link:hover svg { transform: translate(2px, -2px); }
 .site-text-link { min-height: 44px; justify-content: start; }
 .site-text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.preflight-site { display: grid; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); gap: clamp(25px, 7vw, 125px); align-items: start; }
+.preflight-site .site-text-link { margin-top: 10px; text-decoration: underline; text-underline-offset: 4px; }
+.preflight-site-checks { margin: 0; }
+.preflight-site-checks > div { display: grid; grid-template-columns: minmax(90px, .34fr) minmax(0, 1fr); gap: 14px; padding-block: 16px; border-top: 1px solid var(--site-divider); }
+.preflight-site-checks > div:last-child { border-bottom: 1px solid var(--site-divider); }
+.preflight-site-checks dt { font-weight: 600; }
+.preflight-site-checks dd { color: #44564a; }
+@media (max-width: 740px) { .preflight-site { grid-template-columns: minmax(0, 1fr); } }
 .site-hero :focus-visible, .site-chrome :focus-visible { outline-color: var(--site-lime); }
 .hero-art { position: relative; margin: 0; min-width: 0; overflow: hidden; border: 1px solid #65736a; background: #a3afb0; }
 .hero-art img { display: block; width: 100%; height: auto; aspect-ratio: 1.13; object-fit: cover; object-position: center 60%; }

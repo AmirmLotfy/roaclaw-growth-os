@@ -2,14 +2,16 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { safeCapture } from '../capture.js';
-import { ORIGINS, parseExternal, publicPageUrl } from '../protocol.js';
+import { runInNewContext } from 'node:vm';
+import { readLandingPage, safeCapture } from '../capture.js';
+import { ORIGINS, parseExternal, PREFLIGHT, publicPageUrl } from '../protocol.js';
 
 const origin = 'https://roaclaw-growth-os-2026.web.app';
 const scope = { workspaceId: 'weekend-co', sessionId: '12345678-1234-1234-1234-123456789012' };
 const fixture = `${origin}/demo-store/`;
 const target = `${fixture}?utm_source=meta&utm_medium=paid_social&utm_campaign=weekend-everyday-essentials`;
 const workspace = { url: `${origin}/app/`, origin, frameId: 0, tab: { id: 4, incognito: false } };
+const preflightPage = { ...workspace, url: `${origin}/app/preflight/` };
 const extensionId = 'loglkephefkogehklbohjpdnhdalgnmc';
 const extensionUrl = `chrome-extension://${extensionId}/`;
 const panel = { id: extensionId, url: `${extensionUrl}panel.html` };
@@ -19,12 +21,16 @@ const pair = request('ROACLAW_PAIR', { workspaceName: 'Weekend Co' });
 const propose = request('ROACLAW_PROPOSE_BOOKMARK', { proposal: { id: 'proposal-1', title: 'Landing-page research', url: target } });
 const receipt = request('ROACLAW_RECEIPT', { proposalId: propose.proposal.id });
 const capture = request('ROACLAW_CAPTURE');
+const preflightRequest = (type, extra) => request(type, { workspaceId: PREFLIGHT, ...extra });
+const preflightPair = preflightRequest('ROACLAW_PAIR', { workspaceName: 'Weekend Collection', destinationHost: new URL(fixture).hostname });
+const preflightCapture = preflightRequest('ROACLAW_CAPTURE');
 
 test('manifest keeps the development ID and grants no blanket host access', async () => {
   const manifest = JSON.parse(await readFile(new URL('../manifest.json', import.meta.url), 'utf8'));
   const keyDigest = createHash('sha256').update(Buffer.from(manifest.key, 'base64')).digest('hex').slice(0, 32);
   const id = [...keyDigest].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join('');
   assert.equal(id, extensionId);
+  assert.equal(manifest.version, '0.3.0');
   assert.deepEqual(manifest.permissions, ['activeTab', 'scripting', 'sidePanel', 'storage']);
   assert.deepEqual(manifest.optional_permissions, ['bookmarks', 'history']);
   assert.deepEqual(manifest.externally_connectable.matches, [...ORIGINS].map((url) => `${url}/*`));
@@ -47,6 +53,22 @@ test('bookmark URL admits the exact same-origin fixture UTM and safe ordinary pa
   assert.equal(publicPageUrl('https://ads.google.com/campaigns/'), null);
 });
 
+test('preflight handshake only accepts a hostname and capture-scoped operations', () => {
+  const parse = (message) => parseExternal(message, origin, PREFLIGHT);
+  assert.equal(parseExternal(preflightPair, origin), null);
+  assert.equal(parse(pair), null);
+  assert.equal(parse({ ...preflightPair, destinationHost: 'Destination.Example' }).destinationHost, 'destination.example');
+  assert.equal(parse({ ...preflightPair, destinationHost: '[::1]' }).destinationHost, '[::1]');
+  assert.equal(parse({ ...preflightPair, destinationHost: undefined }).destinationHost, undefined);
+  assert.equal(parse(preflightCapture).type, 'ROACLAW_CAPTURE');
+  assert.equal(parse(preflightRequest('ROACLAW_DISCONNECT')).type, 'ROACLAW_DISCONNECT');
+  assert.equal(parse({ ...propose, workspaceId: PREFLIGHT }), null);
+  assert.equal(parse({ ...receipt, workspaceId: PREFLIGHT }), null);
+  for (const destinationHost of ['https://example.com', 'example.com/offer', 'example.com:3000', 'example.com?secret=x', 'example.com#page', 'user@example.com', 'example.com\n', 'a..example.com']) {
+    assert.equal(parse({ ...preflightPair, destinationHost }), null, destinationHost);
+  }
+});
+
 test('capture trimming drops common identifiers and retains bounded exact evidence', () => {
   const evidence = safeCapture({ title: 'Welcome alice@example.org', headings: Array.from({ length: 15 }, (_, i) => `Heading ${i}`),
     visiblePriceText: ['$119', 'USD 119', '$119', 'Phone: 555-555-5555'], ctas: ['Buy now', 'password: abcdefghi'] }, fixture,
@@ -56,6 +78,31 @@ test('capture trimming drops common identifiers and retains bounded exact eviden
   assert.deepEqual(evidence.visiblePriceText, ['$119', 'USD 119']);
   assert.deepEqual(evidence.ctas, ['Buy now']);
   assert.equal(evidence.capturedAt, '2026-11-22T00:00:00.000Z');
+});
+
+test('the serialized page reader captures supported currencies without partial prices', () => {
+  const parent = {
+    closest: () => null,
+    getClientRects: () => [1],
+    getBoundingClientRect: () => ({ width: 200, height: 20, right: 200, bottom: 20 }),
+  };
+  const nodes = ['USD 1234567890 and 1234,5678 USD', 'USD 119 and $89', 'EUR 1 299,5', 'INR 875',
+    'Packs are AU$45.50 and C$55', '500 ¥', 'The card says 8,00€.'].map((nodeValue) => ({ nodeValue, parentElement: parent }));
+  const emptyQuery = () => [];
+  const document = {
+    title: 'Public landing page',
+    querySelector: () => ({ querySelectorAll: emptyQuery }),
+    querySelectorAll: emptyQuery,
+    createTreeWalker: () => {
+      let index = 0;
+      return { nextNode() { this.currentNode = nodes[index++]; return this.currentNode; } };
+    },
+  };
+  const result = runInNewContext(`(${readLandingPage.toString()})(${JSON.stringify(fixture)})`, {
+    document, location: { href: fixture }, NodeFilter: { SHOW_TEXT: 4 }, window: { scrollY: 0 },
+    getComputedStyle: () => ({ display: 'block', visibility: 'visible', opacity: '1', clip: 'auto' }),
+  });
+  assert.deepEqual([...result.visiblePriceText], ['USD 119', '$89', 'EUR 1 299,5', 'INR 875', 'AU$45.50', 'C$55', '500 ¥', '8,00€']);
 });
 
 function listen() {
@@ -172,6 +219,85 @@ test('requires local pairing and capture, isolates origin, workspace, tab and se
   assert.equal((await external(capture)).status, 'empty');
   assert.equal((await external(disconnect)).status, 'disconnected');
   assert.equal((await external(capture)).code, 'NOT_PAIRED');
+});
+
+test('preflight capture stays bound to the campaign purpose, origin, tab, and session', async () => {
+  const { data, external, internal } = await worker();
+  assert.equal((await external(preflightPair)).code, 'BAD_INPUT');
+  for (const path of ['/demo-store/', '/app/preflight-preview/', '/app/preflight/extra/']) {
+    assert.equal((await external(preflightPair, { ...preflightPage, url: origin + path })).code, 'FORBIDDEN_ORIGIN');
+  }
+  assert.equal((await external(pair, preflightPage)).code, 'BAD_INPUT');
+  assert.equal((await external(preflightPair, { ...preflightPage, frameId: 1 })).code, 'FORBIDDEN_ORIGIN');
+  assert.equal((await external(preflightPair, preflightPage)).status, 'pending');
+  assert.equal((await external(preflightCapture, preflightPage)).code, 'NOT_PAIRED');
+  const { pendingPair } = await internal('PANEL_STATE');
+  assert.equal(pendingPair.purpose, PREFLIGHT);
+  assert.equal(pendingPair.workspaceName, preflightPair.workspaceName);
+  assert.equal(pendingPair.destinationHost, preflightPair.destinationHost);
+  assert.equal((await internal('PANEL_CONFIRM_PAIR', { reviewId: pendingPair.reviewId })).ok, true);
+  assert.equal((await external(preflightPair, { ...preflightPage, url: preflightPage.url.slice(0, -1) })).status, 'paired');
+  assert.equal((await external(preflightCapture, preflightPage)).status, 'empty');
+  assert.equal(data.injections, 0);
+  const approve = { pairId: pendingPair.reviewId, windowId: 1, tabId: 8, displayedUrl: fixture };
+  assert.equal((await internal('PANEL_CAPTURE', approve)).ok, true);
+  assert.equal(data.injections, 1);
+  assert.equal((await external(preflightCapture, preflightPage)).capture.url, fixture);
+  assert.equal((await external(capture, workspace)).code, 'NOT_PAIRED');
+  assert.equal((await external(preflightCapture, { ...preflightPage, tab: { id: 7 } })).code, 'NOT_PAIRED');
+  assert.equal((await external(preflightCapture, { ...preflightPage, origin: 'http://localhost:3000', url: 'http://localhost:3000/app/preflight/' })).code, 'NOT_PAIRED');
+  assert.equal((await external(preflightRequest('ROACLAW_CAPTURE', { sessionId: 'other-session-123456' }), preflightPage)).code, 'NOT_PAIRED');
+  assert.equal((await external({ ...propose, workspaceId: PREFLIGHT }, preflightPage)).code, 'BAD_INPUT');
+  assert.equal((await external(preflightRequest('ROACLAW_DISCONNECT'), preflightPage)).status, 'disconnected');
+  assert.equal((await internal('PANEL_STATE')).capture, null);
+});
+
+test('changed preflight metadata replaces review and clears capture before fresh consent', async () => {
+  const { external, internal } = await worker();
+  const send = (message) => external(message, preflightPage);
+  await send(preflightPair);
+  const first = (await internal('PANEL_STATE')).pendingPair;
+  const renamed = { ...preflightPair, workspaceName: 'Updated Weekend Collection' };
+  assert.equal((await send(renamed)).status, 'pending');
+  assert.equal((await internal('PANEL_CONFIRM_PAIR', { reviewId: first.reviewId })).code, 'PAIR_STALE');
+  const second = (await internal('PANEL_STATE')).pendingPair;
+  assert.equal(second.workspaceName, renamed.workspaceName);
+  await internal('PANEL_CONFIRM_PAIR', { reviewId: second.reviewId });
+  await internal('PANEL_CAPTURE', { pairId: second.reviewId, windowId: 1, tabId: 8, displayedUrl: fixture });
+  assert.equal((await send(preflightCapture)).status, 'captured');
+
+  const updated = { ...renamed, destinationHost: 'new.example' };
+  assert.equal((await send(updated)).status, 'pending');
+  const pending = await internal('PANEL_STATE');
+  assert.equal(pending.binding, null);
+  assert.equal(pending.capture, null);
+  assert.equal(pending.pendingPair.destinationHost, updated.destinationHost);
+  assert.equal((await send(preflightCapture)).code, 'NOT_PAIRED');
+  await internal('PANEL_CONFIRM_PAIR', { reviewId: pending.pendingPair.reviewId });
+  assert.equal((await send(updated)).status, 'paired');
+  assert.equal((await send(preflightCapture)).status, 'empty');
+});
+
+test('preflight handoff focuses the original tab and does not create a new session', async () => {
+  const { data, external, internal } = await worker();
+  await external(preflightPair, preflightPage);
+  const { pendingPair } = await internal('PANEL_STATE');
+  await internal('PANEL_CONFIRM_PAIR', { reviewId: pendingPair.reviewId });
+  const handoff = () => internal('PANEL_OPEN_PREFLIGHT', { pairId: pendingPair.reviewId });
+  data.dashboardTab = { ...preflightPage.tab, url: preflightPage.url, windowId: 3 };
+  assert.equal((await handoff()).status, 'focused');
+  data.dashboardTab.url = undefined;
+  assert.equal((await handoff()).status, 'focused');
+  const focus = [['update', 4, { active: true }], ['window', 3, { focused: true }]];
+  assert.deepEqual(data.tabActions, [...focus, ...focus]);
+  data.dashboardTab.url = workspace.url;
+  assert.equal((await handoff()).code, 'PREFLIGHT_TAB_UNAVAILABLE');
+  data.dashboardTab.url = preflightPage.url;
+  data.dashboardTab.pendingUrl = workspace.url;
+  assert.equal((await handoff()).code, 'PREFLIGHT_TAB_UNAVAILABLE');
+  data.dashboardTab = null;
+  assert.equal((await handoff()).code, 'PREFLIGHT_TAB_UNAVAILABLE');
+  assert.deepEqual(data.tabActions, [...focus, ...focus]);
 });
 
 test('bookmark requires two panel clicks, optional permission, verified readback and idempotency', async () => {

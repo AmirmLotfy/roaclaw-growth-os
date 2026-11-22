@@ -1,7 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 
 export const firebaseApp = initializeApp({
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -30,5 +28,3 @@ function initializeBrowserAppCheck() {
 }
 
 export const appCheck = initializeBrowserAppCheck();
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);

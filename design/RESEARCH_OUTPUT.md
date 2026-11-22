@@ -73,3 +73,9 @@ The project owner rejected the initial warm editorial direction after reviewing 
 - Burocratik gives product imagery and moving work substantial space, with strong typographic pacing. ROACLAW uses a short photo settle and turns the source prices into the opening composition. [Refero reference](https://burocratik.com/)
 - Workflow exposes different product examples through a tabbed stage. ROACLAW uses two keyboard-operable tabs for a verified audit and a verified Chrome bookmark. [Refero reference](https://workflow.design/)
 - The Awwwards mobile performance guide emphasizes immediate, meaningful interaction feedback. ROACLAW applies it to proof tabs, workspace controls, and the initial capture guide. [Awwwards performance guide](https://www.awwwards.com/brainfood-mobile-performance-vol3.pdf)
+
+## Campaign Preflight
+
+- Origin puts the submitted text inside a dedicated, editable review pane. Preflight keeps the brief editable above the report and invalidates the result when the brief changes. [Mobbin Origin review](https://mobbin.com/screens/cd79ea90-cdc0-4d7c-b342-02bbb995d188)
+- Vercel's Refero style keeps the product explanation spacious and reserves density for evidence. Burocratik uses fine rules and changes scale between the product narrative and reading labels. Preflight uses the existing charcoal and lime site with a ruled section for brief, capture and review. [Vercel style](https://vercel.com/) · [Burocratik style](https://burocratik.com/)
+- The app uses the existing paper-green work surface, IBM Plex, lime for the next step, and text labels alongside status color. The review places observed evidence beside the brief, following the comparison pattern in [ShareWillow](https://refero.design/pages/e54f3a37), and retains explicit scope and connection feedback following the [Maze connection flow](https://refero.design/flows/3630). Chrome displays only the approved campaign name and destination hostname.

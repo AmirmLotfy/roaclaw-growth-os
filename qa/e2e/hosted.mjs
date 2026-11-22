@@ -6,7 +6,7 @@ import { chromium } from '../../tools/hybrid-proof/node_modules/playwright/index
 const origin = new URL(process.argv[2] ?? 'https://roaclaw-growth-os-2026.web.app').origin;
 const appUrl = new URL('/app/', origin).href;
 const profile = resolve('.local/g0-chrome');
-const dest = resolve('qa/evidence/web');
+const dest = resolve(process.env.ROACLAW_HOSTED_EVIDENCE ?? 'qa/evidence/web');
 const recordVideo = process.env.ROACLAW_CAPTURE_VIDEO === '1';
 await mkdir(dest, { recursive: true });
 const holdMs = Math.round(1000 * Number(process.env.ROACLAW_CAPTURE_HOLD_SECONDS || '2.2'));
@@ -72,6 +72,7 @@ try {
   }
   await page.goto(origin, { waitUntil: 'domcontentloaded', timeout: 45000 });
   await page.getByRole('heading', { name: /The page said/ }).waitFor();
+  await page.waitForLoadState('networkidle');
   await page.locator('.hero-art img').evaluate((image) => image.decode());
   const offerTab = page.getByRole('tab', { name: 'Read the audit' });
   const chromeTab = page.getByRole('tab', { name: 'Verify the bookmark' });

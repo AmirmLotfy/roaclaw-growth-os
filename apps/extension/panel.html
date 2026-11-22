@@ -15,8 +15,10 @@
     <main>
       <section class="workspace" aria-labelledby="workspace-name">
         <div>
+          <p id="workspace-purpose" hidden>Campaign Preflight</p>
           <h1 id="workspace-name">Connect a workspace</h1>
-          <p id="workspace-origin">Request pairing in Growth Audit.</p>
+          <p id="workspace-origin">Request pairing in Growth Audit or Campaign Preflight.</p>
+          <p id="workspace-destination" hidden>Destination <span id="workspace-destination-host" class="technical"></span></p>
         </div>
         <button id="disconnect" class="text-button" type="button" hidden>Disconnect</button>
       </section>
@@ -27,6 +29,7 @@
         <h2 id="pair-heading">Confirm connection</h2>
         <h3 id="pair-name"></h3>
         <p id="pair-origin" class="technical"></p>
+        <p id="pair-destination" hidden>Destination <span id="pair-destination-host" class="technical"></span></p>
         <p id="pair-copy">This workspace can retrieve your captures and propose bookmarks for review.</p>
         <div class="button-row">
           <button id="confirm-pair" class="primary" type="button">Connect workspace</button>

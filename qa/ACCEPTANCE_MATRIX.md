@@ -12,6 +12,7 @@
 | A-03 | Client switch | No stale data from previous client in UI and subsequent tool actions | E2E trace |
 | A-04 | Audit engine | Detects fixture price mismatch, missing UTM, goal gap | Asserted JSON source evidence |
 | A-05 | No false causality | Findings label facts vs hypotheses and missing evidence | Schema/unit test + screenshot |
+| P-01 | Campaign Preflight | Marketing entry, manually entered brief, explicit Chrome pairing and public-page capture, local comparison, corrected tracking link clipboard, downloadable report, mobile sizing, and no Firebase data requests | Single Chrome browser run with a live public landing page |
 | X-01 | Extension capture | Selected page read only after user gesture/permission | Chrome recording and explicit origin |
 | X-02 | Bookmark tool | Approved create writes real bookmark, readback matches | E2E and action receipt |
 | X-03 | Search | Query returns previously saved actual bookmark and source URL | E2E screenshot |

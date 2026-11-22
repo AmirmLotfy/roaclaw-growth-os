@@ -1,8 +1,9 @@
-import { signInAnonymously, type User } from 'firebase/auth';
-import { doc, getDoc, runTransaction } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { getAuth, signInAnonymously, type User } from 'firebase/auth';
+import { doc, getDoc, getFirestore, runTransaction } from 'firebase/firestore';
+import { firebaseApp } from './firebase';
 
-export { appCheck, auth, db, firebaseApp } from './firebase';
+export const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 let pendingSession: Promise<User> | undefined;
 

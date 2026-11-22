@@ -55,6 +55,7 @@ main { display: grid; gap: 10px; padding-block-start: 12px; }
 .workspace { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 5px 12px; }
 .workspace > div { min-inline-size: 0; }
 .workspace p { margin-block-start: 4px; }
+.workspace #workspace-purpose { font-size: 12px; font-weight: 650; margin-block: 0 4px; }
 .technical { color: var(--secondary); font: 12px/1.5 var(--mono); overflow-wrap: anywhere; }
 .section { display: grid; align-items: start; gap: 9px; min-inline-size: 0; }
 .section-heading { align-items: center; display: flex; flex-wrap: wrap; gap: 6px 9px; justify-content: space-between; }

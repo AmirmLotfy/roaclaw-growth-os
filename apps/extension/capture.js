@@ -8,7 +8,12 @@ export function readLandingPage(expectedUrl) {
   const privateInput = 'input[type="password"], input[autocomplete*="cc-"], input[autocomplete="one-time-code"]';
   const obviousIdentifier = /[\w.!#$%&'*+/=?^_`{|}~-]+@[\w.-]+\.[a-z]{2,}|(?:\+\d{1,3}[\s.-]*)?\(?\d{3}\)?[\s.-]+\d{3}[\s.-]+\d{4}|\b(?:\d[ -]?){13,19}\b|\b(?:api[-_ ]?key|bearer|password|passcode|access[-_ ]?token|refresh[-_ ]?token)\s*[:= ]\s*[a-z0-9._/-]{6,}|\b(?:eyJ[a-z0-9_-]{12,}|[a-z0-9_-]{42,})\b/i;
   const unsafeChars = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u;
-  const pricePattern = /(?<![\p{L}\d])(?:US\$|CA\$|A\$|[$€£¥₹]|USD|EUR|GBP|CAD|AUD|JPY|EGP|AED|SAR)\s?\d{1,6}(?:[,.]\d{2,3}){0,2}(?![\p{L}\d])|(?<![\p{L}\d])\d{1,6}(?:[,.]\d{2,3}){0,2}\s?(?:USD|EUR|GBP|CAD|AUD|JPY|EGP|AED|SAR)(?![\p{L}\d])/gu;
+  const codes = 'USD|EUR|GBP|CAD|AUD|JPY|INR|EGP|AED|SAR';
+  const symbols = '[$€£¥₹]';
+  const amount = String.raw`(?:\d{1,3}(?:[,. ]\d{3}){1,2}|\d{1,9})(?:[,.]\d{1,2})?`;
+  const prefixedPrice = String.raw`(?:US\$|CA\$|AU\$|[CA]\$|${symbols}|${codes}) ?${amount}(?![,. ]\d)`;
+  const suffixedPrice = String.raw`(?<!\d[,. ])${amount} ?(?:${symbols}|${codes})`;
+  const pricePattern = new RegExp(String.raw`(?<![\p{L}\d])(?:${prefixedPrice}|${suffixedPrice})(?![\p{L}\d])`, 'giu');
   const actionPattern = /\b(?:add to (?:cart|bag|basket)|book|buy|compare|contact|download|enquire|explore|get (?:a |an )?(?:demo|quote|started)|join|learn more|order|register|request|reserve|see pricing|shop|sign up|start|subscribe|try|view (?:the )?(?:collection|product|offer))\b/i;
 
   const visible = (element) => {
