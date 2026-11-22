@@ -23,3 +23,14 @@ Audio is a silent 48 kHz stereo AAC track. Narration and music were unavailable 
 | Color and thumbnail | Pass | Thumbnail pixels match cool canvas `#F4F7FB` and signal blue `#1853D8`. Encoded navy reads `#132742` against source `#132642`, within one channel level. The captured thumbnail shows the same redesigned interface. |
 
 A brief gray viewport edge appears near 00:08 while the captured browser resizes. The gray area stays outside the audit content and captions. The side-panel capture, bookmark result, and dashboard receipt are labeled QA stills.
+
+## Expanded release cut
+
+The replacement master covers the standalone site, Growth Audit, genuine on-device and cloud source states, selected-page capture, bookmark approval and receipt, local history search, a due follow-up, and the lead-generation scenario. It uses recordings and screenshots from the deployed release. All 13 selected scenes, the receipt crop, thumbnail, and captions were checked. FFmpeg decoded the complete master without errors. FFprobe reported 57.813 seconds, 1920 × 1080, H.264 at 30fps with a silent AAC track. The separate English SRT accompanies the open captions.
+
+- Final MP4: `.local/video/ROACLAW_BuildHybridAI_2026_FINAL.mp4`
+- English SRT: `.local/video/ROACLAW_BuildHybridAI_2026_EN.srt`
+- Thumbnail: `.local/video/ROACLAW_BuildHybridAI_2026_THUMBNAIL.png`
+- Edit manifest: `.local/footage/release-edit.json`
+
+Studio lists the earlier cut as a draft. The replacement master is awaiting the final publication step.

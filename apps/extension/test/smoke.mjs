@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -21,6 +22,7 @@ const evidence = evidenceFlag < 0 ? null : resolve(process.argv[evidenceFlag + 1
 const useWebFlow = process.argv.includes('--web-flow');
 const exerciseHistory = process.argv.includes('--history');
 const pregranted = process.argv.includes('--pregrant-test-permissions');
+const recordPanel = process.env.ROACLAW_COMPANION_RECORD === '1';
 const fixture = new URL('/demo-store/', base).href;
 const tagged = `${fixture}?utm_source=meta&utm_medium=paid_social&utm_campaign=weekend-everyday-essentials`;
 const id = { workspaceId: 'sable-stem', sessionId: crypto.randomUUID() };
@@ -62,6 +64,7 @@ async function connectPanel(context, devtools) {
       evaluate: (fn, arg) => page.evaluate(fn, arg),
       click: (selector) => page.locator(selector).click(),
       screenshot: (name) => evidence ? page.screenshot({ path: join(evidence, name) }) : null,
+      frame: () => page.screenshot(),
     };
   }
 
@@ -97,8 +100,13 @@ async function connectPanel(context, devtools) {
     if (outcome.exceptionDetails) throw new Error(outcome.result?.description ?? outcome.exceptionDetails.text);
     return outcome.result.value;
   }
+  async function frame() {
+    const { data } = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+    return Buffer.from(data, 'base64');
+  }
   return {
     evaluate,
+    frame,
     async click(selector) {
       const point = await until(`a clickable ${selector} in the side panel`, () => evaluate((selector) => {
         const element = document.querySelector(selector);
@@ -113,8 +121,42 @@ async function connectPanel(context, devtools) {
     },
     async screenshot(name) {
       if (!evidence) return;
-      const { data } = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
-      await writeFile(join(evidence, name), Buffer.from(data, 'base64'));
+      await writeFile(join(evidence, name), await frame());
+    },
+  };
+}
+
+async function startRecording(panel, profile) {
+  const frames = join(profile, 'panel-recording');
+  await mkdir(frames);
+  let running = true;
+  let count = 0;
+  const beats = {};
+  const captured = (async () => {
+    while (running) {
+      const start = Date.now();
+      const frame = await panel.frame();
+      await writeFile(join(frames, String(count++).padStart(5, '0') + '.png'), frame);
+      await delay(Math.max(10, 100 - (Date.now() - start)));
+    }
+  })();
+  captured.catch(() => { running = false; });
+  async function freeze() {
+    running = false;
+    await captured;
+  }
+  return {
+    freeze,
+    mark: (name) => { beats[name] = count / 10; },
+    async finish(exportVideo) {
+      await freeze().catch((error) => { if (exportVideo) throw error; });
+      if (!exportVideo) return;
+      const output = resolve('.local/footage');
+      await mkdir(output, { recursive: true });
+      execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-framerate', '10',
+        '-i', join(frames, '%05d.png'), '-vf', 'pad=width=ceil(iw/2)*2:height=ceil(ih/2)*2:color=0xedf1ec,format=yuv420p', '-c:v', 'libx264', '-crf', '17',
+        join(output, 'roaclaw-chrome-panel.mp4')]);
+      await writeFile(join(output, 'roaclaw-chrome-panel-beats.json'), JSON.stringify(beats, null, 2) + '\n');
     },
   };
 }
@@ -169,15 +211,20 @@ function waitWeb(page, text, timeout) {
 }
 
 async function webPair(page) {
+  await page.bringToFront();
   await page.getByRole('heading', { name: 'Growth Audit', exact: true }).waitFor();
   if (await webButton(page, 'Open demo').isVisible()) {
     await clickWeb(page, 'Open demo');
     await clickWeb(page, 'Open ecommerce demo');
   }
   await waitWeb(page, 'Demo session active');
-  if (await webButton(page, 'Use an approved Chrome capture').isVisible()) await clickWeb(page, 'Use an approved Chrome capture');
   const pairButton = page.locator('.capture-actions').getByRole('button', { name: 'Pair Chrome extension', exact: true });
-  await webCondition(page, 'enabled capture pairing', async () => await pairButton.isVisible() && await pairButton.isEnabled());
+  await webCondition(page, 'enabled capture pairing', async () => {
+    if (await pairButton.isVisible()) return pairButton.isEnabled();
+    const expand = webButton(page, 'Use an approved Chrome capture');
+    if (await expand.isVisible()) await expand.click({ timeout: 2000 }).catch(() => undefined);
+    return false;
+  });
   await pairButton.click();
   await webCondition(page, 'pending web pairing', () => webButton(page, 'Check pairing').isVisible());
   const sessionId = await page.evaluate(() => sessionStorage.getItem(Object.keys(sessionStorage).find((key) => key.startsWith('roaclaw.session.') && key.endsWith('.sable-stem'))));
@@ -247,6 +294,7 @@ async function checkWebMemory(source, receipt) {
 }
 
 async function searchSaved(panel) {
+  await panel.click('#panel-research-tab');
   await panel.click('#research details:first-child summary');
   const query = useWebFlow ? 'demo-store' : 'ROACLAW smoke';
   await panel.evaluate((text) => { document.querySelector('#search-text').value = text; }, query);
@@ -259,6 +307,7 @@ const profile = await mkdtemp(join(tmpdir(), 'roaclaw-g3-chrome-'));
 let context;
 let source;
 let stage = 'launch';
+let panelRecording;
 try {
   let unpacked = extensionPath;
   if (pregranted) {
@@ -272,7 +321,7 @@ try {
     await writeFile(path, JSON.stringify(manifest));
   }
   context = await chromium.launchPersistentContext(profile, {
-    channel: 'chrome', headless: false, viewport: null, ignoreDefaultArgs: ['--disable-extensions'],
+    channel: 'chrome', headless: process.env.ROACLAW_QA_HEADLESS === '1', viewport: null, ignoreDefaultArgs: ['--disable-extensions'],
     args: ['--enable-unsafe-extension-debugging', '--window-size=1280,900'],
   });
   const devtools = await context.browser().newBrowserCDPSession();
@@ -289,8 +338,10 @@ try {
   else assert.equal((await sendFromPage(source, scope, 'ROACLAW_PAIR', { workspaceName })).status, 'pending');
   await triggerToolbar(source, devtools, context);
   const panel = await connectPanel(context, devtools);
+  if (recordPanel) panelRecording = await startRecording(panel, profile);
   await hasText(panel, '#pair-name', workspaceName);
   await panel.screenshot('01-pairing.png');
+  panelRecording?.mark('pair');
   await panel.click('#confirm-pair');
   await hasText(panel, '#workspace-name', workspaceName);
   if (useWebFlow) {
@@ -306,10 +357,13 @@ try {
   await triggerToolbar(landing, devtools, context);
   await hasText(panel, '#page-state', 'Ready to capture');
   await hasText(panel, '#page-url', fixture);
+  panelRecording?.mark('captureStart');
   await panel.click('#capture');
   await hasText(panel, '#capture-url', fixture);
   await panel.click('#capture-review summary');
   await panel.screenshot('02-captured-evidence.png');
+  panelRecording?.mark('captureVisible');
+  if (recordPanel) await delay(1800);
   const { capture } = await sendFromPage(source, scope, 'ROACLAW_CAPTURE');
   assert.equal(capture.url, fixture);
   assert.ok(capture.title && capture.headings.length && capture.visiblePriceText.length && capture.ctas.length, JSON.stringify(capture));
@@ -322,7 +376,10 @@ try {
     await waitWeb(source, 'Approved Chrome capture attached.');
     webInference = await auditInWeb(source);
     stage = 'web bookmark proposal, approval, and receipt';
+    panelRecording?.mark('approvalStart');
     receipts.push(await bookmarkInWeb(source, panel, scope));
+    panelRecording?.mark('verified');
+    if (recordPanel) await delay(2100);
     stage = 'Memory receipt readback';
     await checkWebMemory(source, receipts[0]);
     if (evidence) await source.screenshot({ path: join(evidence, '07-web-memory.png'), fullPage: true });
@@ -352,10 +409,13 @@ try {
     await panel.click('#history-form button');
     await hasText(panel, '#history-results', fixture, 90_000);
     await panel.screenshot('08-history.png');
+    panelRecording?.mark('historyVisible');
+    if (recordPanel) await delay(1800);
     await panel.click('#clear-history');
     await until('history results cleared', () => panel.evaluate(() => document.querySelector('#history-results').children.length === 0));
   }
 
+  await panelRecording?.freeze();
   stage = 'bookmark persistence';
   await source.reload({ waitUntil: 'domcontentloaded', timeout: 45_000 });
   for (const entry of receipts) {
@@ -370,6 +430,7 @@ try {
     const outside = new URL('/morrow-booking/', base).href;
     await landing.goto(outside, { waitUntil: 'domcontentloaded' });
     await triggerToolbar(landing, devtools, context);
+    await panel.click('#panel-inspect-tab');
     await hasText(panel, '#page-url', outside);
     await panel.click('#capture');
     await hasText(panel, '#capture-url', outside);
@@ -390,6 +451,9 @@ try {
     assert.notEqual(newScope.sessionId, scope.sessionId);
     assert.equal((await sendFromPage(source, newScope, 'ROACLAW_CAPTURE')).code, 'NOT_PAIRED');
   }
+  stage = 'panel recording export';
+  await panelRecording?.finish(true);
+  panelRecording = null;
   await context.close();
   context = null;
   const saved = JSON.parse(await readFile(join(profile, 'Default', 'Bookmarks'), 'utf8'));
@@ -410,6 +474,7 @@ try {
   }
   throw error;
 } finally {
+  await panelRecording?.finish(false);
   await context?.close();
   await rm(profile, { recursive: true, force: true });
 }

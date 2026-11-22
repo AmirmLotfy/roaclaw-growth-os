@@ -51,7 +51,7 @@ try {
 
   const app = context.pages()[0] ?? await context.newPage();
   await app.goto(origin, { waitUntil: 'networkidle' });
-  await app.getByRole('heading', { name: 'Does the landing page match the ad?' }).waitFor();
+  await app.getByRole('heading', { name: /The page said/ }).waitFor();
   await inspect(app, 'website-desktop');
 
   await app.getByRole('link', { name: 'Open Growth Audit', exact: true }).first().click();

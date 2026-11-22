@@ -4,7 +4,7 @@
     "width": 1280,
     "noHorizontalOverflow": true,
     "reduceMotion": true,
-    "rulesPassed": 25,
+    "rulesPassed": 28,
     "violations": []
   },
   {
@@ -84,7 +84,7 @@
     "width": 360,
     "noHorizontalOverflow": true,
     "reduceMotion": true,
-    "rulesPassed": 19,
+    "rulesPassed": 20,
     "violations": []
   },
   {
@@ -92,7 +92,7 @@
     "width": 420,
     "noHorizontalOverflow": true,
     "reduceMotion": true,
-    "rulesPassed": 19,
+    "rulesPassed": 20,
     "violations": []
   },
   {

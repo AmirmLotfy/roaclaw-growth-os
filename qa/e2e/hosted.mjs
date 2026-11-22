@@ -9,7 +9,8 @@ const profile = resolve('.local/g0-chrome');
 const dest = resolve('qa/evidence/web');
 const recordVideo = process.env.ROACLAW_CAPTURE_VIDEO === '1';
 await mkdir(dest, { recursive: true });
-const recordingStart = Date.now();
+const holdMs = Math.round(1000 * Number(process.env.ROACLAW_CAPTURE_HOLD_SECONDS || '2.2'));
+let recordingStart;
 const context = await chromium.launchPersistentContext(profile, {
   channel: 'chrome',
   ignoreDefaultArgs: true,
@@ -18,13 +19,16 @@ const context = await chromium.launchPersistentContext(profile, {
     '--remote-debugging-pipe',
     '--no-first-run',
     '--no-default-browser-check',
+    ...(process.env.ROACLAW_QA_HEADLESS === '1' ? ['--headless=new'] : []),
     'about:blank',
   ],
   viewport: { width: 1440, height: 920 },
   ...(recordVideo ? { recordVideo: { dir: resolve('.local/footage'), size: { width: 1440, height: 920 } } } : {}),
 });
 const responses = [];
+const aiRequestAttempts = [];
 let page;
+let passed = false;
 const beats = {};
 async function assertChevronInset(target) {
   const control = target.locator('.select-control').first();
@@ -37,20 +41,29 @@ async function assertChevronInset(target) {
 async function beat(name) {
   if (!recordVideo) return;
   const start = (Date.now() - recordingStart) / 1000;
-  await new Promise((done) => setTimeout(done, 2200));
+  await new Promise((done) => setTimeout(done, holdMs));
   beats[name] = { start, end: (Date.now() - recordingStart) / 1000 };
 }
 try {
   page = context.pages()[0] ?? await context.newPage();
+  recordingStart = Date.now();
   const cdp = await context.newCDPSession(page);
   await cdp.send('Network.clearBrowserCache');
   await cdp.send('Storage.clearDataForOrigin', { origin, storageTypes: 'all' });
   await cdp.detach();
-  page.on('response', (response) => {
-    const url = new URL(response.url());
+  function aiRoute(address) {
+    const url = new URL(address);
     const kind = url.pathname.includes(':generateContent') ? 'generation'
       : url.pathname.includes(':exchangeRecaptchaEnterpriseToken') ? 'app-check' : null;
-    if (kind) responses.push({ kind, host: url.hostname, status: response.status() });
+    return kind ? { kind, host: url.hostname } : null;
+  }
+  page.on('request', (request) => {
+    const route = aiRoute(request.url());
+    if (route) aiRequestAttempts.push(route);
+  });
+  page.on('response', (response) => {
+    const route = aiRoute(response.url());
+    if (route) responses.push({ ...route, status: response.status() });
   });
   if (recordVideo) {
     await page.goto(origin + '/demo-store/', { waitUntil: 'networkidle' });
@@ -58,15 +71,28 @@ try {
     await beat('offer');
   }
   await page.goto(origin, { waitUntil: 'domcontentloaded', timeout: 45000 });
-  await page.getByRole('heading', { name: 'Does the landing page match the ad?' }).waitFor();
-  await page.locator('.hero-demo img').evaluate((image) => image.decode());
-  await page.screenshot({ path: resolve(dest, '00-website-desktop.png'), fullPage: true });
-  await page.setViewportSize({ width: 390, height: 844 });
-  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth), true);
-  await page.screenshot({ path: resolve(dest, '00-website-mobile.png'), fullPage: true });
-  await page.setViewportSize({ width: 1440, height: 920 });
-  await page.keyboard.press('Tab');
+  await page.getByRole('heading', { name: /The page said/ }).waitFor();
+  await page.locator('.hero-art img').evaluate((image) => image.decode());
+  const offerTab = page.getByRole('tab', { name: 'Read the audit' });
+  const chromeTab = page.getByRole('tab', { name: 'Verify the bookmark' });
+  await offerTab.focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await chromeTab.getAttribute('aria-selected'), 'true');
+  await page.getByRole('tabpanel', { name: 'Verify the bookmark' }).getByRole('img').waitFor();
+  await page.keyboard.press('Home');
+  assert.equal(await offerTab.getAttribute('aria-selected'), 'true');
+  await offerTab.blur();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: resolve(dest, '00-website-desktop.png'), fullPage: !recordVideo });
+  if (!recordVideo) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth), true);
+    await page.screenshot({ path: resolve(dest, '00-website-mobile.png'), fullPage: true });
+    await page.setViewportSize({ width: 1440, height: 920 });
+  }
+  await page.getByRole('link', { name: 'Skip to content' }).focus();
   assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Skip to content');
+  await page.getByRole('link', { name: 'Skip to content' }).blur();
   const zip = await fetch(origin + '/roaclaw-extension.zip');
   assert.equal(zip.status, 200);
   assert.equal(Buffer.from(await zip.arrayBuffer()).subarray(0, 4).toString('hex'), '504b0304');
@@ -82,6 +108,7 @@ try {
   const open = page.getByRole('button', { name: 'Open demo' });
   if (await open.isVisible()) {
     await open.click();
+    await beat('setup');
     await page.getByRole('button', { name: 'Open ecommerce demo', exact: true }).click();
   }
   await page.getByText('Demo session active', { exact: true }).waitFor({ timeout: 45000 });
@@ -91,8 +118,24 @@ try {
   await page.getByText('Page · On device', { exact: true }).waitFor({ timeout: 90000 });
   await page.getByText(/Advertised \$99 vs landing page \$119/).waitFor();
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.screenshot({ path: resolve(dest, '01-on-device.png'), fullPage: true });
+  await page.screenshot({ path: resolve(dest, '01-on-device.png'), fullPage: !recordVideo });
   await beat('device');
+
+  await context.setOffline(true);
+  await page.getByText('Offline · Device only', { exact: true }).waitFor();
+  const networkBeforeOfflineAudit = aiRequestAttempts.length;
+  await page.getByRole('button', { name: 'Run again' }).click();
+  await page.getByText('Audit complete offline. Reconnect to save it, or export the audit now.', { exact: true }).waitFor({ timeout: 90000 });
+  await page.getByText('Page · On device', { exact: true }).waitFor();
+  const offlineAiRequestAttempts = aiRequestAttempts.length - networkBeforeOfflineAudit;
+  assert.equal(offlineAiRequestAttempts, 0);
+  assert.equal(await page.evaluate(() => navigator.onLine), false);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: resolve(dest, '08-offline-app.png'), fullPage: !recordVideo });
+  await beat('offline');
+  await context.setOffline(false);
+  await page.getByText('Offline audits synced.', { exact: true }).waitFor({ timeout: 30000 });
+
   await modes.selectOption('hybrid');
   await page.getByRole('button', { name: 'Run again' }).click();
   await page.getByText('Review · In cloud', { exact: true }).waitFor({ timeout: 90000 });
@@ -100,7 +143,7 @@ try {
   await page.getByRole('heading', { name: /campaign tracking|campaign tag|UTM/i }).waitFor();
   await page.getByRole('heading', { name: /ROAS|return on ad spend/i }).waitFor();
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.screenshot({ path: resolve(dest, '02-hybrid-audit.png'), fullPage: true });
+  await page.screenshot({ path: resolve(dest, '02-hybrid-audit.png'), fullPage: !recordVideo });
   await beat('cloud');
   await beat('findings');
   await page.getByText('Save a tagged URL', { exact: true }).scrollIntoViewIfNeeded();
@@ -116,7 +159,7 @@ try {
   await page.getByLabel('Question').fill('What did the audit find about the price?');
   await page.getByRole('button', { name: 'Find in workspace' }).click();
   await page.getByText(/Advertised and displayed prices differ ·/).waitFor();
-  await page.screenshot({ path: resolve(dest, '05-text-lookup.png'), fullPage: true });
+  await page.screenshot({ path: resolve(dest, '05-text-lookup.png'), fullPage: !recordVideo });
 
   await page.getByRole('button', { name: 'Memory', exact: true }).click();
   await page.getByLabel('Note', { exact: true }).fill('Check the campaign price before refreshing the creative.');
@@ -126,6 +169,7 @@ try {
   const memorySearch = page.getByLabel('Search bookmarks and notes');
   await memorySearch.fill('Offer');
   await page.getByText('Check the campaign price before refreshing the creative.', { exact: true }).waitFor();
+  await beat('memory');
 
   await page.getByRole('button', { name: 'Automations', exact: true }).click();
   await assertChevronInset(page);
@@ -136,7 +180,7 @@ try {
   await page.clock.setFixedTime(nextMinute);
   await page.getByRole('button', { name: 'Run due checks' }).click();
   await page.getByText('The fixture storefront displays $119.', { exact: true }).waitFor();
-  await page.screenshot({ path: resolve(dest, '03-followup-recheck.png'), fullPage: true });
+  await page.screenshot({ path: resolve(dest, '03-followup-recheck.png'), fullPage: !recordVideo });
   await beat('followup');
   await page.clock.setFixedTime(Date.now());
 
@@ -149,7 +193,7 @@ try {
   await modes.selectOption('local');
   await page.getByRole('button', { name: 'Run Growth Audit' }).click();
   await page.getByRole('heading', { name: 'The CTA may obscure the booking goal' }).waitFor({ timeout: 90000 });
-  await page.screenshot({ path: resolve(dest, '06-lead-audit.png'), fullPage: true });
+  await page.screenshot({ path: resolve(dest, '06-lead-audit.png'), fullPage: !recordVideo });
   await page.locator('select[aria-label="Workspace"]').selectOption('northline-retail');
   await page.getByText('Field Notebook | Northline Retail', { exact: true }).waitFor();
   await modes.selectOption('local');
@@ -163,6 +207,9 @@ try {
   await page.getByText('The fixture storefront displays $119.', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Run due checks' }).click();
   await page.getByText('No follow-ups are due.', { exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Schedule follow-up' }).click();
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await page.getByText('canceled', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Memory', exact: true }).click();
   await page.getByText('Check the campaign price before refreshing the creative.', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Growth Audit', exact: true }).click();
@@ -170,15 +217,16 @@ try {
   await page.getByRole('heading', { name: 'Growth Audit', exact: true }).waitFor();
   await assertChevronInset(page);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth), true);
-  await page.screenshot({ path: resolve(dest, '04-mobile.png'), fullPage: true });
+  await page.screenshot({ path: resolve(dest, '04-mobile.png'), fullPage: !recordVideo });
 
   assert.ok(responses.some((response) => response.kind === 'generation' && response.status === 200));
-  const report = { origin, appUrl, marketingEntryVerified: true, passed: true, appCheckResponses: responses, deviceAnalysis: true, cloudReview: true, firestoreReload: true, workspaceIsolationInView: true, fixtureRecheck: true, mobileNoOverflow: true, selectChevronInsetVerified: true, leadAuditVerified: true, retailAuditVerified: true, taggedNotesAfterReload: true, textLookupVerified: true, auditExportVerified: true };
+  const report = { origin, appUrl, marketingEntryVerified: true, marketingKeyboardProofView: true, offlineAppAuditAndSync: true, offlineAiRequestAttempts, passed: true, appCheckResponses: responses, deviceAnalysis: true, cloudReview: true, firestoreReload: true, workspaceIsolationInView: true, fixtureRecheck: true, mobileNoOverflow: true, selectChevronInsetVerified: true, leadAuditVerified: true, retailAuditVerified: true, taggedNotesAfterReload: true, textLookupVerified: true, auditExportVerified: true };
   await writeFile(resolve(dest, 'runtime.json'), JSON.stringify(report, null, 2) + '\n');
+  passed = true;
   console.log(JSON.stringify(report, null, 2));
 } catch (error) {
   if (page) {
-    await page.screenshot({ path: resolve(dest, 'failure.png'), fullPage: true }).catch(() => {});
+    await page.screenshot({ path: resolve(dest, 'failure.png'), fullPage: !recordVideo }).catch(() => {});
     console.log('Browser error:', await page.locator('[role="alert"]').last().textContent({ timeout: 500 }).catch(() => 'none'));
     console.log('Observed routes:', JSON.stringify(responses));
   }
@@ -186,7 +234,7 @@ try {
 } finally {
   const rawVideo = recordVideo ? await page?.video()?.path().catch(() => null) : null;
   await context.close();
-  if (rawVideo && beats.followup && beats.workspaces) {
+  if (rawVideo && passed && beats.followup && beats.workspaces) {
     const videoFile = resolve('.local/footage/roaclaw-web.webm');
     await copyFile(rawVideo, videoFile);
     await writeFile(resolve('.local/footage/roaclaw-web-beats.json'), JSON.stringify(beats, null, 2) + '\n');

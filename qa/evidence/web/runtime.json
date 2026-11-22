@@ -2,6 +2,9 @@
   "origin": "https://roaclaw-growth-os-2026.web.app",
   "appUrl": "https://roaclaw-growth-os-2026.web.app/app/",
   "marketingEntryVerified": true,
+  "marketingKeyboardProofView": true,
+  "offlineAppAuditAndSync": true,
+  "offlineAiRequestAttempts": 0,
   "passed": true,
   "appCheckResponses": [
     {

@@ -11,13 +11,10 @@ const footageDir = resolve(repo, ".local/footage");
 const outputDir = resolve(repo, ".local/video");
 const entry = resolve(packageDir, "src/Root.tsx");
 const remotion = resolve(packageDir, "node_modules/.bin/remotion");
-const master = resolve(outputDir, "ROACLAW_BuildHybridAI_2026_FINAL.mp4");
-const thumbnail = resolve(outputDir, "ROACLAW_BuildHybridAI_2026_THUMBNAIL.png");
-const srt = resolve(outputDir, "ROACLAW_BuildHybridAI_2026_EN.srt");
 const propsPath = resolve(outputDir, "edit-props.json");
-const required = ["offer", "device", "cloud", "findings"];
+const required = ["offer", "device", "cloud"];
 const videoExt = [".mp4", ".webm"];
-const screenshotBeats = ["capture", "bookmark", "receipt", "history", "lead"];
+const screenshotBeats = ["capture", "bookmark", "receipt", "history", "lead", "offline"];
 const audioExt = [".wav", ".mp3", ".m4a", ".aiff"];
 const focuses = ["center", "top", "bottom", "left", "right"];
 
@@ -67,7 +64,7 @@ function cue(number, from, end, text) {
   return `${number}\n${position(from)} --> ${position(end)}\n${subtitleText(text)}\n\n`;
 }
 
-function ingest(path) {
+function ingest(path, srt) {
   const realManifest = realpathSync(path);
   assertInside(realpathSync(footageDir), realManifest);
   const folder = dirname(realManifest);
@@ -80,6 +77,8 @@ function ingest(path) {
   const opening = data.segments[0]?.kind === "home" ? data.segments.slice(1) : data.segments;
   assert(required.every((kind, index) => opening[index]?.kind === kind),
     `The core opening order is ${required.join(", ")}, with an optional homepage before it.`);
+
+  assert(data.segments.some((clip) => clip.kind === "findings"), "Include the real audit findings.");
 
   const seen = new Set();
   const probes = new Map();
@@ -137,12 +136,37 @@ function ingest(path) {
     "The thumbnail time must select a frame inside one of the edited beats.");
   const cover = { kind: coverKind, frame: coverSegment.startFrame + Math.round(coverSecond * fps) };
   captions += cue(++cueNumber, cursor, duration, `ROACLAW · ${link.hostname}`);
-  const props = { demoUrl: link.href.replace(/\/$/, ""), duration, cover, segments };
+  function track(name) {
+    if (!data[name]) return;
+    const { path, servedName } = verifiedAsset(folder, data[name], audioExt);
+    const metadata = probe(path);
+    const seconds = Number(metadata.format?.duration);
+    assert(metadata.streams.some((item) => item.codec_type === "audio") && Number.isFinite(seconds),
+      `${data[name]} needs a readable audio stream.`);
+    assert(name === "score" ? seconds >= duration / fps - 0.05 : seconds <= duration / fps,
+      name === "score" ? "Prepare an instrumental file at least as long as the cut." : "Narration must finish within the cut.");
+    return servedName;
+  }
+
+  assert(!data.voiceover || !segments.some((segment) => segment.narration),
+    "Choose a continuous voiceover or scene narration.");
+  if (data.subtitleCues) {
+    assert(Array.isArray(data.subtitleCues) && data.subtitleCues.length > 0, "Provide timed English subtitle cues.");
+    let lastEnd = 0;
+    captions = data.subtitleCues.map(({ start, end, text }, index) => {
+      assert(Number.isFinite(start) && Number.isFinite(end) && start >= lastEnd && end > start &&
+        end <= duration / fps && typeof text === "string" && text.length > 0 && text.length <= 110,
+      `Subtitle ${index + 1} needs non-overlapping start/end seconds and up to 110 English characters.`);
+      lastEnd = end;
+      return cue(index + 1, Math.round(start * fps), Math.round(end * fps), text);
+    }).join("");
+  }
+  const props = { demoUrl: link.href.replace(/\/$/, ""), duration, cover, segments, score: track("score"), voiceover: track("voiceover") };
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(propsPath, JSON.stringify(props, null, 2) + "\n");
   writeFileSync(srt, captions);
   console.log(`Verified ${segments.length} cuts · ${(duration / fps).toFixed(2)} seconds · ${srt}`);
-  return { folder, props };
+  return { folder, props, requireAudio: data.requireAudio === true };
 }
 
 function runRemotion(args, folder) {
@@ -152,7 +176,7 @@ function runRemotion(args, folder) {
   });
 }
 
-function verifyMaster() {
+function verifyMaster(master, thumbnail, qa) {
   const metadata = probe(master);
   const video = metadata.streams.find((track) => track.codec_type === "video");
   const audio = metadata.streams.find((track) => track.codec_type === "audio");
@@ -162,7 +186,6 @@ function verifyMaster() {
   const cover = probe(thumbnail).streams.find((track) => track.codec_type === "video");
   assert(cover?.width === 1280 && cover.height === 720, "The thumbnail must be 1280×720.");
 
-  const qa = resolve(outputDir, "qa");
   mkdirSync(qa, { recursive: true });
   const sampleSpan = Math.floor(duration * fps / 5);
   const frames = [0, ...Array.from({ length: 5 }, (_, index) => index * sampleSpan + randomInt(1, sampleSpan))];
@@ -178,19 +201,28 @@ function verifyMaster() {
 
 try {
   const [mode, manifestArg] = process.argv.slice(2);
-  assert(["ingest", "preview", "render"].includes(mode), "Choose ingest, preview, or render.");
+  assert(["ingest", "preview", "picture", "render"].includes(mode), "Choose ingest, preview, picture, or render.");
   const manifest = manifestArg ? resolve(process.env.INIT_CWD ?? process.cwd(), manifestArg) : resolve(footageDir, "edit.json");
-  const { folder, props } = ingest(manifest);
+  const picture = mode === "picture";
+  const prefix = picture ? "ROACLAW_PICTURE_REVIEW" : "ROACLAW_BuildHybridAI_2026";
+  const srt = resolve(outputDir, prefix + "_EN.srt");
+  const master = resolve(outputDir, picture ? prefix + ".mp4" : prefix + "_FINAL.mp4");
+  const thumbnail = resolve(outputDir, prefix + "_THUMBNAIL.png");
+  const { folder, props, requireAudio } = ingest(manifest, srt);
   if (mode === "preview") {
     const preview = resolve(outputDir, "ROACLAW_preview.png");
-    const device = props.segments[1];
+    const device = props.segments.find((segment) => segment.kind === "device");
     runRemotion(["still", entry, "ROACLAW-Demo", preview, `--frame=${device.from + device.duration - 10}`], folder);
     console.log(`Preview · ${preview}`);
   }
-  if (mode === "render") {
+  if (mode === "render" || picture) {
+    if (requireAudio && !picture) {
+      assert((props.voiceover || props.segments.some((segment) => segment.narration)) && props.score,
+        "The final render requires an approved voiceover and score. Use picture for the silent review.");
+    }
     runRemotion(["render", entry, "ROACLAW-Demo", master, "--codec=h264", "--audio-codec=aac", "--enforce-audio-track", "--crf=17", "--concurrency=2"], folder);
     runRemotion(["still", entry, "ROACLAW-Thumbnail", thumbnail, "--frame=0"], folder);
-    verifyMaster();
+    verifyMaster(master, thumbnail, resolve(outputDir, picture ? "picture-review-qa" : "qa"));
   }
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);

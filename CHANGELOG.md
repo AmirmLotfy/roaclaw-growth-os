@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 · Submission candidate
+
+- Rebuilt the product site around the audited offer, original storefront artwork, and keyboard-operable proof tabs.
+- Applied the new brand to the dashboard, Chrome icon, and companion. The companion now has Inspect, Actions, and Research views.
+- Added the open-tab offline audit path, reconnect sync for demo results, and follow-up cancellation.
+- Expanded real product recording and prepared timed narration and score inputs.
+
 ## 0.1.0 · BuildHybridAI 2026
 
 - Chrome Nano 4 through Firebase AI Logic, with verified on-device, offline, cloud and consented fallback requests.

@@ -1,31 +1,29 @@
 # ROACLAW visual system
 
-## Audit layout
+## Product site
 
-The desktop layout has a 222px workspace rail, a client and view breadcrumb, and a single scrollable audit area. Put campaign figures in one horizontal strip. Keep the selected page, inference mode, and run action together. Lay out the findings next to the Chrome review on wide screens. On narrow screens, stack them in reading order and open navigation from Menu.
+The opening puts the two confirmed demo prices in large type next to the actual storefront image. Follow it with an interactive, captioned proof panel using verified audit and Chrome screenshots. Use the install section for exact steps and the privacy section for model routing. A compact navigation leads to those sections and the working app.
 
-Use the verified two-column price comparison as the focal point when the sources disagree. Print captured and campaign evidence below its corresponding finding. Use the secondary rail for the exact bookmark destination, approval state, and audit history. In Chrome, put the connected workspace at the top and promote a pending approval above Inspect.
+The photo entrance settles from a small scale change. A single guide line emphasizes the selected evidence area. The proof pane changes quickly on tab selection. The text, navigation, and screenshots stay readable with reduced motion.
 
-## Color
+## Work surfaces
+
+The desktop layout pairs a charcoal workspace rail with a light dashboard. Put campaign figures in one strip and keep the source, inference mode, and run button together. Use controlled contrast for the recorded price and approved bookmark. In Chrome, show the workspace over three views, and open Actions when a new bookmark requires review.
 
 | Role | Color |
 |---|---|
-| Workspace rail | `#132642` |
-| Dashboard canvas | `#F4F7FB` |
-| Surface | `#FFFFFF` |
-| Ink | `#14243D` |
-| Secondary text | `#4C5B70` |
-| Primary action and focus | `#1853D8` |
-| Selected evidence | `#E9F1FD` |
-| Border | `#CBD8E5` |
-| Verified | `#17674F` |
-| Warning | `#79460F` |
-| High priority | `#9C2348` |
+| Navigation and site backdrop | `#171E19` |
+| Canvas | `#EDF1EC` |
+| Surface | `#FEFFFC` |
+| Ink | `#1D291F` |
+| Secondary text | `#46564A` |
+| Primary control | `#D8F479` |
+| Link and focus | `#345641` |
+| Border | `#BFCDBF` |
+| Verified | `#186047` |
+| Warning | `#764B13` |
+| High priority | `#922848` |
 
-Keep dark navy in navigation and blue in primary controls, text links, focus, and selected evidence. Pair priority and verification colors with text. Surfaces use thin rules and radii of 4–6px.
+Archivo Black is for the product-site headings. Use IBM Plex Sans for web product controls and IBM Plex Mono for timestamps and source strings. The extension uses the platform interface font and the shared color roles. Tint selected evidence and pair every status color with its meaning in text. Use 14px from the right edge for web select chevrons and preserve the native select interaction.
 
-## Type and content
-
-IBM Plex Sans serves interface copy, headings, and the metric strip. Use IBM Plex Mono for timestamps, evidence excerpts, and URLs. Set the current view as the page heading. Use the supporting sentence to tell the user what they can do. Use plain verbs in controls and direct labels for what the model or browser returned.
-
-When an action has a prerequisite, show it at the point of use. The browser panel keeps the destination visible during bookmark review. The demo storefront labels itself and uses an original illustrative product image for the synthetic item. Dashboard metrics and analysis originate from the documented fixtures and the actual inference calls.
+The campaign prices and audit screenshots use the synthetic Sable & Stem demo. The switches, captures, reviews, connections, and receipts shown in the app reflect actual runtime events.

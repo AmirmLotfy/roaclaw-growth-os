@@ -20,6 +20,8 @@ let state = {};
 let busy = false;
 let refreshIndex = 0;
 let historyRequest;
+let activeView = 'inspect';
+const views = ['inspect', 'actions', 'research'];
 
 function notice(message, error = false) {
   $('notice').classList.toggle('error', error);
@@ -64,6 +66,7 @@ function renderCapture(capture) {
 
 function renderAction(proposal) {
   show('bookmark', Boolean(proposal));
+  show('no-action', !proposal);
   show('action-status', Boolean(proposal));
   if (!proposal) return;
   const [status, description] = actionCopy[proposal.status] ?? ['Verifying', 'Checking the saved bookmark in Chrome.'];
@@ -99,9 +102,14 @@ function render() {
     text('confirm-pair', binding ? 'Switch workspace' : 'Connect workspace');
   }
 
-  show('inspect', Boolean(binding));
-  show('actions', Boolean(binding && proposal));
-  show('research', Boolean(binding));
+  show('panel-nav', Boolean(binding));
+  for (const view of views) {
+    const selected = view === activeView;
+    const tab = $('panel-' + view + '-tab');
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    show(view, Boolean(binding) && selected);
+  }
   if (binding) {
     text('page-state', activePage?.url ? 'Ready to capture' : 'Tab access needed');
     $('page-state').dataset.tone = activePage?.url ? 'success' : 'warning';
@@ -126,10 +134,12 @@ async function refresh() {
     if (index !== refreshIndex) return;
     if (!updated?.ok) throw new Error(ERRORS.INTERNAL);
     if (state.binding?.reviewId !== updated.binding?.reviewId) {
+      activeView = 'inspect';
       $('search-results').replaceChildren();
       $('search-form').reset();
       resetHistory();
     }
+    if (updated.proposal?.status === 'pending' && updated.proposal.reviewId !== state.proposal?.reviewId) activeView = 'actions';
     state = updated;
     if (tab?.url && !tab.incognito) {
       const url = publicPageUrl(tab.url);
@@ -268,12 +278,32 @@ async function searchHistory(event) {
   }
 }
 
+function switchView(view, focus = false) {
+  activeView = view;
+  render();
+  if (focus) $('panel-' + view + '-tab').focus();
+}
+
+function viewKeys(event) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  const current = views.indexOf(activeView);
+  const direction = event.key === 'ArrowRight' ? 1 : -1;
+  const next = event.key === 'Home' ? 0 : event.key === 'End' ? views.length - 1 : (current + direction + views.length) % views.length;
+  switchView(views[next], true);
+}
+
 async function start() {
   try {
     ({ id: windowId } = await chrome.windows.getCurrent());
   } catch {
     notice(ERRORS.INTERNAL, true);
     return;
+  }
+  for (const view of views) {
+    const tab = $('panel-' + view + '-tab');
+    tab.addEventListener('click', () => switchView(view));
+    tab.addEventListener('keydown', viewKeys);
   }
   $('open-dashboard').addEventListener('click', () => void run({ type: 'PANEL_OPEN_DASHBOARD' }));
   $('history-form').addEventListener('submit', searchHistory);
@@ -296,7 +326,10 @@ async function start() {
   chrome.tabs.onActivated.addListener((tab) => { if (tab.windowId === windowId) void refresh(); });
   chrome.tabs.onUpdated.addListener((tabId, _changes, tab) => { if (tab.active && tab.windowId === windowId) void refresh(); });
   chrome.runtime.onMessage.addListener((message, sender) => {
-    if (sender.id === chrome.runtime.id && message?.type === 'ROACLAW_TOOLBAR_INVOKED' && message.windowId === windowId) void refresh();
+    if (sender.id === chrome.runtime.id && message?.type === 'ROACLAW_TOOLBAR_INVOKED' && message.windowId === windowId) {
+      if (!['pending', 'approved'].includes(state.proposal?.status)) activeView = 'inspect';
+      void refresh();
+    }
   });
   window.setInterval(refresh, 15_000);
   await refresh();

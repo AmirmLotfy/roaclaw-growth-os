@@ -1,18 +1,13 @@
-# Google AI Studio — voiceover generation handoff
+# Google AI Studio voiceover prompt
 
-**Where:** Google AI Studio text-to-speech workflow if available for the account (current documented TTS family includes Gemini 3.1 Flash TTS Preview). This is **submission video asset generation**, not app runtime inference. It is permitted only if platform and contest licenses allow usage; verify rights. User will generate/return WAV/PCM files if Codex cannot access account.
+Use the speech generation interface with **Gemini 3.8 Flash TTS**, if shown for the account. Use a single voice for every clip. Pick a clear, adult English-speaking voice with even enunciation and no strong character accent. Voice generation is for the video. [Google speech generation guide](https://ai.google.dev/gemini-api/docs/speech-generation)
 
-## Copy/paste direction prompt
-Produce an original, professionally narrated English voiceover for a serious B2B product walkthrough called ROACLAW. Speaker: adult gender-neutral or male, calm, articulate, confident without hype, neutral international English with slight editorial documentary cadence. Speak naturally at around 135 words per minute, with clear enunciation of 'Firebase AI Logic', 'Gemini Nano', 'on-device', 'landing page', 'return on ad spend', 'ROACLAW'. Avoid AI-influencer enthusiasm, upspeak, dramatic trailer bass, stock-commercial warmth or breathless speed. No music, no background ambiance, no sound effects, no extra introductions. Maintain consistent timbre across all clips, subtle pauses after technical claims, and emphasize evidence and user control rather than marketing superlatives. Read the script supplied below **verbatim**; do not rewrite it or add fictional capabilities. Export isolated high-quality WAV or PCM if supported, with consistent levels.
+For each of the ten clips, paste this direction followed by the exact narration under the matching filename in [Voiceover script](VOICEOVER_SCRIPT.md).
 
-[PASTE THE SEGMENT TEXT FROM `VOICEOVER_SCRIPT.md` HERE]
+```text
+Read only the narration after NARRATION. Speak clear international English as a product engineer describing a browser demonstration to a colleague. Use a low-key conversational delivery, steady volume, and short pauses between sentences. Aim for about 145 words a minute. The figures and model names need to be easy to hear. Say ROACLAW as “ROH-claw.” Say Firebase A.I. Logic with the letters A and I spoken separately. Say Gemini Nano Four in full. Keep the wording exact. Do not introduce the clip, read a filename, add breaths for effect, or add music, effects, or reverb. Leave a short quiet tail after the final line.
 
-## Practical workflow
-- Generate one continuous take or 10 scene-aligned clips, depending on model control. Use exactly the same chosen voice settings.
-- User review for pronunciation and naturalness; regenerate individual clips rather than altering visual timeline to fit unnatural speech.
-- Name: `vo_00_hook.wav`, `vo_01_local.wav`, ...; put files in `apps/video/public/audio/` for Codex, do not commit if licensing forbids redistribution.
-- In Remotion, align clips to timeline; no time-stretch greater than a few percent to mask poor timing. Prefer revise text to fit genuine footage.
-- Use a short alternative version if no music model is available; music is secondary.
+NARRATION
+```
 
-## Verification
-Check output format, loudness, unnatural pauses, incorrect 'Nano 4' claims, subtitles, and license terms before final public upload.
+Export each take as WAV or upload the original audio from AI Studio. Use the filenames in the script. Send the files together if possible. For a single continuous take, keep the same order, leave a one-second pause between passages, and name it `roaclaw_voiceover.wav`. The edit will be timed to the supplied performance and captioned in English.

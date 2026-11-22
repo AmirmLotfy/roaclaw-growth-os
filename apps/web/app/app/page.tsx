@@ -17,7 +17,7 @@ import { inspectPage, reasonFromFindings } from '../../lib/inference';
 import { auth, openDemoSession, readWorkspace, updateWorkspace } from '../../lib/store';
 
 type View = 'Overview' | 'Growth Audit' | 'Campaigns' | 'Clients' | 'Agent' | 'Memory' | 'Automations' | 'Settings';
-type FollowUp = { id: string; runAt: string; status: 'scheduled' | 'completed'; description: string; result?: string };
+type FollowUp = { id: string; runAt: string; status: 'scheduled' | 'completed' | 'canceled'; description: string; result?: string };
 type ResearchItem = ExtensionReceipt;
 type ResearchNote = { id: string; text: string; tag: string; createdAt: string };
 type WorkspaceData = { audits: AuditResult[]; research: ResearchItem[]; followups: FollowUp[]; notes?: ResearchNote[]; privacy: PrivacyMode; updatedAt?: string };
@@ -73,6 +73,7 @@ function workspaceMetrics(workspace: Workspace) {
 export default function Page() {
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [online, setOnline] = useState(true);
   const [setup, setSetup] = useState(false);
   const [view, setView] = useState<View>('Growth Audit');
   const [workspace, setWorkspace] = useState(workspaces[0]);
@@ -95,9 +96,21 @@ export default function Page() {
   const [agentReply, setAgentReply] = useState('');
   const dataRef = useRef(workspaceData);
   const currentWorkspace = useRef(workspace.id);
+  const offlineAudits = useRef(new Map<string, AuditResult[]>());
   const uid = user?.uid;
   const scope = uid ? uid + '/' + workspace.id : null;
   const ready = scope !== null && loadedScope === scope;
+
+  useEffect(() => {
+    const readConnection = () => setOnline(navigator.onLine);
+    readConnection();
+    window.addEventListener('online', readConnection);
+    window.addEventListener('offline', readConnection);
+    return () => {
+      window.removeEventListener('online', readConnection);
+      window.removeEventListener('offline', readConnection);
+    };
+  }, []);
 
   useEffect(() => onAuthStateChanged(auth, (session) => {
     setUser(session);
@@ -130,6 +143,30 @@ export default function Page() {
     }).catch((problem: unknown) => { if (!cancelled) setError(friendly(problem)); });
     return () => { cancelled = true; };
   }, [uid, scope, workspace.id]);
+
+  useEffect(() => {
+    if (!ready || !online || !uid || !scope) return;
+    const queued = offlineAudits.current.get(scope);
+    if (!queued?.length) return;
+    let canceled = false;
+    const ids = new Set(queued.map((audit) => audit.id));
+    void updateWorkspace<WorkspaceData>(uid, workspace.id, (stored) => ({
+      ...(stored ?? initial),
+      audits: [...queued, ...(stored?.audits ?? []).filter((audit) => !ids.has(audit.id))].slice(0, maximum),
+      updatedAt: new Date().toISOString(),
+    })).then((saved) => {
+      const rest = offlineAudits.current.get(scope)?.filter((audit) => !ids.has(audit.id)) ?? [];
+      if (rest.length) offlineAudits.current.set(scope, rest);
+      else offlineAudits.current.delete(scope);
+      if (canceled || auth.currentUser?.uid !== uid) return;
+      dataRef.current = saved;
+      setWorkspaceData(saved);
+      setNotice('Offline audits synced.');
+    }).catch(() => {
+      if (!canceled) setNotice('Offline audits could not sync. Reopen this workspace or export the audit.');
+    });
+    return () => { canceled = true; };
+  }, [online, ready, scope, uid, workspace.id]);
 
   async function doWork(label: string, task: () => Promise<void>) {
     setBusy(label);
@@ -178,6 +215,7 @@ export default function Page() {
         })));
       }
       clearBrowserSessions();
+      offlineAudits.current.clear();
       await signOut(auth);
       setSetup(false);
       setView('Growth Audit');
@@ -213,7 +251,7 @@ export default function Page() {
       if (!page.headings.length && !page.prices.length && !page.ctas.length) {
         throw new Error('This workspace needs a page capture. Attach an approved Chrome capture or choose Sable & Stem.');
       }
-      const privacy = page.isSynthetic ? workspaceData.privacy : 'local';
+      const privacy = page.isSynthetic && navigator.onLine ? workspaceData.privacy : 'local';
       const extracted = await inspectPage(page, privacy);
       let result = analyzeAudit(workspace, page, extracted.fields, extracted.source);
       if (privacy !== 'local' && result.findings.length) {
@@ -227,7 +265,15 @@ export default function Page() {
       }
       setCurrentAudit(result);
       setBookmarkState('unrequested');
-      if (page.isSynthetic) await persist((stored) => ({ audits: [result, ...stored.audits].slice(0, maximum) }));
+      if (page.isSynthetic && scope) {
+        if (!navigator.onLine) {
+          const queued = offlineAudits.current.get(scope) ?? [];
+          offlineAudits.current.set(scope, [result, ...queued].slice(0, maximum));
+          setNotice('Audit complete offline. Reconnect to save it, or export the audit now.');
+        } else {
+          await persist((stored) => ({ audits: [result, ...stored.audits].slice(0, maximum) }));
+        }
+      }
     });
   }
 
@@ -282,6 +328,17 @@ export default function Page() {
       const followUp: FollowUp = { id: crypto.randomUUID(), runAt: when, status: 'scheduled', description: 'Recheck the Sable & Stem landing-page price' };
       await persist((stored) => ({ followups: [followUp, ...stored.followups].slice(0, maximum) }));
       setNotice('Follow-up saved for ' + dateTime(when, workspace.timezone) + '.');
+    });
+  }
+
+  function cancelFollowUp(id: string) {
+    return doWork('Canceling the follow-up', async () => {
+      await persist((stored) => ({
+        followups: stored.followups.map((item) => item.id === id && item.status === 'scheduled'
+          ? { ...item, status: 'canceled' as const }
+          : item),
+      }));
+      setNotice('Follow-up canceled.');
     });
   }
 
@@ -364,7 +421,7 @@ export default function Page() {
             <span className="avatar">{initials[workspace.id]}</span>
             <span><small>Workspace</small><strong>{workspace.name}</strong></span>
             <ChevronDown size={15} aria-hidden="true" />
-            <select aria-label="Workspace" value={workspace.id} disabled={Boolean(busy)} onChange={(event) => setClient(event.target.value)}>
+            <select aria-label="Workspace" value={workspace.id} disabled={Boolean(busy) || !online} onChange={(event) => setClient(event.target.value)}>
               {workspaces.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
             </select>
           </label>
@@ -381,7 +438,7 @@ export default function Page() {
       <div className="canvas">
         <header className="topbar">
           <div className="breadcrumb"><span>{workspace.name}</span><span aria-hidden="true">/</span><strong>{view}</strong></div>
-          {user && ready ? <span className="session-state" data-testid="demo-ready"><ShieldCheck size={15} /> Demo session active</span> : <span className="session-state"><ShieldCheck size={15} /> Demo workspace</span>}
+          {user && ready ? <span className="session-state" data-testid="demo-ready" data-offline={!online}><ShieldCheck size={15} /> {online ? 'Demo session active' : 'Offline · Device only'}</span> : <span className="session-state"><ShieldCheck size={15} /> Demo workspace</span>}
         </header>
         <main className="main" id="main">
           <div className="page-head">
@@ -423,7 +480,7 @@ export default function Page() {
                   <div className="source-row">
                     <span className="source-icon"><Globe size={18} aria-hidden="true" /></span>
                     <div><strong>{activePageTitle}</strong>{pageAttached && <small>{capture ? 'Approved Chrome capture' : 'Demo page'}</small>}</div>
-                    {!capture && bundledPageTitle && <Link href={workspace.pagePath} target="_blank" className="icon-link" aria-label="Open demo storefront in a new tab"><ArrowUpRight size={17} /></Link>}
+                    {pageAttached && <Link href={capture?.url ?? workspace.pagePath} target="_blank" rel="noreferrer" className="icon-link" aria-label="Open inspected page in a new tab"><ArrowUpRight size={17} aria-hidden="true" /></Link>}
                   </div>
                 </div>
                 <div className="input-run">
@@ -431,7 +488,7 @@ export default function Page() {
                     <label className="field">
                       <span>Inference mode</span>
                       <span className="select-control">
-                        <select value={externalCapture ? 'local' : workspaceData.privacy} disabled={!ready || Boolean(busy) || externalCapture} onChange={(event) => {
+                        <select value={externalCapture || !online ? 'local' : workspaceData.privacy} disabled={!ready || Boolean(busy) || externalCapture || !online} onChange={(event) => {
                           const privacy = event.target.value as PrivacyMode;
                           void doWork('Saving inference mode', async () => { await persist(() => ({ privacy })); });
                         }}>{Object.entries(runLabel).map(([mode, label]) => <option key={mode} value={mode}>{label}</option>)}</select>
@@ -440,7 +497,7 @@ export default function Page() {
                     </label>
                     <button className="button primary" disabled={!ready || Boolean(busy) || !pageAttached} onClick={() => void runAudit()}>{currentAudit ? 'Run again' : 'Run Growth Audit'} <ArrowRight size={17} aria-hidden="true" /></button>
                   </div>
-                  <p className="field-help">{externalCapture ? 'Pages outside the demo use device-only analysis.' : workspaceData.privacy === 'local' ? 'Chrome reads the page on this device. Cloud review is off.' : 'Cloud inference can receive page headings, prices, and button labels.'}</p>
+                  <p className="field-help">{!online ? 'Offline. Chrome will use the local model for this audit.' : externalCapture ? 'Pages outside the demo use device-only analysis.' : workspaceData.privacy === 'local' ? 'Chrome reads the page on this device. Cloud review is off.' : 'Cloud inference can receive page headings, prices, and button labels.'}</p>
                 </div>
               </div>
               <div className="capture-box">
@@ -469,6 +526,8 @@ export default function Page() {
                     <div><span>Campaign price</span><strong>{currency.format(priceComparison.campaign)}</strong></div>
                     <div><span>Landing page price</span><strong>{currency.format(priceComparison.page)}</strong></div>
                   </div>}
+                  {currentAudit.fieldEvidence?.price === 'page_literal' && priceComparison &&
+                    <p className="field-proof">The price comes from the single USD amount in the captured page.</p>}
                   <ul className="findings">{currentAudit.findings.map((finding) => <li key={finding.id}>
                     <span className={'severity ' + finding.severity}>{finding.type === 'unknown' ? 'Unverified' : finding.type === 'hypothesis' ? 'Hypothesis' : finding.severity + ' priority'}</span>
                     <div><h3>{finding.title}</h3><p>{finding.explanation}</p><blockquote>{finding.evidence}</blockquote></div>
@@ -480,7 +539,7 @@ export default function Page() {
               </section>
               <aside className="audit-rail" aria-label="Bookmark approval and audit history">
                 <section className="panel action-panel">
-                  <header className="section-bar"><h2>Chrome bookmark</h2><ClipboardList size={18} aria-hidden="true" /></header>
+                  <header className={'section-bar' + (receipt ? ' proposal-verified' : '')}><h2>Chrome bookmark</h2><ClipboardList size={18} aria-hidden="true" /></header>
                   {currentAudit?.proposal ? <>
                     <h3>{receipt ? 'Bookmark verified' : 'Save a tagged URL'}</h3>
                     <p>{receipt ? 'Chrome confirmed the saved title and destination.' : 'Check the destination in the side panel before saving it.'}</p>
@@ -519,7 +578,7 @@ export default function Page() {
               </dl>}
           </section>}
           {view === 'Clients' && <section className="panel table-panel"><h2>Demo clients</h2><ul className="simple-list">
-            {workspaces.map((entry) => <li key={entry.id}><span>{entry.name}<small> {entry.category.replace('_', ' ')}</small></span><button className="button" disabled={Boolean(busy) || workspace.id === entry.id} onClick={() => setClient(entry.id)}>{workspace.id === entry.id ? 'Current workspace' : 'Open workspace'}</button></li>)}
+            {workspaces.map((entry) => <li key={entry.id}><span>{entry.name}<small> {entry.category.replace('_', ' ')}</small></span><button className="button" disabled={Boolean(busy) || !online || workspace.id === entry.id} onClick={() => setClient(entry.id)}>{workspace.id === entry.id ? 'Current workspace' : 'Open workspace'}</button></li>)}
           </ul></section>}
           {view === 'Agent' && <section className="panel table-panel">
             <h2>Look up a workspace record</h2><p>Find the current audit findings or the latest verified bookmark.</p>
@@ -558,7 +617,9 @@ export default function Page() {
               <button className="button primary" disabled={!ready || !currentAudit || workspace.id !== 'sable-stem' || Boolean(busy)} onClick={() => void schedule()}>Schedule follow-up</button>
               <button className="button" disabled={!ready || Boolean(busy)} onClick={() => void runDueChecks()}>Run due checks</button>
             </div>
-            <ul className="simple-list">{workspaceData.followups.map((item) => <li key={item.id}><div><strong>{item.description}</strong><small>{dateTime(item.runAt, workspace.timezone)}</small>{item.result && <small>{item.result}</small>}</div><span className="flag ink">{item.status}</span></li>)}</ul>
+            <ul className="simple-list">{workspaceData.followups.map((item) => <li key={item.id}><div><strong>{item.description}</strong><small>{dateTime(item.runAt, workspace.timezone)}</small>{item.result && <small>{item.result}</small>}</div><div className="followup-controls"><span className="flag ink">{item.status}</span>
+              {item.status === 'scheduled' && <button className="button" type="button" disabled={!online || Boolean(busy)} onClick={() => void cancelFollowUp(item.id)}>Cancel</button>}
+            </div></li>)}</ul>
             {!workspaceData.followups.length && <p>No follow-ups are scheduled for this workspace.</p>}
           </section>}
           {view === 'Settings' && <section className="panel table-panel">

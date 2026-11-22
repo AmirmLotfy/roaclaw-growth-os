@@ -1,50 +1,37 @@
-# Remotion production pipeline — real demo first
+# Remotion production
 
-## Mandatory production principle
-The main footage must be **actual running product** (Chrome extension and live web dashboard, with recorded SDK model outcomes). Remotion animates the EDIT and surrounding typography, not fabricated product screens. Do not simulate cloud fallback, ad accounts, ROAS changes, bookmarks or completed automation.
+The picture uses the running dashboard, Chrome companion, and source badges from Firebase. The visual language follows the product site's charcoal, lime, and paper-green colors. Captions and short motion accents preserve the underlying evidence and actions.
 
-## Software discovery
-Check installed Remotion plugin, browser recording tools, screen recording, Playwright, ffmpeg/ffprobe, Remotion CLI and audio files. Official Remotion agent skills are available at https://www.remotion.dev/docs/ ; install only if useful. Do not pretend a screen capture integration exists if not accessible.
+## Record
 
-## Capture specs
-- Record Chromium at consistent 1440x900 screen region or full 1920x1080, while displaying REAL data fixture and true execution outcomes.
-- Record extension open/close, a complete audit, on-device badge, cloud badge, finding and action receipt. Keep IDs, auth pages, API keys and personal account info out of frame.
-- Browser-controlled recording can use Playwright video, Remotion Recorder, OS recorder, or a tested equivalent. Use sufficient resolution and a visible authentic cursor. Prefer dedicated test profile with no personal bookmarks.
-- Retake long waits or flaky transitions; video must truthfully show what completed. Realtime captured UI segments may be slightly trimmed for pacing, but do not splice fake success after failure.
+Use a dedicated test profile with synthetic data. Capture at 1440 × 920 or larger. Keep secrets, real client records, browser account information, and personal bookmarks out of frame.
 
-## Remotion project layout
+```sh
+ROACLAW_QA_HEADLESS=1 ROACLAW_CAPTURE_VIDEO=1 ROACLAW_CAPTURE_HOLD_SECONDS=5 node qa/e2e/hosted.mjs
+ROACLAW_QA_HEADLESS=1 ROACLAW_COMPANION_RECORD=1 node apps/extension/test/smoke.mjs https://roaclaw-growth-os-2026.web.app/app/ --web-flow --history --pregrant-test-permissions --evidence-dir qa/evidence/g3-web
 ```
-apps/video/
-  src/Root.tsx
-  src/ROACLAWDemo.tsx
-  src/compositions/Intro.tsx
-  src/compositions/UiFootage.tsx
-  src/compositions/EvidenceTag.tsx
-  src/compositions/Outro.tsx
-  src/tokens.ts
-  public/footage/*.mp4
-  public/audio/vo_*.wav
-  public/audio/music*.wav
-  public/captions/demo.srt
-  package.json
+
+The browser and native side-panel recordings and their timing markers are under `.local/footage/`. The temporary lab manifest pregrants permissions on an isolated profile. The release manifest requests them at the point of use.
+
+Start with the two offer prices. Show both actual Firebase routes within 30 seconds. Follow the [storyboard](VIDEO_STORYBOARD.md) with the offline rerun, investigation, Chrome capture, approval and readback, workspace isolation, and a due price recheck. Use real screen recordings for interactions and clear crops of verified screenshots to hold sourced results.
+
+## Audio and final picture
+
+- [Narration script](VOICEOVER_SCRIPT.md), [speech direction](AI_STUDIO_VOICE_PROMPT.md), and [score prompt](AI_STUDIO_MUSIC_PROMPT.md) are ready for the owner's AI Studio generation.
+- Put supplied original audio under `.local/footage/audio/`. Record provider, model, date, file hash, and distribution rights in the video QA report.
+- Use each clip's `narration` property or the edit's continuous `voiceover` property. Point `score` at the edited instrumental. The score fades and ducks under speech. Check narration intelligibility on speakers and headphones. Measure integrated loudness and true peak before release.
+- Add a `subtitleCues` array with non-overlapping start/end seconds and verified English transcript text for the final audio. Keep the opening prose and approximate timing in the storyboard for planning.
+
+## Export and release
+
+Use the installed Remotion package. The picture-review command produces a separate local cut. If the edit sets `requireAudio`, the final render checks for both narration and score.
+
+```sh
+npm --prefix apps/video run check
+npm --prefix apps/video run picture -- .local/footage/picture-review.json
+npm --prefix apps/video run render -- .local/footage/final-edit.json
 ```
-Use direct design tokens. Avoid complex 3D, overlaid browser frames or disruptive UI retouching.
 
-## Edit language
-- Use brief chapter cards with the app’s navy background and blue signal color, up to 1.5 seconds each.
-- Picture-in-picture only when contrasting Chrome extension with full SaaS, otherwise show actual app full frame.
-- Evidence callouts on real figures/URLs, no arrows or boxes hiding the UI. Crop/zoom <=1.25 unless the screenshot resolution supports more.
-- Match real UI state changes with transitions; no gratuitous swipe wipes.
-- Use larger subtitles with legible safe zones; avoid small type in split screens.
+Export H.264 MP4, AAC, 1920 × 1080, 30fps, English SRT, and a 1280 × 720 thumbnail. Check the full decode, opening and ending frames, source labels, readable receipts, caption timing, audible balance, and duration under three minutes. Use the [contest FAQ](https://firebasehybridaihackathon.devpost.com/details/faqs) for the first-30-seconds guidance.
 
-## Export contract
-- Target `1920x1080`, 30 fps, H.264 MP4, AAC audio, <=170-175 seconds ideally; absolute <=180 seconds.
-- Verify with ffprobe, listen all the way through, inspect video for black frames / clipped UI / incorrect captions / missing audio / overlarge file / muted background / intentional demo labels.
-- Produce `ROACLAW_BuildHybridAI_2026_FINAL.mp4`, a thumbnail 1280x720, `.srt`, Remotion editable source and `video/VIDEO_QA_REPORT.md`.
-- Create a visual first-frame check, 5 random timestamp checks and one full playback check.
-
-## YouTube workflow
-Use authenticated browser or authorized YouTube API; public, not unlisted/private. After upload, wait until actual HD processing and play URL confirmed. YouTube title/description in `YOUTUBE_METADATA.md`. User login/2FA interactions should be handled by user, not bypassed by agent. Do not claim uploaded until verified URL works in a logged-out context.
-
-## Legal
-Use only owned/generated original music and VO with proper licenses, and original recorded UI. Do not use copyrighted example footage from Mobbin/Refero as public product footage.
+Keep external publication on hold until the owner authorizes it at the final review. Public YouTube playback and Devpost submission are separate verification steps. [Release audit](../submission/RELEASE_GATE.md)

@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookmarkCheck, PanelRight, ScanLine } from 'lucide-react';
+import { ArrowDown, ArrowDownToLine, ArrowRight, ArrowUpRight } from 'lucide-react';
+import '@fontsource/archivo-black/latin-400.css';
+import ProofView from './proof-view';
 import './site.css';
 
-const source = 'https://github.com/AmirmLotfy/roaclaw-growth-os';
+const repo = 'https://github.com/AmirmLotfy/roaclaw-growth-os';
 const extension = '/roaclaw-extension.zip';
 
 export const metadata: Metadata = {
-  title: 'ROACLAW | Check the ad against the page',
-  description: 'Find the gap between your campaign and its landing page. Inspect the offer, verify tracking, and approve the exact follow-up in Chrome.',
+  title: 'ROACLAW — Check the ad against the page',
+  description: 'Audit what your campaign promises, see what the landing page displays, and approve the exact follow-up in Chrome.',
 };
 
 function SiteBrand() {
@@ -25,11 +27,11 @@ export default function Site() {
       <div className="site-wrap site-nav">
         <SiteBrand />
         <nav aria-label="Product website"><ul>
-          <li><a href="#workflow">How it works</a></li>
+          <li><a href="#proof">The audit</a></li>
           <li><a href="#chrome">Chrome extension</a></li>
           <li><a href="#privacy">Privacy</a></li>
         </ul></nav>
-        <Link href="/app/" className="button site-header-cta">Open app <ArrowUpRight size={17} aria-hidden="true" /></Link>
+        <Link href="/app/" className="site-top-link">Open app <ArrowUpRight size={17} aria-hidden="true" /></Link>
       </div>
     </header>
 
@@ -37,101 +39,91 @@ export default function Site() {
       <section className="site-hero">
         <div className="site-wrap hero-layout">
           <div className="hero-copy">
-            <h1>Does the landing page match the ad?</h1>
-            <p>Compare the advertised offer, landing page, and tracking in one audit. See the evidence before you change anything.</p>
+            <h1><span>The ad said <em>$99.</em></span><span>The page said <em>$119.</em></span></h1>
+            <p>Compare a campaign with the page it sends people to. Find the price or tracking gap and see the evidence behind it.</p>
             <div className="site-actions">
-              <Link href="/app/" className="button primary">Open Growth Audit <ArrowRight size={17} aria-hidden="true" /></Link>
-              <a href="#workflow" className="site-link">See how it works</a>
+              <Link href="/app/" className="site-button">Open Growth Audit <ArrowUpRight size={18} aria-hidden="true" /></Link>
+              <a href="#proof" className="site-text-link">See the audit <ArrowDown size={16} aria-hidden="true" /></a>
             </div>
           </div>
-          <figure className="hero-demo">
-            <Image src="/site/growth-audit.webp" width={1260} height={809}
-              alt="ROACLAW Growth Audit showing a $99 campaign price, a $119 page price, and a tagged Chrome bookmark to review"
-              sizes="(max-width: 880px) 95vw, 60vw" unoptimized priority />
-            <figcaption>Growth Audit run on the Sable &amp; Stem demo</figcaption>
+
+          <figure className="hero-art">
+            <Image src="/ceramic-vase-set.webp" width={1000} height={1000} priority unoptimized
+              sizes="(max-width: 780px) 95vw, 47vw" alt="Ivory, rust and sand stoneware vases from the Sable & Stem demo storefront" />
+            <div className="hero-rule" aria-hidden="true"><span /></div>
+            <figcaption>Sable &amp; Stem · Demo campaign</figcaption>
           </figure>
+        </div>
+        <div className="site-wrap hero-index" aria-label="The campaign audit sequence">
+          <span>Campaign offer</span><ArrowRight aria-hidden="true" size={17} />
+          <span>Landing page evidence</span><ArrowRight aria-hidden="true" size={17} />
+          <span>Reviewed action</span>
         </div>
       </section>
 
-      <section className="site-wrap site-section workflow-section" id="workflow" aria-labelledby="workflow-heading">
-        <div className="site-section-title">
-          <h2 id="workflow-heading">Follow the evidence</h2>
-          <p>Start with the demo campaign or attach a page you’ve approved in Chrome.</p>
+      <section className="site-wrap site-section" id="proof" aria-labelledby="proof-heading">
+        <div className="site-section-title proof-heading">
+          <h2 id="proof-heading">See the discrepancy in context.</h2>
+          <p>The Growth Audit links each finding to its source. Compare what Chrome observed, what the campaign says, and what needs a human decision.</p>
         </div>
-        <ol className="workflow-list">
-          <li>
-            <ScanLine size={24} aria-hidden="true" />
-            <h3>Inspect the page</h3>
-            <p>Capture visible headings, prices, and button labels. Choose where Firebase AI Logic runs the inspection.</p>
-          </li>
-          <li>
-            <ArrowUpRight size={24} aria-hidden="true" />
-            <h3>See what changed</h3>
-            <p>Check the landing page against the campaign price and destination. Review the source under each finding.</p>
-          </li>
-          <li>
-            <BookmarkCheck size={24} aria-hidden="true" />
-            <h3>Keep a verified link</h3>
-            <p>Review the proposed tracking URL in Chrome. The dashboard records the bookmark after Chrome confirms the saved destination.</p>
-          </li>
-        </ol>
+        <ProofView />
       </section>
 
       <section className="site-chrome" id="chrome" aria-labelledby="chrome-heading">
         <div className="site-wrap chrome-layout">
           <div className="chrome-copy">
-            <h2 id="chrome-heading">The audit follows you into Chrome.</h2>
-            <p>Capture a page from the ROACLAW side panel. Approve the exact bookmark destination and find it again with local search.</p>
+            <h2 id="chrome-heading">Keep the page in view.</h2>
+            <p>The Chrome side panel captures what you choose, prepares the approved bookmark, and searches saved links or recent public pages locally.</p>
             <ol className="install-steps">
               <li>Download and unzip the extension.</li>
               <li>Open <code>chrome://extensions</code>, turn on <strong>Developer mode</strong>, and choose <strong>Load unpacked</strong>.</li>
-              <li>Open Growth Audit and choose <strong>Use an approved Chrome capture</strong> to pair.</li>
+              <li>In Growth Audit, choose <strong>Use an approved Chrome capture</strong>. Confirm the connection in Chrome.</li>
             </ol>
-            <a className="button primary" href={extension} download><ArrowDownToLine size={17} aria-hidden="true" /> Download extension ZIP</a>
+            <a className="site-button" href={extension} download>Download extension ZIP <ArrowDownToLine size={18} aria-hidden="true" /></a>
           </div>
           <figure className="chrome-demo">
-            <div className="chrome-demo-bar"><PanelRight size={16} aria-hidden="true" /> Chrome side panel</div>
-            <Image src="/site/chrome-bookmark.webp" width={540} height={1148}
-              alt="Chrome side panel after saving the exact campaign URL to Other Bookmarks and verifying it in Chrome"
-              sizes="(max-width: 700px) 75vw, 320px" unoptimized />
+            <Image src="/site/chrome-capture.webp" width={540} height={1148} loading="lazy" unoptimized
+              sizes="(max-width: 700px) 72vw, 315px" alt="The Chrome companion shows the captured Ceramic Vase Set page with one heading, price, and button." />
+            <figcaption>Actual Chrome page capture</figcaption>
           </figure>
         </div>
       </section>
 
       <section className="site-wrap site-section privacy-layout" id="privacy" aria-labelledby="privacy-heading">
-        <div className="site-section-title"><h2 id="privacy-heading">Choose where page analysis runs.</h2>
-          <p>Each audit shows what Firebase reported for page analysis and cloud review.</p></div>
+        <div className="site-section-title"><h2 id="privacy-heading">Where the page gets read.</h2>
+          <p>Each audit names the source Firebase reported. Choose what can leave your device before you run it.</p></div>
         <dl className="privacy-list">
-          <div><dt>Device only</dt><dd>Gemini Nano 4 on compatible Chrome inspects page fields on this device. Cloud review is off.</dd></div>
-          <div><dt>Prefer device</dt><dd>Start on Chrome when the local model is ready. This mode allows cloud review and a cloud fallback.</dd></div>
-          <div><dt>Cloud only</dt><dd>Firebase AI Logic sends the selected fields to Gemini for extraction and review. The hosted app requires App Check.</dd></div>
+          <div><dt>Device only</dt><dd>Gemini Nano 4 on compatible Chrome inspects the selected page fields on this device.</dd></div>
+          <div><dt>Prefer device</dt><dd>Chrome reads the demo page locally when its model is ready. This mode also permits cloud fallback and a separate cloud review.</dd></div>
+          <div><dt>Cloud only</dt><dd>Firebase AI Logic sends the selected demo fields to Gemini for extraction and review. App Check protects the cloud calls.</dd></div>
+          <div><dt>Other pages</dt><dd>Captures outside the demo run in device-only mode. They stay in the open audit tab.</dd></div>
         </dl>
       </section>
 
       <section className="site-wrap site-section site-questions" aria-labelledby="questions-heading">
-        <h2 id="questions-heading">Before you try it</h2>
+        <h2 id="questions-heading">Before you begin.</h2>
         <div className="site-faq">
-          <details><summary>Do I need an account?</summary><p>Choose <strong>Open demo</strong> in the app to start a private demo session. The sample campaign, prices, and performance figures are synthetic.</p></details>
-          <details><summary>What does the Chrome extension read?</summary><p>The extension reads the page you choose after you click <strong>Capture page evidence</strong>. You can review the captured title, headings, prices, and button labels in the side panel.</p></details>
-          <details><summary>What does the app store?</summary><p>The demo stores fixture audits, verified bookmark receipts, preferences, and follow-ups in your Firebase workspace. Captures of other pages stay in the open audit tab. Chrome stores approved bookmarks in your browser.</p></details>
+          <details><summary>Can I try it without an account?</summary><p>Choose <strong>Open demo</strong> and pick a workspace. The app creates a private demo session. The campaign records, prices, and figures are synthetic.</p></details>
+          <details><summary>Which Chrome setup do I need?</summary><p>The device route requires Chrome Desktop and Gemini Nano 4. <a href="https://firebase.google.com/docs/ai-logic/hybrid/web/get-started">Check Firebase’s setup guide</a> to get the model. Prefer device can use the cloud on a browser without Nano.</p></details>
+          <details><summary>What gets saved?</summary><p>The workspace saves demo audits, approved bookmark receipts, research notes, and follow-ups. Bookmarks and recent-history searches stay in Chrome.</p></details>
         </div>
       </section>
 
       <div className="site-final">
         <div className="site-wrap site-final-inner">
-          <h2>Run the audit on a real page.</h2>
-          <Link href="/app/" className="button primary">Open Growth Audit <ArrowRight size={17} aria-hidden="true" /></Link>
+          <h2>Check the page.</h2>
+          <Link href="/app/" className="site-button">Open Growth Audit <ArrowUpRight size={18} aria-hidden="true" /></Link>
         </div>
       </div>
     </main>
 
-    <footer className="site-header site-footer">
+    <footer className="site-footer">
       <div className="site-wrap site-nav">
         <SiteBrand />
         <nav aria-label="Footer"><ul>
           <li><Link href="/demo-store/">Demo storefront</Link></li>
           <li><a href="#privacy">Privacy</a></li>
-          <li><a href={source}>Source code <ArrowUpRight size={15} aria-hidden="true" /></a></li>
+          <li><a href={repo}>Source code <ArrowUpRight size={15} aria-hidden="true" /></a></li>
         </ul></nav>
       </div>
     </footer>

@@ -69,11 +69,17 @@ export type AuditResult = {
   findings: AuditFinding[];
   commentary: string | null;
   priceComparison?: { campaign: number; page: number };
+  fieldEvidence?: PageExtraction["evidence"];
   action?: { status: 'pending' | 'approved' | 'declined' | 'expired' | 'verification_failed' | 'executed'; updatedAt: string };
   proposal: { id: string; title: string; url: string; before: string } | null;
 };
 
-export type PageExtraction = { priceUsd: number | null; cta: string | null };
+type FieldEvidence = "model_match" | "page_literal";
+export type PageExtraction = {
+  priceUsd: number | null;
+  cta: string | null;
+  evidence?: { price?: FieldEvidence; cta?: FieldEvidence };
+};
 
 const demoStorePath = "/demo-store/";
 const pagePaths: Record<string, string> = {
@@ -150,15 +156,35 @@ function normalizeEvidence(value: string): string {
   return value.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-function extractedPriceMatchesCapture(prices: string[], price: number | null): price is number {
-  if (price === null || !Number.isFinite(price) || price < 0) return false;
-
+function singleUsdPrice(prices: string[]) {
   const amounts = new Set<number>();
   for (const text of prices) {
     const usdAmounts = text.matchAll(/(?:\bUS\$|(?<![\p{L}])\$|\bUSD\b)\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)(?!\w|[.,]\d)/giu);
-    for (const match of usdAmounts) amounts.add(Number(match[1].replaceAll(",", "")));
+    for (const match of usdAmounts) {
+      const amount = Number(match[1].replaceAll(",", ""));
+      if (Number.isFinite(amount)) amounts.add(amount);
+    }
   }
-  return amounts.size === 1 && amounts.has(price);
+  return amounts.size === 1 ? [...amounts][0] : null;
+}
+
+function extractedPriceMatchesCapture(prices: string[], price: number | null): price is number {
+  return price !== null && singleUsdPrice(prices) === price;
+}
+
+export function groundPageFields(
+  page: Pick<PageSnapshot, "prices" | "ctas">,
+  extraction: { priceUsd: string; cta: string } | null,
+): PageExtraction {
+  const priceUsd = singleUsdPrice(page.prices);
+  const formattedPrice = extraction?.priceUsd.trim().match(/^(?:(?:USD|US\$|\$)\s*)?(\d+(?:,\d{3})*(?:\.\d{1,2})?)$/i)?.[1];
+  const modelPrice = formattedPrice ? Number(formattedPrice.replaceAll(",", "")) : null;
+  const modelButton = extraction && page.ctas.find((label) => normalizeEvidence(label) === normalizeEvidence(extraction.cta));
+  const cta = modelButton || (page.ctas.length === 1 ? page.ctas[0] : null);
+  const evidence: NonNullable<PageExtraction["evidence"]> = {};
+  if (priceUsd !== null) evidence.price = modelPrice === priceUsd ? "model_match" : "page_literal";
+  if (cta) evidence.cta = modelButton ? "model_match" : "page_literal";
+  return { priceUsd, cta, evidence };
 }
 
 function matchesProduct(page: PageSnapshot, product: string): boolean {
@@ -290,6 +316,7 @@ export function analyzeAudit(
     reasoningSource: confirmedCommentary ? "in_cloud" : null,
     findings,
     ...(priceComparison && { priceComparison }),
+    ...(extraction.evidence && { fieldEvidence: extraction.evidence }),
     commentary: confirmedCommentary,
     proposal,
   };

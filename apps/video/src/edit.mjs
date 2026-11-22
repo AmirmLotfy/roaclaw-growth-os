@@ -1,6 +1,6 @@
 export const fps = 30;
 export const chapterFrames = 36;
-export const outroFrames = 120;
+export const outroFrames = 150;
 export const maxFrames = 180 * fps;
 
 export const beats = {
@@ -34,11 +34,26 @@ export const beats = {
     title: "Review the findings in the cloud",
     caption: "A cloud Gemini model reviews the audit findings.",
   },
+  offline: {
+    label: "Firebase AI Logic · Browser offline",
+    title: "Run the extraction offline",
+    caption: "The browser was offline. Gemini Nano 4 returned the same visible offer on the device.",
+  },
   findings: {
     label: "Sable & Stem · Synthetic campaign",
     title: "Inspect the audit findings",
     caption: "The audit flags a price mismatch, a missing campaign tag, and ROAS below target.",
     chapter: "Audit findings",
+  },
+  setup: {
+    label: "Demo access",
+    title: "Choose an audit workspace",
+    caption: "The dashboard offers ecommerce, lead generation, and an agency demo.",
+  },
+  memory: {
+    label: "Workspace memory",
+    title: "Find a saved note",
+    caption: "Memory stores verified bookmark receipts and the research notes saved to this workspace.",
   },
   workspaces: {
     label: "Workspace context",

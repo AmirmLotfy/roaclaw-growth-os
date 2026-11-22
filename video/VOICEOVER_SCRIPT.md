@@ -1,39 +1,56 @@
-# Voiceover master — EN — production draft
+# ROACLAW submission narration
 
-**Important:** This assumes all visible functionality is BUILT and VERIFIED. Before rendering, Codex must compare every sentence to recorded evidence and remove/rewrite any unimplemented claim. Synthetic figures must be explicitly described as example data. Target voice: ~130-145 words per minute with pauses, calm, precise, no aggressive sales pitch. The script below is organized by shot so AI Studio voice clips can be separately generated and retimed. ROACLAW can be read as “R-O-A Claw” until the brand pronunciation is confirmed.
+English. The names identify source files for the edit. Read the narration only. The timings are picture windows for the edit. Keep a brief pause at the end of each clip. The picture uses the actual ROACLAW dashboard, Chrome side panel, and verified Firebase results.
 
-## 00:00–00:08 — Hook
-"The ad says ninety-nine dollars. The landing page says one-nineteen. One mismatch, invisible across three different tools."
+| Clip | Target picture window | Picture |
+|---|---:|---|
+| `vo_01_offer.wav` | 00:00–00:08 | Show the campaign record and the storefront price |
+| `vo_02_device.wav` | 00:08–00:18 | Show a real run and the Firebase device label |
+| `vo_03_cloud.wav` | 00:18–00:29 | Show the separate cloud review and source labels |
+| `vo_04_offline.wav` | 00:29–00:42 | Show the redacted offline probe and the actual device result |
+| `vo_05_findings.wav` | 00:42–00:59 | Show evidence for price, tracking, and the recorded target |
+| `vo_06_capture.wav` | 00:59–01:14 | Show the selected page, capture gesture, and preview |
+| `vo_07_approval.wav` | 01:14–01:31 | Show the proposed URL, approval, and Chrome's verified receipt |
+| `vo_08_workspaces.wav` | 01:31–01:47 | Switch workspace and show the appointment hypothesis |
+| `vo_09_followup.wav` | 01:47–02:05 | Show Memory and a due storefront price check |
+| `vo_10_close.wav` | 02:05–02:20 | Show the live site and direct demo entry. Hold the URL. |
 
-## 00:08–00:22 — Local intelligence
-"This is ROACLAW. In Chrome, it inspects the page you choose. Firebase AI Logic uses Gemini Nano on the device to extract the visible offer and call to action. The inference source is verified, not guessed."
+## vo_01_offer.wav
 
-## 00:22–00:35 — Hybrid reasoning
-"For the deeper diagnosis, Firebase AI Logic routes to a cloud Gemini model. The product shows which source handled each step, and a local-only setting can prevent cloud fallback for sensitive information."
+If you run ads, check the page customers see. This demo ad says ninety-nine dollars. The page says one hundred nineteen.
 
-## 00:35–00:55 — Unified context
-"ROACLAW connects browser context to a business workspace. The dashboard keeps each client, objective and activity record separate. Here, we're using a fully synthetic ecommerce dataset to demonstrate the workflow safely."
+## vo_02_device.wav
 
-## 00:55–01:18 — Actual audit
-"In this example, the campaign promotes ninety-nine dollars, while the product page shows one-nineteen. The destination is also missing a campaign tracking parameter. And observed return on ad spend is below the configured target. ROACLAW separates those facts from hypotheses about what may be affecting performance."
+I start with Device only. Gemini Nano Four, through Firebase A.I. Logic, reads the price and button text on this device.
 
-## 01:18–01:37 — Decision and control
-"It prepares a corrected destination link and a reviewable action plan. You see the evidence, the exact proposed change, and where it will go. Nothing costly or public is changed without the right approval."
+## vo_03_cloud.wav
 
-## 01:37–01:52 — Real action
-"Approve a safe browser action, and the extension creates the research bookmark. The system verifies the result and records a receipt—what happened, when, and in which workspace."
+Now I choose Prefer device. Firebase reports a local scan and a separate cloud review. Chrome can use cloud extraction when Nano is unavailable.
 
-## 01:52–02:08 — Voice (only if verified)
-"You can also ask ROACLAW by voice, including a follow-up while you're working. The response appears alongside the transcript and a clear approval step before the next action."
+## vo_04_offline.wav
 
-## 02:08–02:24 — Memory and continuation
-"Research is searchable. Tasks have owners and schedules. And follow-up monitoring keeps decisions connected to what actually happened next, instead of disappearing into another chat."
+We also ran the same extraction with the browser offline. Gemini Nano Four returned the one hundred nineteen dollar price and Add to cart. The page made zero external requests.
 
-## 02:24–02:41 — Broader app
-"For media buyers, that means clearer client operations. For shop owners and small businesses, it means understanding the path from campaign to customer. The dashboard and extension work from the same business context."
+## vo_05_findings.wav
 
-## 02:41–02:50 — Closing
-"ROACLAW. A growth operations agent that shows its work. Built with Firebase AI Logic, on device and in the cloud."
+The audit finds the price difference and a missing campaign tag. The demo return on ad spend is three point three one five against a goal of three point six. Those figures show the gap. Establishing a cause would take more evidence.
 
-## Honest claims edit protocol
-If voice does not work, delete the voice section and replace with a verified text command. If server-side monitoring only creates a schedule but has not executed yet, say 'schedules a follow-up', not 'monitors'. If no official advertising account is connected, say 'demo metrics', not 'live ad data'. Use actual model name only after source verification.
+## vo_06_capture.wav
+
+To inspect a page from Chrome, I pair the current workspace and click Capture page evidence. The panel shows the headings, prices, and button labels before I pull them into the audit.
+
+## vo_07_approval.wav
+
+ROACLAW adds the missing campaign tag and shows the entire destination. I approve it in the Chrome side panel. Chrome saves the bookmark, reads it back, and returns a receipt to the dashboard.
+
+## vo_08_workspaces.wav
+
+Switching workspaces loads a different set of records. In the lead generation demo, the booking goal and the Contact us button raise a question to investigate. The audit labels that finding as a hypothesis.
+
+## vo_09_followup.wav
+
+Memory keeps the verified bookmark and any notes I save. I can schedule a storefront price check and run it from the dashboard when it is due. This check reads the current price from the demo storefront.
+
+## vo_10_close.wav
+
+Open ROACLAW, choose the ecommerce demo, and run Growth Audit. The site explains how to install the Chrome companion and enable Gemini Nano Four.

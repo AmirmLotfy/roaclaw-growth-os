@@ -66,3 +66,10 @@ The project owner rejected the initial warm editorial direction after reviewing 
 - The Customer.io event detail screen shows a narrow source table beside contextual review. ROACLAW uses that same relationship for findings and bookmark approval, with its own layout and controls. [Mobbin screen](https://mobbin.com/screens/c1d45657-65be-40cc-a6b7-52602efd2dbf)
 - Serro uses squared controls, restrained color, blue for action, and software as evidence. ROACLAW carries through the action color and keeps the workflow itself in view. [Refero style source](https://serro.ai)
 - Sourcegraph uses fine rules and a disciplined accent. ROACLAW uses quiet rules for evidence and reserves stronger colors for confirmed states, priority, and the run action. [Refero style source](https://sourcegraph.com)
+
+## 22 November premium product revision
+
+- Contractbook places a recognizable product interaction beside a direct headline. ROACLAW’s opening uses the actual demo discrepancy and storefront photograph. Its proof view immediately shows the running interface. [Mobbin section](https://mobbin.com/sites/sections/302907ff-78a2-4aa6-88c8-aeebf1bcdf99)
+- Burocratik gives product imagery and moving work substantial space, with strong typographic pacing. ROACLAW uses a short photo settle and turns the source prices into the opening composition. [Refero reference](https://burocratik.com/)
+- Workflow exposes different product examples through a tabbed stage. ROACLAW uses two keyboard-operable tabs for a verified audit and a verified Chrome bookmark. [Refero reference](https://workflow.design/)
+- The Awwwards mobile performance guide emphasizes immediate, meaningful interaction feedback. ROACLAW applies it to proof tabs, workspace controls, and the initial capture guide. [Awwwards performance guide](https://www.awwwards.com/brainfood-mobile-performance-vol3.pdf)

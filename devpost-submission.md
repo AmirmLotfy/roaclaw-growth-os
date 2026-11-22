@@ -16,7 +16,7 @@ A campaign and its destination can drift apart. A buyer may see one price in the
 
 ## Firebase AI Logic
 
-The Web app uses Firebase AI Logic for Gemini Nano 4 in Chrome and Gemini 3.5 Flash-Lite in the cloud. The local prompt extracts fields from the inspected page without external inference traffic. The cloud prompt receives separate facts for a conditional interpretation, and the consented hybrid mode can fall back to the cloud. The UI displays the SDK-reported source. Chrome 158 returned `on_device` both online and offline. The production cloud request passed reCAPTCHA Enterprise App Check.
+The Web app uses Firebase AI Logic for Gemini Nano 4 in Chrome and Gemini 3.5 Flash-Lite in the cloud. The local prompt extracts fields from the inspected page without external inference traffic. The cloud prompt receives separate facts for a conditional interpretation, and the consented hybrid mode can fall back to the cloud. The UI displays the SDK-reported source. Chrome 158 returned `on_device` both online and offline. The hosted demo completed an open-tab offline run without attempting an AI network call and synced the finished audit on reconnect. The production cloud request passed reCAPTCHA Enterprise App Check.
 
 ## Architecture and Codex
 
@@ -40,9 +40,11 @@ The Growth OS web app and Chrome companion are a new project started on 22 Novem
 - Dashboard: https://roaclaw-growth-os-2026.web.app/app/
 - Proposed public repository: https://github.com/AmirmLotfy/roaclaw-growth-os
 - Apache 2.0 license: https://github.com/AmirmLotfy/roaclaw-growth-os/blob/main/LICENSE
-- Final demonstration video: pending public YouTube playback verification
+- Final demonstration video: awaiting the user-provided narration and instrumental, final mix, and public playback verification
 - Screenshot sources: hosted hybrid audit, Chrome approved capture and verified bookmark receipt
 
 ## Account-holder fields
 
 The account holder confirmed Individual, Egypt, organization N/A, and the project start date of 22 November 2026. The project category is Web (Chrome). The account holder reviewed the official rules and confirmed the required eligibility attestations. Final submission requires a verified public video and explicit approval.
+
+See the [release audit](submission/RELEASE_GATE.md) for the current official requirements and acceptance checks.

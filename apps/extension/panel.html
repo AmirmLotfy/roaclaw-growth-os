@@ -34,11 +34,18 @@
         </div>
       </section>
 
-      <section id="actions" class="section approval" aria-labelledby="actions-title" hidden>
+      <div id="panel-nav" class="panel-nav" role="tablist" aria-label="Chrome companion views" hidden>
+        <button id="panel-inspect-tab" type="button" role="tab" aria-controls="inspect" aria-selected="true">Inspect</button>
+        <button id="panel-actions-tab" type="button" role="tab" aria-controls="actions" aria-selected="false" tabindex="-1">Actions</button>
+        <button id="panel-research-tab" type="button" role="tab" aria-controls="research" aria-selected="false" tabindex="-1">Research</button>
+      </div>
+
+      <section id="actions" class="section approval" role="tabpanel" aria-labelledby="panel-actions-tab" tabindex="0" hidden>
         <div class="section-heading">
           <h2 id="actions-title">Confirm bookmark</h2>
           <span id="action-status" class="status" hidden></span>
         </div>
+        <p id="no-action">Send a bookmark proposal from Growth Audit to review it here.</p>
         <article id="bookmark" hidden>
           <h3 id="bookmark-title"></h3>
           <p id="bookmark-url" class="source-url"></p>
@@ -55,7 +62,7 @@
         </article>
       </section>
 
-      <section id="inspect" class="section" aria-labelledby="inspect-title" hidden>
+      <section id="inspect" class="section" role="tabpanel" aria-labelledby="panel-inspect-tab" tabindex="0" hidden>
         <div class="section-heading">
           <h2 id="inspect-title">Inspect current page</h2>
           <span id="page-state" class="status">Tab access needed</span>
@@ -78,7 +85,7 @@
         </article>
       </section>
 
-      <section id="research" class="section research" aria-label="Research" hidden>
+      <section id="research" class="section research" role="tabpanel" aria-labelledby="panel-research-tab" tabindex="0" hidden>
         <details>
           <summary>Search Chrome bookmarks</summary>
           <p>Chrome may ask for bookmark access. Search results stay here.</p>

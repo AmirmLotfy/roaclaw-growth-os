@@ -40,3 +40,5 @@ npm --prefix apps/video run render
 Pass a different manifest path after `--` to any of the last three scripts. Set `ROACLAW_VIDEO_CHROME` to an installed Chrome executable to use it for rendering. Otherwise Remotion provisions its renderer browser.
 
 Ingest verifies source dimensions and durations, calculates frame-accurate placement, and generates the SRT in `.local/video/`. Render writes the 1920×1080 H.264 MP4 and the 1280×720 PNG thumbnail to the same directory. An AAC track is always present and carries supplied narration when provided. The `qa/` directory contains ffprobe results and six extracted frames. Review the selected images and the complete video before using the export.
+
+The picture-only review now has its own output name. Use `npm run picture -- <manifest>` to review the footage and motion while narration is pending. The manifest may specify `voiceover`, a `score`, per-scene `narration`, and timed `subtitleCues`. Set `requireAudio` on the final edit to prevent a silent submission export. See [production notes](../../video/REMOTION_PRODUCTION.md).

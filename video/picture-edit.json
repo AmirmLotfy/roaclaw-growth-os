@@ -1,0 +1,23 @@
+{
+  "demoUrl": "https://roaclaw-growth-os-2026.web.app",
+  "requireAudio": true,
+  "segments": [
+    { "kind": "home", "file": "roaclaw-web.webm", "start": 9.3, "end": 13.7 },
+    { "kind": "offer", "file": "roaclaw-web.webm", "start": 1.6, "end": 8.0 },
+    { "kind": "device", "file": "roaclaw-web.webm", "start": 39.3, "end": 44.7, "zoom": 1.05, "focus": "bottom" },
+    { "kind": "cloud", "file": "roaclaw-web.webm", "start": 55.9, "end": 61.5, "zoom": 1.05, "focus": "bottom" },
+    { "kind": "offline", "file": "roaclaw-web.webm", "start": 46.7, "end": 51.5 },
+    { "kind": "findings", "file": "roaclaw-web.webm", "start": 58.8, "end": 64.8, "zoom": 1.12, "focus": "bottom" },
+    { "kind": "capture", "file": "roaclaw-chrome-panel.mp4", "start": 0.0, "end": 5.1 },
+    { "kind": "review", "file": "roaclaw-web.webm", "start": 62.7, "end": 68.6, "zoom": 1.13, "focus": "right" },
+    { "kind": "bookmark", "file": "roaclaw-chrome-panel.mp4", "start": 5.6, "end": 9.6 },
+    { "kind": "receipt", "file": "picture-dashboard-receipt.png", "start": 0, "end": 5.2 },
+    { "kind": "history", "file": "roaclaw-chrome-panel.mp4", "start": 9.8, "end": 12.1 },
+    { "kind": "setup", "file": "roaclaw-web.webm", "start": 13.9, "end": 18.0 },
+    { "kind": "workspaces", "file": "roaclaw-web.webm", "start": 78.5, "end": 83.1 },
+    { "kind": "lead", "file": "picture-lead-audit.png", "start": 0, "end": 5.2, "zoom": 1.09, "focus": "bottom" },
+    { "kind": "memory", "file": "roaclaw-web.webm", "start": 69.5, "end": 73.6 },
+    { "kind": "followup", "file": "roaclaw-web.webm", "start": 74.6, "end": 78.7 }
+  ],
+  "cover": { "kind": "findings", "second": 2.4 }
+}
