@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-22",
+  "cut": "ROACLAW_PICTURE_REVIEW.mp4",
+  "sha256": "2fc0378f45205f7d52812ed77eb78ac5a84466b0adf59d3151817b2fbaa4c466",
+  "durationSeconds": 85.803,
+  "width": 1920,
+  "height": 1080,
+  "framesPerSecond": 30,
+  "frames": 2574,
+  "videoCodec": "h264",
+  "audioCodec": "aac",
+  "audio": "Silent picture review",
+  "fullDecode": "PASS",
+  "sceneMidpointsInspected": 16,
+  "subtitleCues": 20,
+  "thumbnail": { "width": 1280, "height": 720 },
+  "evidenceStarts": {
+    "onDeviceSeconds": 10.8,
+    "cloudReviewSeconds": 16.2,
+    "offlineSeconds": 21.8,
+    "bookmarkReadbackSeconds": 47.2
+  },
+  "finalNarrationAndScore": "WAITING_FOR_OWNER_AUDIO",
+  "publication": "HOLD"
+}

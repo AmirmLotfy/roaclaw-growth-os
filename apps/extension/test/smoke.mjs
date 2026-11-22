@@ -338,6 +338,9 @@ try {
   else assert.equal((await sendFromPage(source, scope, 'ROACLAW_PAIR', { workspaceName })).status, 'pending');
   await triggerToolbar(source, devtools, context);
   const panel = await connectPanel(context, devtools);
+  const activeTabId = () => panel.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.id);
+  const dashboardTabId = await activeTabId();
+  assert.ok(Number.isInteger(dashboardTabId));
   if (recordPanel) panelRecording = await startRecording(panel, profile);
   await hasText(panel, '#pair-name', workspaceName);
   await panel.screenshot('01-pairing.png');
@@ -434,7 +437,10 @@ try {
     await hasText(panel, '#page-url', outside);
     await panel.click('#capture');
     await hasText(panel, '#capture-url', outside);
+    stage = 'dashboard handoff';
+    assert.notEqual(await activeTabId(), dashboardTabId);
     await panel.click('#open-dashboard');
+    await until('the original dashboard tab to receive focus', async () => (await activeTabId()) === dashboardTabId);
     await clickWeb(source, 'Growth Audit');
     await clickWeb(source, 'Use an approved Chrome capture');
     await clickWeb(source, 'Get approved capture');
@@ -461,7 +467,7 @@ try {
   const entries = flatten(Object.values(saved.roots));
   for (const entry of receipts) assert.ok(entries.some(({ id, name, url }) => id === entry.bookmarkId && name === entry.title && url === entry.url));
   const report = { browser: version.product, app: base.origin, extensionId, capture, receipts, canceledVerified: true, searchMatches: 2, persistedBookmarks: receipts.length, webUiPairAndCapture: useWebFlow, historyVerified: exerciseHistory, permissionPrompt: pregranted ? 'pregranted in a disposable test manifest' : 'native Chrome',
-    ...(useWebFlow ? { webAudit: { inferenceSourceLabel: webInference, priceMismatchVerified: true, bookmarkReceiptVerified: true, memoryReceiptAfterReload: true, externalCaptureDeviceOnly: true, sessionRotatedAfterSignOut: true } } : {}),
+    ...(useWebFlow ? { webAudit: { inferenceSourceLabel: webInference, priceMismatchVerified: true, bookmarkReceiptVerified: true, memoryReceiptAfterReload: true, dashboardHandoffVerified: true, externalCaptureDeviceOnly: true, sessionRotatedAfterSignOut: true } } : {}),
   };
   if (evidence) await writeFile(join(evidence, 'runtime.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));

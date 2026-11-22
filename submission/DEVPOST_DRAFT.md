@@ -1,56 +1,53 @@
-# Devpost Submission Draft — revise to match VERIFIED app
+# ROACLAW Growth Audit
 
-**Critical:** This is a strong publication-ready narrative STRUCTURE, not permission to claim non-working features. Replace bracketed fields with actual evidence or delete unsupported claims. User wants a finished real submission before November 30 14:00 PST. The submitted page must reflect what Codex genuinely built.
+## Tagline
 
-## Project title
-ROACLAW — The Growth Agent That Shows Its Work
-
-## Short tagline
-A local-first browser companion and SaaS workspace that finds the gap between ad spend and business results—and makes every proposed action accountable.
+Compare a campaign offer with its landing page, then approve a tracked bookmark in Chrome.
 
 ## Inspiration
-A media buyer can have the campaign, the landing page, the store's sales numbers, and their research open at the same time—and still miss a basic mismatch. The problem isn't a shortage of dashboards. It's that browser context, business objectives, campaign performance, and follow-up work live in different places. ROACLAW connects those pieces, with a strong privacy boundary and an explicit record of what the agent actually did.
+
+A buyer clicks an ad for a $99 vase set and lands on a page that shows $119. A campaign dashboard can report return on ad spend while missing that discrepancy. We built ROACLAW to put the offer, the page and the evidence for each finding in the same place.
 
 ## What it does
-ROACLAW combines a SaaS workbench with a Chrome extension. Users choose an ecommerce, lead-generation, or agency client workspace; inspect a selected landing page; analyze available campaign/context data; and receive source-backed findings and proposed actions. Its flagship **Growth Audit** labels observations separately from hypotheses, surfaces a reviewable diff, and asks permission before executing safe browser actions. Saved research, activity receipts and scheduled follow-ups keep the work accessible. [Only mention live speech here if tested: "It also supports a live voice interaction through Firebase AI Logic." ]
 
-In the submission video, a **synthetic** store campaign advertises a $99 offer while the selected page displays $119. ROACLAW flags that mismatch, finds the missing campaign parameter in the sample URL, compares the observed fixture ROAS with the configured target, and prepares a small corrective action that the user can approve. [Specify what action actually executed.]
+Growth Audit opens a synthetic ecommerce, lead-generation or agency workspace. In the ecommerce example, it finds the $99 vs. $119 price mismatch and a missing campaign tag. It also shows the demo's 3.315× return on ad spend against a 3.6× target. In the lead-generation example, the audit labels the button-copy question as a hypothesis.
+
+The Chrome companion captures headings, displayed prices and button labels from a public page after the user requests it. The dashboard proposes the exact tagged link. The user reviews it in Chrome and saves it to Other Bookmarks. Chrome reads it back and the audit saves the verified receipt. The workspace also keeps research notes and lets the user run a due storefront price check.
 
 ## How we built it
-We implemented a [VERIFIED FRAMEWORK] SaaS interface and a Chrome Manifest V3 extension sharing business context through Firebase Authentication and Firestore. For supported short page analysis, Firebase AI Logic uses **on-device Gemini Nano 4** via Chrome's built-in Prompt API. For longer, cross-source reasoning, the app uses a cloud Gemini model through Firebase AI Logic. The UI reports actual `inferenceSource` values from the Firebase SDK and has an explicit local-only privacy mode. [Only include Firebase Live API if verified.] Agent proposals are validated and approved before an allowed browser or API action; results are confirmed with a postcondition and a log entry.
 
-Other Firebase services: [LIST ACTUALLY USED: App Check, Auth, Firestore, Cloud Functions, Hosting/App Hosting, Remote Config]. Test/repo setup: [TESTS, VERSION, PUBLIC REPO].
+Next.js and TypeScript power the web app. Chrome Manifest V3 powers the companion. Firebase AI Logic runs structured page extraction with Gemini Nano 4 in compatible Chrome. With cloud processing enabled, it can fall back to Gemini 3.5 Flash-Lite for extraction and uses that model for a separate cloud review. The dashboard labels each source using the SDK. External page captures use device-only analysis.
 
-## Challenges we ran into
-The hardest boundary was not generating plausible marketing advice; it was **making claims verifiable**. Chrome's on-device model has limited supported tasks and hardware requirements, while cloud reasoning and live voice are separate capabilities. Browser extensions also have security and permission constraints. We designed the audit as a measured sequence of local extraction, cloud diagnosis, human review, and verifiable action rather than pretending a model can freely operate a browser.
+Firebase Authentication opens an anonymous demo session. Cloud Firestore rules isolate each demo UID's workspaces. Firebase App Check protects cloud inference, and Firebase Hosting serves the site, app and extension ZIP. The companion requires confirmed, origin- and tab-bound pairing.
 
-[Replace with the ACTUAL integration or debugging obstacle and resolution: e.g. App Check + extension origin, Chrome model flag/readiness, demo account isolation, voice session reconnection.]
+## Challenges and results
 
-## Accomplishments we're proud of
-- [Only if verified] A genuine Firebase AI Logic request returning `ON_DEVICE` and a separate cloud request returning `IN_CLOUD`, shown in the demo.
-- [Only if verified] A functional full Growth Audit on a deterministic synthetic dataset, separating evidence and hypotheses.
-- [Only if verified] Permission-gated real Chrome action plus postcondition receipt, not a fake button.
-- [Only if verified] Isolated agency/client workspaces and an accessible, restrained interface that supports audit decisions rather than hype.
-- [Only if verified] Live natural voice interaction with a visual approval boundary.
+We verified Gemini Nano 4 on-device and offline, then verified an independent cloud response with App Check. During a fresh recording run the local model sometimes omitted a price. The audit now compares model output with captured evidence and can use a single explicit captured price when needed. It records the basis for the field and asks for review if the captured prices conflict.
+
+The Chrome test verified a real bookmark readback, persistence after browser shutdown, cancellation without a new bookmark, and a saved receipt after dashboard reload. An open demo tab also completed a local audit offline and synced it after reconnecting. The app offers text lookup because the Firebase Web Live preview rejected this configuration's App Check connection.
 
 ## What we learned
-Hybrid inference is a product architecture decision, not just a model toggle. On-device processing changes consent expectations, cloud reasoning requires careful source attribution, and an agent is only trustworthy when it can explain a proposed change, ask for the correct approval, and verify what happened afterward.
+
+A local inference source tells us where the model ran. The evidence attached to each field tells us why we can use it. Capturing both made the findings easier to verify and made the approval workflow clearer.
 
 ## What's next
-Production-grade Meta/Google Ads and ecommerce connectors through official APIs; richer scheduled monitoring; collaborative approvals; additional language coverage; expanded semantic browser memory and enterprise retention controls. These are forward-looking, not present-demo claims.
+
+Authorized campaign and ecommerce connectors, collaborative approvals, and server-run monitoring.
 
 ## Built with
-[ACTUALLY USED ONLY:] Firebase AI Logic, Gemini Nano 4, Gemini [model name], Firebase App Check, Firebase Authentication, Cloud Firestore, Firebase Functions, Next.js, TypeScript, React, Chrome Manifest V3, Remotion, Playwright.
 
-## Links
-- Demo: [VERIFIED HOSTED URL]
-- Extension build/installation: [VERIFIED RELEASE OR DOCS URL]
-- GitHub/GitLab source: [VERIFIED PUBLIC URL]
-- YouTube public demo: [VERIFIED VIDEO URL]
-- Testing instructions: [IN FORM FIELD AS REQUIRED]
+Firebase AI Logic, Gemini Nano 4, Gemini 3.5 Flash-Lite, Firebase App Check, Firebase Authentication, Cloud Firestore, Firebase Hosting, Next.js, TypeScript, React, Chrome Manifest V3, Playwright and Remotion.
 
-## Required disclosures / integrity
-This submission uses synthetic business data; no actual ad spend is changed in the demo. List preexisting code/assets incorporated, date and scope of new work, AI-assisted coding tools, third-party licenses, and production limitations where required by the contest.
+## Judge links
 
-## Category
-**Web / Chrome**, not Android or iOS. A web SaaS plus Chrome extension is one Web platform.
+- [Start Growth Audit](https://roaclaw-growth-os-2026.web.app/app/) and choose **Open demo**, then **Ecommerce**. Run **Prefer device** to see the extraction and review labels. Use **Device only** on compatible Chrome with the model ready.
+- [Product site and install guide](https://roaclaw-growth-os-2026.web.app/)
+- [Chrome companion ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip)
+- [Public Apache 2.0 repository and full test instructions](https://github.com/AmirmLotfy/roaclaw-growth-os)
+- Add the public YouTube URL after the narrated master passes playback review.
+
+## Disclosures
+
+ROACLAW Growth OS is an independent project started on 22 November 2026. The demo uses fictional campaigns, storefronts and workspaces. Codex assisted implementation and ImageGen created the fixture artwork. Asset and dependency licenses are listed in the repository.
+
+Entry platform: **Web (Chrome)**.

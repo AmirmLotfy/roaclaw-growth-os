@@ -20,3 +20,4 @@ jobs:
       - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm check
       - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm test
       - run: node --test apps/extension/tests/*.test.js
+      - run: npm exec --yes --package=pnpm@10.34.9 -- pnpm build

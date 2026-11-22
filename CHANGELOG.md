@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 · Chrome compatibility
+
+- Use dashboard handoff APIs available from the companion's Chrome 116 minimum. Rechecked the full Chrome workflow on 158 and tested the handoff without `URL.canParse`.
+- Build the web export and companion archive from the clean GitHub Actions checkout.
+
 ## 0.2.0 · Submission candidate
 
 - Rebuilt the product site around the audited offer, original storefront artwork, and keyboard-operable proof tabs.

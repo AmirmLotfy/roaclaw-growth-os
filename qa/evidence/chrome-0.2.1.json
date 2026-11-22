@@ -1,0 +1,37 @@
+{
+  "browser": "Chrome/158.0.8127.37",
+  "app": "https://roaclaw-growth-os-2026.web.app",
+  "extensionId": "loglkephefkogehklbohjpdnhdalgnmc",
+  "permissionPrompt": "pregranted in a disposable test manifest",
+  "packageVersion": "0.2.1",
+  "packageSha256": "c2ee22db65348ac76693ddaa365c1ad0be5b9addec0b5fc5399cd60ac4f3d1ff",
+  "hostingPackageMatchesLocalBuild": true,
+  "olderChromeApiAbsenceTest": "PASS",
+  "capture": {
+    "capturedAt": "2026-11-22T11:23:49.929Z",
+    "ctas": [
+      "Add to cart"
+    ],
+    "headings": [
+      "Ceramic Vase Set"
+    ],
+    "title": "Ceramic Vase Set | Demo Store",
+    "url": "https://roaclaw-growth-os-2026.web.app/demo-store/",
+    "visiblePriceText": [
+      "$119"
+    ]
+  },
+  "canceledVerified": true,
+  "searchMatches": 2,
+  "persistedBookmarks": 2,
+  "historyVerified": true,
+  "webAudit": {
+    "inferenceSourceLabel": "Page · In cloud",
+    "priceMismatchVerified": true,
+    "bookmarkReceiptVerified": true,
+    "memoryReceiptAfterReload": true,
+    "dashboardHandoffVerified": true,
+    "externalCaptureDeviceOnly": true,
+    "sessionRotatedAfterSignOut": true
+  }
+}

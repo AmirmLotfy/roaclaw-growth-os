@@ -68,7 +68,8 @@ function listen() {
 let mockSequence = 0;
 async function worker() {
   const data = { writes: 0, permission: false, injections: 0, entries: new Map(), stored: {},
-    tab: { id: 8, url: `${fixture}?utm_source=old`, incognito: false, active: true, windowId: 1 } };
+    tab: { id: 8, url: `${fixture}?utm_source=old`, incognito: false, active: true, windowId: 1 },
+    dashboardTab: null, tabActions: [] };
   const internalEvent = listen();
   const externalEvent = listen();
   globalThis.chrome = {
@@ -78,7 +79,18 @@ async function worker() {
       get: async (key) => structuredClone({ [key]: data.stored[key] }),
       set: async (patch) => Object.assign(data.stored, structuredClone(patch)),
     } },
-    tabs: { query: async () => [data.tab], onRemoved: listen() },
+    tabs: {
+      get: async (id) => {
+        assert.equal(id, workspace.tab.id);
+        if (!data.dashboardTab) throw new Error('No tab');
+        return data.dashboardTab;
+      },
+      query: async () => [data.tab],
+      update: async (id, change) => { data.tabActions.push(['update', id, change]); },
+      create: async (change) => { data.tabActions.push(['create', change]); },
+      onRemoved: listen(),
+    },
+    windows: { update: async (id, change) => { data.tabActions.push(['window', id, change]); } },
     scripting: { executeScript: async ({ target: destination, args }) => {
       data.injections += 1;
       assert.equal(destination.tabId, data.tab.id);
@@ -115,6 +127,21 @@ async function connect({ external, internal }) {
   const state = await internal('PANEL_STATE');
   return state.binding.reviewId;
 }
+
+test('dashboard handoff works without URL.canParse and opens a new tab when reassignment is unsafe', async (t) => {
+  const instance = await worker();
+  const { data, internal } = instance;
+  await connect(instance);
+  t.mock.method(URL, 'canParse', () => { throw new Error('Requires Chrome 120'); });
+  data.dashboardTab = { ...workspace.tab, url: workspace.url, windowId: 1 };
+  assert.equal((await internal('PANEL_OPEN_DASHBOARD')).status, 'focused');
+  assert.deepEqual(data.tabActions, [['update', 4, { active: true }], ['window', 1, { focused: true }]]);
+  data.dashboardTab = { ...data.dashboardTab, url: undefined };
+  assert.equal((await internal('PANEL_OPEN_DASHBOARD')).status, 'opened');
+  assert.deepEqual(data.tabActions.at(-1), ['create', { url: workspace.url }]);
+  data.dashboardTab = null;
+  assert.equal((await internal('PANEL_OPEN_DASHBOARD')).status, 'opened');
+});
 
 test('requires local pairing and capture, isolates origin, workspace, tab and session', async () => {
   const instance = await worker();

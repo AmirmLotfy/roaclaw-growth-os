@@ -199,7 +199,7 @@ async function openDashboard(binding) {
   const destination = new URL('/app/', origin);
   if (binding) {
     const existingTab = await chrome.tabs.get(binding.tabId).catch(() => null);
-    const existingPage = URL.canParse(existingTab?.url) ? new URL(existingTab.url) : null;
+    const existingPage = existingTab?.url ? new URL(existingTab.url) : null;
     if (!existingTab?.incognito && existingPage?.origin === origin && ['/app', '/app/'].includes(existingPage.pathname)) {
       await chrome.tabs.update(existingTab.id, { active: true });
       await chrome.windows.update(existingTab.windowId, { focused: true });

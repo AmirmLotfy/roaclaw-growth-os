@@ -1,6 +1,6 @@
 # #BuildHybridAI release audit
 
-Checked 22 November 2026 against the organizer’s overview, Resources, Official Rules, and FAQ. The redesigned product is the current release candidate. The narrated video is pending the user’s audio. Evidence from the previous release remains available in the QA index.
+Checked 22 November 2026 against the organizer’s overview, Resources, Official Rules, and FAQ. The redesigned product is live. The current picture review is 85.803 seconds and the narrated master is waiting for the owner’s audio.
 
 ## Organizer requirements
 
@@ -8,9 +8,9 @@ Checked 22 November 2026 against the organizer’s overview, Resources, Official
 |---|---|---|
 | Enter one supported platform | The dashboard and Chrome companion are one Web (Chrome) project. | Select Web (Chrome) on the existing draft. |
 | Firebase AI Logic in the runtime | The dashboard imports and executes Firebase AI Logic. Chrome reported Nano 4, and the Gemini cloud path ran separately under App Check. | Passed on the redesigned deployment, including the open-tab offline route, consented fallback in the companion test profile, and cloud review under App Check. |
-| Explain problem, features, and Firebase use | The English draft explains the campaign and page mismatch and the approval flow. | Refresh copy, testing URL, repo tag, and demo link after final QA. |
-| Public repository and open-source license | Public GitHub detects Apache-2.0. The source includes install instructions and actual inference code. | Pass CI, a clean checkout check, package readback, and secret scan on the final revision. |
-| Public YouTube video and English | A prior Studio upload remains a draft. The replacement needs current visuals and the user’s audio. | Verified public playback, English captions, downloadable evidence, and at most three minutes. Local and cloud behavior appear within the first 30 seconds. |
+| Explain problem, features, and Firebase use | The [updated English draft](DEVPOST_DRAFT.md) explains the campaign and page mismatch, the Chrome approval flow, and the observed Firebase behavior. | Current copy and judge links are ready. Add the final video URL after playback review. |
+| Public repository and open-source license | Public GitHub detects Apache-2.0. The source includes install instructions, runtime inference code, and evidence. | Confirm final tag, CI, package readback, and secret scan before submission. |
+| Public YouTube video and English | The [picture review](../video/VIDEO_QA_REPORT.md) passed decode and scene review. Local and cloud behavior start at 00:10.800 and 00:16.200. | Ingest the owner’s audio, verify English captions and duration under three minutes, then confirm public playback. |
 | Testing experience | Firebase Hosting has the product site, anonymous demo, and extension package. | Passed in fresh isolated profiles. Use the app URL in the judging instructions and the product site as context. |
 | Accurate eligibility and work history | The account holder confirmed a new individual project in Egypt, no organization, started 22 November 2026, and confirmed the required attestations. | Confirm the final action at submission time. |
 | Deadline | 30 November 2026 at 14:00 PST, which is midnight entering 1 December in Cairo. | Finish playback verification before opening the submission form. |
