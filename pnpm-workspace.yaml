@@ -1,2 +1,6 @@
 packages:
   - apps/web
+
+overrides:
+  # Remove when Firestore pins a version patched for CVE-2026-101916.
+  '@firebase/firestore>@grpc/grpc-js': 1.13.7

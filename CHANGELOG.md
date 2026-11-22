@@ -4,6 +4,7 @@
 
 - Use dashboard handoff APIs available from the companion's Chrome 116 minimum. Rechecked the full Chrome workflow on 158 and tested the handoff without `URL.canParse`.
 - Build the web export and companion archive from the clean GitHub Actions checkout.
+- Override Firestore's transitive gRPC dependency with patched version 1.13.7 and recheck the hosted audit.
 
 ## 0.2.0 · Submission candidate
 

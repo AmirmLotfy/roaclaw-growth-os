@@ -15,9 +15,9 @@ Last checked 22 November 2026. The Firebase verification gate, hosted Growth Aud
 | V-01 | BLOCKED | The Firebase Web Live SDK does not send the required App Check attestation on the Live transport. [Voice investigation](backend/live-voice.md) · [Hosted rejection trace](evidence/live/transport.json) |
 | V-02 | PASS | Asked for the audit price finding through Agent text lookup in hosted Chrome. [Text lookup](evidence/web/05-text-lookup.png) |
 | D-01 and D-02 | PASS FOR TESTED STATES | Checked the homepage and dashboard at desktop and mobile sizes, paired extension content at 360 and 420 CSS pixels, keyboard access to the site skip link, and reduced-motion behavior. Axe reported zero WCAG A/AA-tagged violations in the 13 scanned views. [Hosted browser](evidence/web/runtime.json) · [Axe and dimension report](evidence/accessibility/runtime.json) |
-| S-01 | PASS | The release candidate passed a staged Gitleaks scan. Build artifacts, browser profiles, and local credentials are ignored by Git. |
+| S-01 | PASS | Staged Gitleaks and a five-commit release-history scan returned zero findings. Build artifacts, browser profiles, and local credentials are ignored by Git. |
 | S-03 | PASS | Verified the public marketing site, the direct Growth Audit route, fresh demo onboarding, App Check and a separate cloud generation HTTP 200. [Website](https://roaclaw-growth-os-2026.web.app/) · [Dashboard](https://roaclaw-growth-os-2026.web.app/app/) · [Browser run](evidence/web/runtime.json) |
-| S-02 | PASS | Public Apache 2.0 repository, stable release tag, matching extension ZIP, and passing GitHub Actions. [Release](https://github.com/AmirmLotfy/roaclaw-growth-os/releases/tag/v0.1.0) · [CI](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/runs/45013512110) |
+| S-02 | PASS | Public Apache 2.0 repository, published candidate tag, clean-checkout web export, matching extension ZIP, and passing GitHub Actions. [0.2.1 candidate](https://github.com/AmirmLotfy/roaclaw-growth-os/releases/tag/v0.2.1-rc.2) · [CI](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) |
 | S-04 | HOLD | The 85.803-second redesign picture review passed full decode and scene inspection. The final narration, score, and public playback are pending. [Video QA](../video/VIDEO_QA_REPORT.md) · [Picture review report](evidence/video/picture-review.json) |
 | S-05 | DRAFT | The authenticated Devpost project exists with no submission timestamp. [RoaClaw draft](https://devpost.com/software/roaclaw-o1637x) |
 
@@ -37,3 +37,5 @@ The redesigned site passed keyboard proof tabs, desktop and mobile sizing, and s
 [Hosted report](evidence/web/runtime.json) · [Chrome report](evidence/g3-web/runtime.json) · [Accessibility report](evidence/accessibility/runtime.json)
 
 The Chrome 0.2.1 hotfix preserves the normal dashboard handoff on older Chrome. The ninth extension unit check models a browser without the later `URL.canParse` API. The fresh Chrome 158 run verified the dashboard handoff, approved capture, two persisted bookmarks, declined proposal, local history and pairing revocation. [Compatibility retest](evidence/chrome-0.2.1.json)
+
+The final hosted audit passed with Firestore's gRPC dependency patched to 1.13.7. The production workspace dependency scan returned zero known advisories. [Hosted rerun](evidence/web-0.2.1.json)

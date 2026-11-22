@@ -1,0 +1,37 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "appUrl": "https://roaclaw-growth-os-2026.web.app/app/",
+  "marketingEntryVerified": true,
+  "marketingKeyboardProofView": true,
+  "offlineAppAuditAndSync": true,
+  "offlineAiRequestAttempts": 0,
+  "passed": true,
+  "appCheckResponses": [
+    {
+      "kind": "app-check",
+      "host": "content-firebaseappcheck.googleapis.com",
+      "status": 200
+    },
+    {
+      "kind": "generation",
+      "host": "firebasevertexai.googleapis.com",
+      "status": 200
+    }
+  ],
+  "deviceAnalysis": true,
+  "cloudReview": true,
+  "firestoreReload": true,
+  "workspaceIsolationInView": true,
+  "fixtureRecheck": true,
+  "mobileNoOverflow": true,
+  "selectChevronInsetVerified": true,
+  "leadAuditVerified": true,
+  "retailAuditVerified": true,
+  "taggedNotesAfterReload": true,
+  "textLookupVerified": true,
+  "auditExportVerified": true,
+  "release": "0.2.1-rc.2",
+  "date": "2026-11-22",
+  "firestoreGrpcJs": "1.13.7",
+  "productionDependencyAudit": "No known vulnerabilities found"
+}
