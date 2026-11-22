@@ -1,0 +1,36 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "appUrl": "https://roaclaw-growth-os-2026.web.app/app/",
+  "headless": false,
+  "marketingEntryVerified": true,
+  "marketingKeyboardProofView": true,
+  "offlineAppAuditAndSync": true,
+  "offlineAiRequestAttempts": 0,
+  "passed": true,
+  "appCheckResponses": [
+    {
+      "kind": "app-check",
+      "host": "content-firebaseappcheck.googleapis.com",
+      "status": 200
+    },
+    {
+      "kind": "generation",
+      "host": "firebasevertexai.googleapis.com",
+      "status": 200,
+      "appCheckAttached": true
+    }
+  ],
+  "deviceAnalysis": true,
+  "cloudReview": true,
+  "deviceOnlyAfterAppCheckDenial": false,
+  "firestoreReload": true,
+  "workspaceIsolationInView": true,
+  "fixtureRecheck": true,
+  "mobileNoOverflow": true,
+  "selectChevronInsetVerified": true,
+  "leadAuditVerified": true,
+  "retailAuditVerified": true,
+  "taggedNotesAfterReload": true,
+  "textLookupVerified": true,
+  "auditExportVerified": true
+}

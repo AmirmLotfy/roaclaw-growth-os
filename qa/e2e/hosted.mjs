@@ -9,6 +9,8 @@ const profile = resolve('.local/g0-chrome');
 const dest = resolve(process.env.ROACLAW_HOSTED_EVIDENCE ?? 'qa/evidence/web');
 const recordVideo = process.env.ROACLAW_CAPTURE_VIDEO === '1';
 const allowAppCheckDenial = process.env.ROACLAW_TEST_APP_CHECK_DENIAL === '1';
+const headless = process.env.ROACLAW_QA_HEADLESS === '1';
+const minimized = process.env.ROACLAW_QA_MINIMIZED === '1';
 await mkdir(dest, { recursive: true });
 const holdMs = Math.round(1000 * Number(process.env.ROACLAW_CAPTURE_HOLD_SECONDS || '2.2'));
 let recordingStart;
@@ -20,7 +22,8 @@ const context = await chromium.launchPersistentContext(profile, {
     '--remote-debugging-pipe',
     '--no-first-run',
     '--no-default-browser-check',
-    ...(process.env.ROACLAW_QA_HEADLESS === '1' ? ['--headless=new'] : []),
+    ...(headless ? ['--headless=new'] : []),
+    ...(minimized ? ['--start-minimized', '--window-position=-10000,-10000'] : []),
     'about:blank',
   ],
   viewport: { width: 1440, height: 920 },
@@ -62,9 +65,13 @@ try {
     const route = aiRoute(request.url());
     if (route) aiRequestAttempts.push(route);
   });
-  page.on('response', (response) => {
+  page.on('response', async (response) => {
     const route = aiRoute(response.url());
-    if (route) responses.push({ ...route, status: response.status() });
+    if (!route) return;
+    const appCheckAttached = route.kind === 'generation'
+      ? Boolean(await response.request().headerValue('X-Firebase-AppCheck'))
+      : undefined;
+    responses.push({ ...route, status: response.status(), appCheckAttached });
   });
   if (recordVideo) {
     await page.goto(origin + '/demo-store/', { waitUntil: 'networkidle' });
@@ -142,11 +149,13 @@ try {
   await page.getByRole('button', { name: 'Run again' }).click();
   const cloudLabel = page.getByText('Review · In cloud', { exact: true });
   const localAfterDenial = page.getByText('Page inspected on this device. Firebase App Check blocked the cloud review.', { exact: true });
-  await (allowAppCheckDenial ? cloudLabel.or(localAfterDenial) : cloudLabel).waitFor({ timeout: 90000 });
+  await cloudLabel.or(localAfterDenial).waitFor({ timeout: 90000 });
   const cloudReview = await cloudLabel.isVisible();
+  assert.ok(cloudReview || allowAppCheckDenial, 'App Check blocked the required cloud review.');
   await page.getByText('Page · On device', { exact: true }).waitFor();
   await page.getByRole('heading', { name: /campaign tracking|campaign tag|UTM/i }).waitFor();
   await page.getByRole('heading', { name: /ROAS|return on ad spend/i }).waitFor();
+  await page.getByRole('button', { name: 'Run again', exact: true }).and(page.locator('button:enabled')).waitFor();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: resolve(dest, '02-hybrid-audit.png'), fullPage: !recordVideo });
   await beat('cloud');
@@ -159,6 +168,9 @@ try {
   assert.equal(auditFile.suggestedFilename(), 'roaclaw-sable-stem-audit.json');
   const output = JSON.parse(await readFile(await auditFile.path(), 'utf8'));
   assert.deepEqual(output.priceComparison, { campaign: 99, page: 119 });
+  assert.equal(output.pageSource, 'on_device');
+  assert.equal(output.reasoningSource, cloudReview ? 'in_cloud' : null);
+  if (cloudReview) assert.ok(typeof output.commentary === 'string' && output.commentary.trim().length > 0);
 
   await page.getByRole('button', { name: 'Agent', exact: true }).click();
   await page.getByLabel('Question').fill('What did the audit find about the price?');
@@ -225,13 +237,15 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth), true);
   await page.screenshot({ path: resolve(dest, '04-mobile.png'), fullPage: !recordVideo });
 
-  if (cloudReview) assert.ok(responses.some((response) => response.kind === 'generation' && response.status === 200));
-  else {
+  if (cloudReview) {
+    assert.ok(responses.some((response) => response.kind === 'app-check' && response.status === 200));
+    assert.ok(responses.some((response) => response.kind === 'generation' && response.status === 200 && response.appCheckAttached));
+  } else {
     assert.ok(allowAppCheckDenial);
     assert.ok(responses.some((response) => response.kind === 'app-check' && response.status >= 400));
     assert.ok(!responses.some((response) => response.kind === 'generation'));
   }
-  const report = { origin, appUrl, marketingEntryVerified: true, marketingKeyboardProofView: true, offlineAppAuditAndSync: true, offlineAiRequestAttempts, passed: true, appCheckResponses: responses, deviceAnalysis: true, cloudReview, deviceOnlyAfterAppCheckDenial: !cloudReview, firestoreReload: true, workspaceIsolationInView: true, fixtureRecheck: true, mobileNoOverflow: true, selectChevronInsetVerified: true, leadAuditVerified: true, retailAuditVerified: true, taggedNotesAfterReload: true, textLookupVerified: true, auditExportVerified: true };
+  const report = { origin, appUrl, headless, marketingEntryVerified: true, marketingKeyboardProofView: true, offlineAppAuditAndSync: true, offlineAiRequestAttempts, passed: true, appCheckResponses: responses, deviceAnalysis: true, cloudReview, deviceOnlyAfterAppCheckDenial: !cloudReview, firestoreReload: true, workspaceIsolationInView: true, fixtureRecheck: true, mobileNoOverflow: true, selectChevronInsetVerified: true, leadAuditVerified: true, retailAuditVerified: true, taggedNotesAfterReload: true, textLookupVerified: true, auditExportVerified: true };
   await writeFile(resolve(dest, 'runtime.json'), JSON.stringify(report, null, 2) + '\n');
   passed = true;
   console.log(JSON.stringify(report, null, 2));

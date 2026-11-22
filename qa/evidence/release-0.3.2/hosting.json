@@ -1,0 +1,24 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "routes": {
+    "/": {
+      "status": 200
+    },
+    "/app/": {
+      "status": 200
+    },
+    "/app/preflight/": {
+      "status": 200
+    },
+    "/demo-store/": {
+      "status": 200
+    },
+    "/roaclaw-extension.zip": {
+      "status": 200,
+      "manifestVersion": "0.3.2",
+      "sha256": "37641a0f48ba03c256fa070610afded69f7becd62c21eafe13645fab9f06bd0c",
+      "sizeBytes": 26082,
+      "matchesLocalBuild": true
+    }
+  }
+}

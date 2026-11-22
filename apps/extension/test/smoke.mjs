@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
+import { constants } from 'node:fs';
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ORIGINS } from '../protocol.js';
@@ -12,7 +13,7 @@ const extensionPath = fileURLToPath(new URL('../', import.meta.url));
 const panelUrl = `chrome-extension://${extensionId}/panel.html`;
 const baseArg = process.argv[2];
 if (!baseArg || baseArg === '--help') {
-  console.log('Usage: node apps/extension/test/smoke.mjs <app URL> [--evidence-dir <path>] [--web-flow] [--history] [--pregrant-test-permissions]');
+  console.log('Usage: node apps/extension/test/smoke.mjs <app URL> [--evidence-dir <path>] [--web-flow] [--require-cloud-review] [--hosted-zip] [--with-nano] [--history] [--pregrant-test-permissions]');
   process.exit(baseArg ? 0 : 1);
 }
 const base = new URL(baseArg);
@@ -20,6 +21,12 @@ assert.ok(ORIGINS.has(base.origin), 'Use a ROACLAW companion origin from the man
 const evidenceFlag = process.argv.indexOf('--evidence-dir');
 const evidence = evidenceFlag < 0 ? null : resolve(process.argv[evidenceFlag + 1]);
 const useWebFlow = process.argv.includes('--web-flow');
+const requireCloud = process.argv.includes('--require-cloud-review');
+const hostedZip = process.argv.includes('--hosted-zip');
+const withNano = process.argv.includes('--with-nano');
+const headless = process.env.ROACLAW_QA_HEADLESS === '1';
+const minimized = process.env.ROACLAW_QA_MINIMIZED === '1';
+assert.ok(!requireCloud || useWebFlow, '--require-cloud-review requires --web-flow.');
 const exerciseHistory = process.argv.includes('--history');
 const pregranted = process.argv.includes('--pregrant-test-permissions');
 const recordPanel = process.env.ROACLAW_COMPANION_RECORD === '1';
@@ -263,9 +270,22 @@ async function auditInWeb(source) {
   await waitWeb(source, 'Save a tagged URL', 90_000);
   await waitWeb(source, 'Advertised $99 vs landing page $119.');
   const observed = source.getByText(/^Page · (In cloud|On device)$/);
+  const review = source.getByText('Review · In cloud', { exact: true });
   await webCondition(source, 'the Firebase inference source', () => observed.isVisible());
+  if (requireCloud) {
+    const unavailable = source.getByText(/App Check blocked the cloud review|The cloud review was unavailable/);
+    await webCondition(source, 'the Firebase cloud review', async () => {
+      assert.equal(await unavailable.isVisible(), false, 'The production cloud review was unavailable.');
+      return review.isVisible();
+    }, 90_000);
+    const commentary = source.locator('.interpretation p');
+    assert.ok((await commentary.innerText()).trim().length > 0, 'The cloud review returned no commentary.');
+  }
+  await webCondition(source, 'the saved audit to finish', () => webButton(source, 'Run again').isEnabled());
   if (evidence) await source.screenshot({ path: join(evidence, '05-web-audit.png'), fullPage: true });
-  return observed.innerText();
+  const label = await observed.innerText();
+  if (withNano) assert.equal(label, 'Page · On device');
+  return { inferenceSourceLabel: label, reviewSourceLabel: await review.isVisible() ? 'Review · In cloud' : null };
 }
 
 async function bookmarkInWeb(source, panel, scope) {
@@ -308,27 +328,62 @@ let context;
 let source;
 let stage = 'launch';
 let panelRecording;
+const firebaseResponses = [];
 try {
+  if (withNano) {
+    const labProfile = fileURLToPath(new URL('../../../.local/g0-chrome/', import.meta.url));
+    await cp(labProfile, profile, { recursive: true, mode: constants.COPYFILE_FICLONE,
+      filter: (path) => !basename(path).startsWith('Singleton') });
+  }
   let unpacked = extensionPath;
-  if (pregranted) {
+  if (hostedZip) {
+    const zip = await fetch(new URL('/roaclaw-extension.zip', base));
+    assert.ok(zip.ok, 'The hosted companion ZIP was unavailable.');
+    const archive = join(profile, 'companion.zip');
+    await writeFile(archive, Buffer.from(await zip.arrayBuffer()));
+    unpacked = join(profile, 'unpacked-hosted-extension');
+    await mkdir(unpacked);
+    execFileSync('unzip', ['-q', archive, '-d', unpacked]);
+  } else if (pregranted) {
     unpacked = join(profile, 'unpacked-test-copy');
     await cp(extensionPath, unpacked, { recursive: true });
+  }
+  const manifest = JSON.parse(await readFile(join(unpacked, 'manifest.json'), 'utf8'));
+  if (pregranted) {
     const path = join(unpacked, 'manifest.json');
-    const manifest = JSON.parse(await readFile(path, 'utf8'));
     manifest.permissions.push('bookmarks');
     if (exerciseHistory) manifest.permissions.push('history');
     manifest.optional_permissions = manifest.optional_permissions.filter((permission) => !manifest.permissions.includes(permission));
     await writeFile(path, JSON.stringify(manifest));
   }
   context = await chromium.launchPersistentContext(profile, {
-    channel: 'chrome', headless: process.env.ROACLAW_QA_HEADLESS === '1', viewport: null, ignoreDefaultArgs: ['--disable-extensions'],
-    args: ['--enable-unsafe-extension-debugging', '--window-size=1280,900'],
+    channel: 'chrome', headless, viewport: null,
+    ignoreDefaultArgs: ['--disable-extensions',
+      ...(withNano ? ['--disable-field-trial-config', '--disable-component-update', '--disable-background-networking'] : [])],
+    args: ['--enable-unsafe-extension-debugging', '--window-size=1280,900',
+      ...(withNano ? ['--disable-features=HttpsUpgrades,HttpsFirstBalancedModeAutoEnable'] : []),
+      ...(minimized ? ['--start-minimized', '--window-position=-10000,-10000'] : [])],
   });
   const devtools = await context.browser().newBrowserCDPSession();
   const version = await devtools.send('Browser.getVersion');
   const { id: loaded } = await devtools.send('Extensions.loadUnpacked', { path: unpacked });
   assert.equal(loaded, extensionId);
   source = context.pages()[0] ?? await context.newPage();
+  if (withNano) {
+    const cdp = await context.newCDPSession(source);
+    await cdp.send('Storage.clearDataForOrigin', { origin: base.origin, storageTypes: 'all' });
+    await cdp.detach();
+  }
+  source.on('response', async response => {
+    const url = new URL(response.url());
+    if (url.hostname.endsWith('firebaseappcheck.googleapis.com') && url.pathname.endsWith(':exchangeRecaptchaEnterpriseToken')) {
+      const error = response.ok() ? undefined : await response.json().then(body => body.error?.message).catch(() => undefined);
+      firebaseResponses.push({ kind: 'app-check', status: response.status(), error });
+    } else if (url.hostname === 'firebasevertexai.googleapis.com' && url.pathname.endsWith(':generateContent')) {
+      const appCheckAttached = Boolean(await response.request().headerValue('X-Firebase-AppCheck'));
+      firebaseResponses.push({ kind: 'generation', status: response.status(), appCheckAttached });
+    }
+  });
   if (useWebFlow) await source.setViewportSize({ width: 1440, height: 920 });
   await ensureSource(source);
   stage = 'pair';
@@ -378,6 +433,12 @@ try {
     await clickWeb(source, 'Get approved capture');
     await waitWeb(source, 'Approved Chrome capture attached.');
     webInference = await auditInWeb(source);
+    if (requireCloud) {
+      assert.ok(firebaseResponses.some(item => item.kind === 'app-check' && item.status === 200), 'No live App Check token exchange passed.');
+      const generations = firebaseResponses.filter(item => item.kind === 'generation' && item.status === 200 && item.appCheckAttached);
+      const expectedGenerations = webInference.inferenceSourceLabel === 'Page · In cloud' ? 2 : 1;
+      assert.ok(generations.length >= expectedGenerations, 'The expected Firebase cloud calls did not all pass with App Check.');
+    }
     stage = 'web bookmark proposal, approval, and receipt';
     panelRecording?.mark('approvalStart');
     receipts.push(await bookmarkInWeb(source, panel, scope));
@@ -428,6 +489,7 @@ try {
   if (useWebFlow) {
     stage = 'Memory receipt persistence after reload';
     await waitWeb(source, 'Demo session active');
+    if (webInference.reviewSourceLabel) await waitWeb(source, webInference.reviewSourceLabel);
     await checkWebMemory(source, receipts[0]);
     stage = 'non-demo capture mode';
     const outside = new URL('/morrow-booking/', base).href;
@@ -466,13 +528,14 @@ try {
   function flatten(nodes) { return nodes.flatMap((node) => [node, ...flatten(node.children ?? [])]); }
   const entries = flatten(Object.values(saved.roots));
   for (const entry of receipts) assert.ok(entries.some(({ id, name, url }) => id === entry.bookmarkId && name === entry.title && url === entry.url));
-  const report = { browser: version.product, app: base.origin, extensionId, capture, receipts, canceledVerified: true, searchMatches: 2, persistedBookmarks: receipts.length, webUiPairAndCapture: useWebFlow, historyVerified: exerciseHistory, permissionPrompt: pregranted ? 'pregranted in a disposable test manifest' : 'native Chrome',
-    ...(useWebFlow ? { webAudit: { inferenceSourceLabel: webInference, priceMismatchVerified: true, bookmarkReceiptVerified: true, memoryReceiptAfterReload: true, dashboardHandoffVerified: true, externalCaptureDeviceOnly: true, sessionRotatedAfterSignOut: true } } : {}),
+  const report = { browser: version.product, headless, app: base.origin, extensionId, extensionVersion: manifest.version, hostedZip, seededNanoProfile: withNano, capture, receipts, canceledVerified: true, searchMatches: 2, persistedBookmarks: receipts.length, webUiPairAndCapture: useWebFlow, historyVerified: exerciseHistory, permissionPrompt: pregranted ? 'pregranted in a disposable test manifest' : 'native Chrome',
+    ...(useWebFlow ? { firebaseResponses, webAudit: { ...webInference, priceMismatchVerified: true, bookmarkReceiptVerified: true, memoryReceiptAfterReload: true, dashboardHandoffVerified: true, externalCaptureDeviceOnly: true, sessionRotatedAfterSignOut: true } } : {}),
   };
   if (evidence) await writeFile(join(evidence, 'runtime.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));
 } catch (error) {
   console.error(`Chrome companion smoke stopped during ${stage}.`);
+  if (firebaseResponses.length) console.error('Firebase responses:', JSON.stringify(firebaseResponses));
   if (useWebFlow && source) {
     const alert = await source.getByRole('main').getByRole('alert').first().textContent({ timeout: 500 }).catch(() => null);
     if (alert) console.error(`Growth Audit alert: ${alert}`);

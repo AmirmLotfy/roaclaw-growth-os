@@ -1,0 +1,26 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "scoring": true,
+  "events": [
+    {
+      "host": "content-firebaseappcheck.googleapis.com",
+      "failed": "net::ERR_FAILED"
+    },
+    {
+      "host": "content-firebaseappcheck.googleapis.com",
+      "kind": "exchange",
+      "http": 403,
+      "message": "App attestation failed."
+    }
+  ],
+  "assessment": {
+    "status": 200,
+    "valid": true,
+    "invalidReason": "INVALID_REASON_UNSPECIFIED",
+    "hostname": "roaclaw-growth-os-2026.web.app",
+    "action": "fire_app_check",
+    "score": 0.1,
+    "reasons": []
+  },
+  "cloudReviewUi": false
+}

@@ -1,0 +1,77 @@
+{
+  "browser": "Chrome/158.0.8127.37",
+  "headless": false,
+  "app": "https://roaclaw-growth-os-2026.web.app",
+  "extensionId": "loglkephefkogehklbohjpdnhdalgnmc",
+  "extensionVersion": "0.3.1",
+  "hostedZip": true,
+  "seededNanoProfile": true,
+  "capture": {
+    "capturedAt": "2026-11-22T13:08:15.311Z",
+    "ctas": [
+      "Add to cart"
+    ],
+    "headings": [
+      "Ceramic Vase Set"
+    ],
+    "title": "Ceramic Vase Set | Demo Store",
+    "url": "https://roaclaw-growth-os-2026.web.app/demo-store/",
+    "visiblePriceText": [
+      "$119"
+    ]
+  },
+  "receipts": [
+    {
+      "bookmarkId": "5",
+      "folder": "Other Bookmarks",
+      "proposalId": "d4fac49a-2a66-451b-9a3b-6b4bf8db4deb-bookmark",
+      "title": "Ceramic Vase Set · Campaign research",
+      "url": "https://roaclaw-growth-os-2026.web.app/demo-store/?utm_source=meta&utm_medium=paid_social&utm_campaign=weekend-everyday-essentials",
+      "verifiedAt": "2026-11-22T13:08:35.738Z",
+      "workspaceId": "sable-stem"
+    },
+    {
+      "bookmarkId": "6",
+      "folder": "Other Bookmarks",
+      "proposalId": "roaclaw-smoke-plain",
+      "title": "ROACLAW smoke storefront",
+      "url": "https://roaclaw-growth-os-2026.web.app/demo-store/",
+      "verifiedAt": "2026-11-22T13:08:36.525Z",
+      "workspaceId": "sable-stem"
+    }
+  ],
+  "canceledVerified": true,
+  "searchMatches": 2,
+  "persistedBookmarks": 2,
+  "webUiPairAndCapture": true,
+  "historyVerified": true,
+  "permissionPrompt": "pregranted in a disposable test manifest",
+  "firebaseResponses": [
+    {
+      "kind": "app-check",
+      "status": 200
+    },
+    {
+      "kind": "generation",
+      "status": 200,
+      "appCheckAttached": true
+    }
+  ],
+  "webAudit": {
+    "inferenceSourceLabel": "Page · On device",
+    "reviewSourceLabel": "Review · In cloud",
+    "priceMismatchVerified": true,
+    "bookmarkReceiptVerified": true,
+    "memoryReceiptAfterReload": true,
+    "dashboardHandoffVerified": true,
+    "externalCaptureDeviceOnly": true,
+    "sessionRotatedAfterSignOut": true
+  },
+  "hostedArtifact": {
+    "sha256": "2a0cfab9d2468732343d87dce64ace0d99ba45c78b4cd1114d6812d2835df6ca",
+    "permissionsOptionalInRelease": [
+      "bookmarks",
+      "history"
+    ]
+  }
+}

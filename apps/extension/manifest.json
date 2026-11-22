@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ROACLAW",
   "description": "Capture landing-page evidence for Campaign Preflight and Growth Audit, and approve research bookmarks.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "minimum_chrome_version": "116",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuWNc+Vh06q+DiWno+ZYJnCpuOkng9dO/tR45OdjwecKnc/Kx2Ba8ltW7IkcOl5pAtv5B8ydNnXxBX53fhwgGlnsK/YkjzBoVb1YWcOtL1Bp0y2583dl8Ydl9ie11gO5XedQN8vyE/jhH48KvO5ILzAg4q1kR09V53gCVG2GhXXK9tUxvH7s16lXK9wipFTfFiFRlsz/wg1bum8Ykdtez92lmu3v6tDGSZcVyRzNVl4jOPnRulKn7XOuKbRk2OheCOi4EQ+mOTh4Yu/kDdXIJPpjA4/3bPB1IiuuEjH/RYmRxZbLs8+sWh2A+yWxOHQfhudYRdBaSIEcDDFIAWuapKQIDAQAB",
   "incognito": "not_allowed",
@@ -41,6 +41,7 @@
     "matches": [
       "https://roaclaw-growth-os-2026.web.app/*",
       "https://roaclaw-growth-os-2026.firebaseapp.com/*",
+      "https://roaclaw.com/*",
       "http://localhost:3000/*",
       "http://127.0.0.1:3000/*"
     ]

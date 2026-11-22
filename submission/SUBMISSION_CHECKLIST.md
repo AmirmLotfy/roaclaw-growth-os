@@ -9,13 +9,14 @@
 - [x] Functional SaaS deployment URL works in a fresh browser.
 - [x] Chrome extension loads and core action succeeds; release/install instructions public.
 - [x] No real client data, unauthorized ad actions or secrets in demo.
-- [ ] All entry claims reconciled with tests and video.
+- [x] Core entry claims reconciled with the runtime, release evidence and film review.
 - [x] Repo PUBLIC, LICENSE Apache-2.0 or other accepted open source, actual runtime code, `.env.example`, instructions, test scripts, limitations, screenshots.
-- [ ] Third-party and generated music/video/font licenses documented.
-- [ ] <=3 minute actual product YouTube video rendered, with English captions, and reviewed end to end.
+- [x] Source, fonts, icons, storefront artwork and owner-supplied audio provenance documented. Keep supplied audio stems out of Git.
+- [x] The 127.019-second final film passed full decode, all 26 shot checks and English captions QA.
+- [x] Separate 3:2 Devpost cover, 16:9 YouTube cover and authentic product screenshots prepared.
 - [ ] YouTube upload is publicly visible (not unlisted), fully processed and open logged out.
 - [ ] Devpost project category Web/Chrome, description, technology, repo, video, test URL, permissions and disclosures complete.
-- [x] Any legal/identity attestations completed by appropriate user, not silently by agent.
+- [x] The owner confirmed the eligibility attestations. Authenticated Devpost submission remains on hold.
 - [ ] Click/complete final Submit and confirm status and project URL before deadline.
 
 ## Automation/tool usage policy
@@ -52,4 +53,4 @@ The existing [RoaClaw Devpost draft](https://devpost.com/software/roaclaw-o1637x
 
 The account holder confirmed Growth OS is a new, independent build started on 22 November 2026, and confirmed the required eligibility attestations. Submitter type is Individual, country is Egypt, and organization is N/A. Final submission approval remains pending.
 
-The [public candidate](https://github.com/AmirmLotfy/roaclaw-growth-os/releases/tag/v0.2.1-rc.2) passed a clean checkout build. The verified product copy is in [DEVPOST_DRAFT.md](DEVPOST_DRAFT.md). The [picture review](../video/VIDEO_QA_REPORT.md) is ready for the owner's narration and music. Keep free judge access available through the judging period, which ends 16 December at 14:00 PST. [Official rules](https://firebasehybridaihackathon.devpost.com/rules)
+The [published packages](https://github.com/AmirmLotfy/roaclaw-growth-os/releases) and [project checks](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) document the build. The entry copy is in [DEVPOST_DRAFT.md](DEVPOST_DRAFT.md). The [judge walkthrough](JUDGE_GUIDE.md) and [screenshot gallery](../docs/screenshots/README.md) use the verified Firebase Hosting URL. The [final film report](../video/VIDEO_QA_REPORT.md) describes the narrated local master, captions and two covers. The judging period ends 16 December at 14:00 PST. [Official rules](https://firebasehybridaihackathon.devpost.com/rules)

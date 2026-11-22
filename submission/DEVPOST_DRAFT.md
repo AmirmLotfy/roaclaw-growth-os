@@ -6,7 +6,7 @@ Compare a campaign offer with its landing page, then approve a tracked bookmark 
 
 ## Inspiration
 
-A buyer clicks an ad for a $99 vase set and lands on a page that shows $119. A campaign dashboard can report return on ad spend while missing that discrepancy. We built ROACLAW to put the offer, the page and the evidence for each finding in the same place.
+A buyer clicks an ad for a $99 vase set and lands on a page that shows $119. A campaign dashboard can report return on ad spend while missing that discrepancy. ROACLAW puts the offer, the page, and the evidence for each finding in one audit.
 
 ## What it does
 
@@ -45,8 +45,10 @@ Firebase AI Logic, Gemini Nano 4, Gemini 3.5 Flash-Lite, Firebase App Check, Fir
 - [Start Growth Audit](https://roaclaw-growth-os-2026.web.app/app/) and choose **Open demo**, then **Ecommerce**. Run **Prefer device** to see the extraction and review labels. Use **Device only** on compatible Chrome with the model ready.
 - [Product site and install guide](https://roaclaw-growth-os-2026.web.app/)
 - [Chrome companion ZIP](https://roaclaw-growth-os-2026.web.app/roaclaw-extension.zip)
-- [Public Apache 2.0 repository and full test instructions](https://github.com/AmirmLotfy/roaclaw-growth-os)
-- Add the public YouTube URL after the narrated master passes playback review.
+- [Public Apache 2.0 repository](https://github.com/AmirmLotfy/roaclaw-growth-os)
+- [Judge walkthrough](https://github.com/AmirmLotfy/roaclaw-growth-os/blob/main/submission/JUDGE_GUIDE.md)
+- [Screenshots](https://github.com/AmirmLotfy/roaclaw-growth-os/tree/main/docs/screenshots)
+- Add the public YouTube URL after verifying public playback of the 127-second master.
 
 ## Disclosures
 

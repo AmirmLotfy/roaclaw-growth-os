@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { readLandingPage, safeCapture } from '../capture.js';
-import { ORIGINS, parseExternal, PREFLIGHT, publicPageUrl } from '../protocol.js';
+import { ORIGINS, parseExternal, PREFLIGHT, publicPageUrl, senderScope } from '../protocol.js';
 
 const origin = 'https://roaclaw-growth-os-2026.web.app';
 const scope = { workspaceId: 'weekend-co', sessionId: '12345678-1234-1234-1234-123456789012' };
@@ -51,6 +51,19 @@ test('bookmark URL admits the exact same-origin fixture UTM and safe ordinary pa
   ]) assert.equal(normalize(invalid), undefined, invalid);
   assert.equal(publicPageUrl(`${fixture}?session=private#home`), fixture);
   assert.equal(publicPageUrl('https://ads.google.com/campaigns/'), null);
+});
+
+test('the branded dashboard pairs on its exact HTTPS origin and can propose its own fixture URL', () => {
+  const brandedOrigin = 'https://roaclaw.com';
+  const dashboard = { ...workspace, origin: brandedOrigin, url: `${brandedOrigin}/app/` };
+  const brandedUrl = target.replace(origin, brandedOrigin);
+  const proposal = { ...propose, proposal: { ...propose.proposal, url: brandedUrl } };
+  assert.equal(senderScope(dashboard)?.origin, brandedOrigin);
+  assert.equal(parseExternal(proposal, brandedOrigin)?.proposal.url, brandedUrl);
+  assert.equal(parseExternal(proposal, origin), null);
+  for (const otherOrigin of ['http://roaclaw.com', 'https://www.roaclaw.com', 'https://roaclaw.example']) {
+    assert.equal(senderScope({ ...dashboard, origin: otherOrigin, url: `${otherOrigin}/app/` }), null);
+  }
 });
 
 test('preflight handshake only accepts a hostname and capture-scoped operations', () => {

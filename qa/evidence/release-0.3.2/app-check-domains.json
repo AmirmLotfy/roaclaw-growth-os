@@ -1,0 +1,14 @@
+{
+  "allowedDomainsBefore": [
+    "roaclaw-growth-os-2026.firebaseapp.com",
+    "roaclaw-growth-os-2026.web.app"
+  ],
+  "allowedDomainsAfter": [
+    "roaclaw-growth-os-2026.firebaseapp.com",
+    "roaclaw-growth-os-2026.web.app",
+    "roaclaw.com"
+  ],
+  "allowAllDomains": false,
+  "integrationType": "SCORE",
+  "usingTestingKey": false
+}

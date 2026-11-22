@@ -1,0 +1,18 @@
+{
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "scoring": false,
+  "events": [
+    {
+      "host": "content-firebaseappcheck.googleapis.com",
+      "kind": "exchange",
+      "http": 200
+    },
+    {
+      "host": "firebasevertexai.googleapis.com",
+      "kind": "generation",
+      "http": 200
+    }
+  ],
+  "cloudReviewUi": true,
+  "deviceInspectionUi": true
+}

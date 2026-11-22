@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 · Judge documentation and branded origin
+
+- Add a judge walkthrough and a screenshot gallery from the deployed website, dashboard, Campaign Preflight, and native Chrome side panel.
+- Let the extension pair with the exact `https://roaclaw.com` origin and keep the Firebase demo origins available. Test the custom-origin pairing and same-origin bookmark boundary.
+- Record verified production App Check and separate Firebase cloud review calls, including the device-only fallback observed on a reconnect retry.
+
 ## 0.3.1 · Graphite and vermilion
 
 - Apply the revised visual system to the product site, Growth Audit, Campaign Preflight, exported reports and Chrome companion.

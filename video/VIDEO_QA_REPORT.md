@@ -19,4 +19,6 @@ The edit uses the owner's supplied continuous narration and music. The score duc
 
 ## Publication
 
-The prior Studio upload and Devpost project remain drafts. The owner asked to hold external submission. The new assets have only been created locally.
+The prior Studio upload and Devpost project remain drafts. The owner authorized uploading the final cut via the Codex internal browser. The browser-control session reported that access was unavailable. The final master and cover stay in the workspace pending authenticated upload and public playback. Devpost submission remains on hold.
+
+The [verified screenshot gallery](../docs/screenshots/README.md) accompanies the separate 3:2 Devpost cover. PNG copies for the gallery are in `.local/submission-gallery/`.

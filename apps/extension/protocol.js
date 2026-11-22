@@ -2,6 +2,7 @@ export const PRIMARY_ORIGIN = 'https://roaclaw-growth-os-2026.web.app';
 export const ORIGINS = new Set([
   PRIMARY_ORIGIN,
   'https://roaclaw-growth-os-2026.firebaseapp.com',
+  'https://roaclaw.com',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
 ]);

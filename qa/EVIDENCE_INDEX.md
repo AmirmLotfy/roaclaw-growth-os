@@ -17,9 +17,9 @@ Last checked 22 November 2026. The Firebase verification gate, hosted Growth Aud
 | V-02 | PASS | Asked for the audit price finding through Agent text lookup in hosted Chrome. [Text lookup](evidence/web/05-text-lookup.png) |
 | D-01 and D-02 | PASS FOR TESTED STATES | Checked the homepage and dashboard at desktop and mobile sizes, paired extension content at 360 and 420 CSS pixels, keyboard access to the site skip link, and reduced-motion behavior. Axe reported zero WCAG A/AA-tagged violations in the 13 scanned views. [Hosted browser](evidence/web/runtime.json) · [Axe and dimension report](evidence/accessibility/runtime.json) |
 | S-01 | PASS | Staged Gitleaks and a five-commit release-history scan returned zero findings. Build artifacts, browser profiles, and local credentials are ignored by Git. |
-| S-03 | PASS | Verified the public marketing site, the direct Growth Audit route, fresh demo onboarding, App Check and a separate cloud generation HTTP 200. [Website](https://roaclaw-growth-os-2026.web.app/) · [Dashboard](https://roaclaw-growth-os-2026.web.app/app/) · [Browser run](evidence/web/runtime.json) |
-| S-02 | PASS | Public Apache 2.0 repository, published candidate tag, clean-checkout web export, matching extension ZIP, and passing GitHub Actions. [0.3.1 candidate](https://github.com/AmirmLotfy/roaclaw-growth-os/releases/tag/v0.3.1-rc.1) · [CI](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/runs/45023603268) |
-| S-04 | HOLD | The 127.019-second Campaign Preflight film passed full decode and review. The supplied narration and score are mixed and the English captions and both thumbnails are ready. Public playback awaits authorization. [Video QA](../video/VIDEO_QA_REPORT.md) · [Film report](evidence/video/campaign-preflight-film.json) |
+| S-03 | PASS | Verified the public marketing site, direct Growth Audit route, fresh demo onboarding, production App Check exchange HTTP 200, and a separate attested cloud review HTTP 200. [Website](https://roaclaw-growth-os-2026.web.app/) · [Dashboard](https://roaclaw-growth-os-2026.web.app/app/) · [Latest browser run](evidence/app-check-repair/hosted.json) |
+| S-02 | PASS | Public Apache 2.0 repository with versioned package, judge walkthrough, and screenshots. GitHub Actions checks the export from a clean checkout. [Releases](https://github.com/AmirmLotfy/roaclaw-growth-os/releases) · [CI](https://github.com/AmirmLotfy/roaclaw-growth-os/actions/workflows/check.yml) |
+| S-04 | BLOCKED | The 127.019-second Campaign Preflight film passed full decode and review. The supplied narration and score are mixed and the English captions and both thumbnails are ready. Browser control was unavailable for the authorized YouTube upload. [Video QA](../video/VIDEO_QA_REPORT.md) · [Film report](evidence/video/campaign-preflight-film.json) |
 | S-05 | DRAFT | The authenticated Devpost project exists with no submission timestamp. [RoaClaw draft](https://devpost.com/software/roaclaw-o1637x) |
 
 The probe's type check and Vite production build passed. The final local-only verifier exited successfully. Earlier cloud and App Check tests remain separately recorded. Git and Firebase CLI setup are recorded in the [worklog](../WORKLOG.md).
@@ -42,3 +42,30 @@ The Chrome 0.2.1 hotfix preserves the normal dashboard handoff on older Chrome. 
 The final hosted audit passed with Firestore's gRPC dependency patched to 1.13.7. The production workspace dependency scan returned zero known advisories. [Hosted rerun](evidence/web-0.2.1.json)
 
 The 0.3.1 Growth Audit rerun verified on-device extraction, offline sync, all three scenarios, and report export. The reCAPTCHA Enterprise exchange returned 403 on the hybrid call. Growth Audit correctly used Nano only, displayed the App Check result, and made no cloud generation request on that run. The Chrome extension separately passed capture, approval, two persisted bookmark readbacks, cancellation and history search. [Hosted recovery run](evidence/web-0.3.1.json) · [Chrome regression](evidence/chrome-0.3.1.json)
+
+## App Check repair and full Growth Audit rerun
+
+| Check | Status | Evidence |
+|---|---|---|
+| Production App Check registration | PASS | A valid token scored 0.3. The cutoff changed from 0.5 to 0.3 and Firebase AI Logic enforcement remained active. A later headless assessment scored 0.1 and still encountered a 403. [Configuration](evidence/app-check-repair/config.json) · [Headless assessment](evidence/app-check-repair/headless-assessment.json) |
+| Live hybrid Growth Audit | PASS | Isolated Chrome observed a real HTTP 200 on the token exchange and on the Firebase cloud review, which carried the attestation header. The export confirmed device extraction, cloud review, and nonempty commentary. Offline audit with zero AI requests, reconnect sync, all three workspaces, reload, and the follow-up also passed. A separate direct hybrid run passed and provided the screenshot. [Runtime](evidence/app-check-repair/hosted.json) · [Direct hybrid run](evidence/app-check-repair/hosted-hybrid-confirmation.json) · [Hybrid result](evidence/app-check-repair/hosted-hybrid.png) |
+| Repeated cloud audit after reconnect | INTERMITTENT | A repeat of the same offline-to-online sequence in isolated Chrome received HTTP 403 and returned a device-only result. [Reconnect retry](evidence/app-check-repair/hosted-reconnect-retry.json) |
+| Chrome companion with live cloud review | PASS | The hosted 0.3.1 ZIP captured the storefront via the Chrome side panel. Nano inspected the capture and a separate attested Firebase generation returned the review. Two approved bookmarks persisted, and cancellation, local search, history, the dashboard's receipt after reload, private capture, and revocation passed. The disposable profile pregranted optional bookmark and history permissions. [Runtime](evidence/app-check-repair/companion.json) · [Hybrid result](evidence/app-check-repair/companion-hybrid.png) · [Chrome receipt](evidence/app-check-repair/companion-receipt.png) |
+
+Run these checks from the repository root after preparing the Nano profile described in the [inference probe setup](../tools/hybrid-proof/README.md). The scripts use isolated Chrome QA profiles and require a real production cloud response.
+
+```sh
+ROACLAW_QA_MINIMIZED=1 ROACLAW_HOSTED_EVIDENCE=.local/app-check-repair/hosted-isolated \
+  node qa/e2e/hosted.mjs
+ROACLAW_QA_MINIMIZED=1 node apps/extension/test/smoke.mjs \
+  https://roaclaw-growth-os-2026.web.app/app/ --hosted-zip --with-nano \
+  --web-flow --require-cloud-review --history --pregrant-test-permissions \
+  --evidence-dir .local/app-check-repair/companion-isolated
+```
+
+## 0.3.2 package and judge assets
+
+- **PASS.** The homepage, Growth Audit, Campaign Preflight, demo store and updated ZIP returned HTTP 200. The ZIP matched the production build. [Hosting evidence](evidence/release-0.3.2/hosting.json)
+- **PASS with intermittent cloud failures.** Chrome paired with the hosted 0.3.2 ZIP, captured the storefront, observed Nano and real attested Firebase cloud review, and verified two bookmark readbacks and persistence. Two preceding cloud checks returned App Check HTTP 403 or Firebase AI Logic HTTP 500. The complete run pregranted optional permissions in the disposable profile. [Passing run](evidence/release-0.3.2/companion.json) · [Earlier retries](evidence/release-0.3.2/cloud-retries.json)
+- **PASS.** Five product screenshots with captions and test links, judge walkthrough, Apache-2.0 repository license and asset provenance. [Screenshots](../docs/screenshots/README.md) · [Judge walkthrough](../submission/JUDGE_GUIDE.md) · [License](../LICENSE)
+- **PENDING.** Firebase Hosting registrations and App Check domain allowlist are in place. Namecheap still served parking records. [DNS steps](../docs/09_DEPLOYMENT_AND_RELEASE.md#roaclaw-custom-domain) · [App Check key readback](evidence/release-0.3.2/app-check-domains.json)

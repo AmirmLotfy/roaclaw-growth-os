@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-22",
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "extensionVersion": "0.3.2",
+  "headless": false,
+  "stage": "replay a captured synthetic storefront in Growth Audit with cloud review required",
+  "runs": [
+    {
+      "appCheckExchangeStatus": 403,
+      "generationAttempted": false,
+      "cloudReview": false
+    },
+    {
+      "appCheckExchangeStatus": 200,
+      "generationStatus": 500,
+      "appCheckAttached": true,
+      "cloudReview": false
+    }
+  ]
+}

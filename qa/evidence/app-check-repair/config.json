@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-11-22T12:51:31.527Z",
+  "project": "roaclaw-growth-os-2026",
+  "webAppId": "1:1003872487777:web:c54b147ad565a4f39e1d20",
+  "baselineExchange": {
+    "status": 403,
+    "message": "App attestation failed."
+  },
+  "assessment": {
+    "status": 200,
+    "valid": true,
+    "invalidReason": "INVALID_REASON_UNSPECIFIED",
+    "hostname": "roaclaw-growth-os-2026.web.app",
+    "action": "fire_app_check",
+    "score": 0.3,
+    "reasons": []
+  },
+  "minimumScoreBefore": 0.5,
+  "minimumScoreAfter": 0.3,
+  "tokenTtl": "3600s",
+  "siteKeyMatchesBuild": true,
+  "siteKeyUnchanged": true,
+  "allowedDomains": [
+    "roaclaw-growth-os-2026.firebaseapp.com",
+    "roaclaw-growth-os-2026.web.app"
+  ],
+  "testingKey": false,
+  "enforcementMode": "ENFORCED",
+  "billingEnabled": false
+}

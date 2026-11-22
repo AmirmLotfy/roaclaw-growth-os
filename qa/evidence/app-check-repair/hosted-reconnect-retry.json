@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-22",
+  "origin": "https://roaclaw-growth-os-2026.web.app",
+  "headless": false,
+  "stage": "hybrid audit following offline audit and reconnect",
+  "passed": false,
+  "appCheckResponses": [
+    {
+      "kind": "app-check",
+      "host": "content-firebaseappcheck.googleapis.com",
+      "status": 403
+    }
+  ],
+  "fallback": "Page inspected on this device. Firebase App Check blocked the cloud review.",
+  "cloudReview": false,
+  "riskScoreMeasuredForThisRun": false
+}

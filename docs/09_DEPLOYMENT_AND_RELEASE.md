@@ -10,6 +10,20 @@
 ## Hosting
 Prefer Firebase App Hosting for Next.js if the project supports it; otherwise choose an explicitly supported Firebase Hosting deployment or Vercel front end with Firebase backend and verified App Check. Document why chosen. Host an authentic demo fixture landing page under the same controlled project domain, so extension capture can be reproduced.
 
+### ROACLAW custom domain
+
+Firebase Hosting has registered `roaclaw.com` to serve ROACLAW and `www.roaclaw.com` to redirect to the apex. The public Firebase origin stays available for the demo. The production reCAPTCHA Enterprise key permits the branded domain alongside the two Firebase defaults. Companion 0.3.2 adds the exact HTTPS apex origin and keeps the same extension ID and permission model.
+
+The Firebase API returned these required changes for Namecheap Advanced DNS on 22 November 2026.
+
+| Host | Type | Value | Change |
+|---|---|---|---|
+| `@` | A | `199.36.158.100` | Replace the parking address or the URL redirect rule that produces it. |
+| `@` | TXT | `hosting-site=roaclaw-growth-os-2026` | Add alongside the existing TXT records. |
+| `www` | CNAME | `roaclaw-growth-os-2026.web.app` | Replace the Namecheap parking CNAME. |
+
+Keep the existing MX, SPF, Google site verification and nameserver records. Verify authoritative DNS and Firebase certificate status, then verify the homepage, the `www` redirect, anonymous demo sign-in, attested cloud review and extension capture on the branded host. Keep the judge guide on the verified Firebase origin until these checks pass. [Firebase Hosting custom domains](https://firebase.google.com/docs/hosting/custom-domain) · [Namecheap host records](https://www.namecheap.com/support/knowledgebase/article.aspx/434/2237/how-do-i-set-up-host-records-for-a-domain/)
+
 ## Judge access
 - Demo workspace seeded with synthetic values and visible `DEMO DATA` label; no real ad credentials.
 - If auth required, use a short-lived dedicated judge demo credential distributed via permitted Devpost testing-instructions field, not public README; consider a self-serve demo where Firestore rules still protect data.
