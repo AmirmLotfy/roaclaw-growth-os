@@ -2,26 +2,35 @@
 
 ## Title
 
-ROACLAW | Check the ad against the landing page
+Landing Page Audit for Paid Campaigns | ROACLAW
 
 ## Description
 
-ROACLAW compares a campaign offer with the page it sends people to. The demo ad says $99 and the product page shows $119. Gemini Nano 4 reads the page on the device. Firebase AI Logic runs a separate cloud review of the findings.
+```text
+The ad says $99. The landing page says $119. ROACLAW helps media buyers catch mismatches between a paid campaign and its destination. Each finding shows the evidence behind it.
 
-See the source evidence, the exact tagged destination, and the Chrome bookmark receipt after approval. The workspaces, campaign figures, and storefront are demo data.
+Run Growth Audit at https://roaclaw.com/app/
+Check your own landing page at https://roaclaw.com/app/preflight/
+Download the Chrome companion at https://roaclaw.com/roaclaw-extension.zip
+Explore the Apache-2.0 source and judge guide at https://github.com/AmirmLotfy/roaclaw-growth-os
 
-Campaign Preflight lets you enter your own brief and compare it with a public page you capture in Chrome. It produces a suggested tracking link and a downloadable report.
+The walkthrough uses synthetic campaign and storefront data. Firebase AI Logic runs page extraction on Gemini Nano 4 in Chrome and sends a separate cloud request to review the demo findings. The Chrome side panel lets you review a tagged URL, approve the bookmark, and verify it was saved. Campaign Preflight compares your own brief with a public page and exports the report.
 
-Product site https://roaclaw.com/
+00:00 The $99 ad and $119 landing page
+00:12 On-device extraction and cloud review
+00:29 Offline audit
+00:41 Price mismatch and missing campaign tag
+00:56 Chrome capture and bookmark approval
+01:19 Workspaces, audit memory, and follow-up
+01:44 Campaign Preflight and report export
 
-Growth Audit https://roaclaw-growth-os-2026.web.app/app/
+Built for Google #BuildHybridAI 2026 in the Web (Chrome) category.
+```
 
-Campaign Preflight https://roaclaw-growth-os-2026.web.app/app/preflight/
+## Tags and distribution
 
-Source https://github.com/AmirmLotfy/roaclaw-growth-os
+- Tags include `digital marketing`, `ROACLAW`, `Roa Claw`, `landing page audit`, `paid media`, `Chrome extension`, `Campaign Preflight`, `Growth Audit`, `UTM tracking`, `Firebase AI Logic`, `Gemini Nano 4`, `BuildHybridAI`, and `hybrid inference`.
+- Category is Science & Technology. Visibility is Public, and embedding is enabled. The video keeps its AI-use disclosure and uploaded English subtitle track.
+- The custom 3840 × 2160 thumbnail is `ROACLAW_YOUTUBE_16X9.jpg`. Its price labels are readable in the 320px preview. The Devpost gallery uses its separate 3:2 cover.
 
-Built for Google #BuildHybridAI 2026.
-
-## Assets and checks
-
-The video is public on the Frameless channel. The uploaded thumbnail is `ROACLAW_YOUTUBE_16X9.jpg` and the English subtitle track came from `ROACLAW_CAMPAIGN_PREFLIGHT_FILM.srt`. The Devpost gallery uses its separate 3:2 cover. [Public video](https://youtu.be/V-a7CwUjY1U) · [Playback QA](VIDEO_QA_REPORT.md)
+Studio readback confirmed the saved tags and category. The public watch page showed the final title, the revised opening, the branded links and all seven chapter links. [Public video](https://youtu.be/V-a7CwUjY1U) · [Playback QA](VIDEO_QA_REPORT.md)

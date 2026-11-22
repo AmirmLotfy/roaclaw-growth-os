@@ -36,6 +36,14 @@
     "anonymousOEmbed": "HTTP 200",
     "initialCopyrightAndCommunityChecks": "No issues found",
     "aiUseDisclosed": true,
-    "subscriberNotificationsEnabled": false
+    "subscriberNotificationsEnabled": false,
+    "metadata": {
+      "title": "Landing Page Audit for Paid Campaigns | ROACLAW",
+      "category": "Science & Technology",
+      "savedTagCount": 13,
+      "visibleChapterLinks": 7,
+      "embeddingEnabled": true,
+      "publicDescriptionVerified": true
+    }
   }
 }
